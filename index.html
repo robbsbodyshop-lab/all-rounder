@@ -213,6 +213,38 @@
 
   @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
   @media(max-width:580px){.days-grid{grid-template-columns:1fr}.header-inner{flex-direction:column;align-items:flex-start}.stats-row{grid-template-columns:repeat(2,1fr)}.profile-cards{flex-direction:column;align-items:center}}
+
+  .wife-ex-card{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:6px;padding:.55rem .7rem;margin-bottom:.45rem}
+  .wife-ex-header{display:flex;align-items:center;gap:.4rem;margin-bottom:.3rem;flex-wrap:wrap}
+  .wife-ex-order{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;color:var(--accent);letter-spacing:.08em;min-width:22px}
+  .wife-ex-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;color:var(--text-primary);letter-spacing:.04em}
+  .wife-ex-equip{font-size:.6rem;color:var(--text-muted);margin-left:auto;font-style:italic}
+  .wife-ex-params{display:flex;flex-wrap:wrap;gap:.25rem .6rem;font-size:.65rem;color:var(--text-secondary);margin-bottom:.3rem}
+  .wife-ex-params .p-label{color:var(--text-muted);font-size:.55rem;text-transform:uppercase;letter-spacing:.08em;margin-right:.15rem}
+  .scoliosis-cue{font-size:.66rem;color:#e8736f;background:rgba(232,115,111,.07);border-left:2px solid rgba(232,115,111,.5);padding:.22rem .5rem;border-radius:0 4px 4px 0;margin-bottom:.2rem;line-height:1.45}
+  .coaching-cue{font-size:.66rem;color:var(--text-muted);font-style:italic;padding:.12rem .5rem;line-height:1.45}
+  .wife-block-section{margin-bottom:.75rem}
+  .wife-block-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);padding-bottom:.25rem;border-bottom:1px solid rgba(46,134,193,.15);margin-bottom:.45rem}
+  .wife-session-note{font-size:.68rem;color:#e8736f;background:rgba(232,115,111,.06);border:1px solid rgba(232,115,111,.15);border-radius:5px;padding:.4rem .6rem;margin-bottom:.75rem;line-height:1.5}
+  .wife-ex-note{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-primary);border-radius:4px;padding:.28rem .45rem;font-family:'Barlow',sans-serif;font-size:.7rem;outline:none;margin-top:.2rem}
+  .wife-ex-note:focus{border-color:var(--accent)}
+  .wife-ex-note::placeholder{color:var(--text-muted)}
+  .phase-pill{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;padding:.16rem .6rem;border-radius:20px;background:rgba(232,115,111,.12);border:1px solid rgba(232,115,111,.3);color:#e8736f}
+  .red-flags-card{border-color:rgba(231,76,60,.3)!important}
+  .red-flags-card h3{color:var(--red)!important;border-bottom-color:rgba(231,76,60,.2)!important}
+  .red-flags-card ul li::before{color:var(--red)!important}
+  .nutrition-card h3{color:var(--green-light)!important;border-bottom-color:rgba(46,204,113,.2)!important}
+  .nutrition-card ul li::before{color:var(--green-light)!important}
+  .wife-prep-phase{margin-bottom:.65rem;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:6px;padding:.55rem .7rem}
+  .wife-prep-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.15rem}
+  .wife-prep-dur{font-size:.6rem;color:var(--text-muted);margin-bottom:.3rem}
+  .wife-prep-ex{font-size:.7rem;color:var(--text-secondary);padding:.15rem 0 .15rem .7rem;position:relative;line-height:1.45}
+  .wife-prep-ex::before{content:'\2014';position:absolute;left:0;color:var(--muted);font-size:.58rem}
+  .wife-prep-sf{color:#e8736f;font-size:.64rem;font-style:italic;display:block;margin-top:.1rem}
+  .wife-progression{font-size:.62rem;color:var(--gold);font-style:italic;margin-top:.12rem}
+  .wife-day-blocks{margin-top:.35rem}
+  .wife-day-block-summary{font-size:.68rem;color:var(--text-secondary);padding:.12rem 0 .12rem .7rem;position:relative;line-height:1.4}
+  .wife-day-block-summary::before{content:'\25B8';position:absolute;left:0;color:var(--accent);font-size:.55rem;top:.22rem}
 </style>
 </head>
 <body>
@@ -954,64 +986,109 @@ function renderLibrary() {
 //  RENDER
 // ═══════════════════════════════════════════════════
 function render() {
-  const days = program[S.mode];
+  var prog = getProgram();
+  var days = prog[S.mode] || prog.standard;
   document.getElementById('weekLabel').textContent = 'WEEK ' + S.week;
-  const pill = document.getElementById('modePill');
-  pill.textContent = S.mode === 'standard' ? 'Standard' : 'Taper / Deload';
-  pill.className = 'pill ' + (S.mode === 'standard' ? 'pill-standard' : 'pill-deload');
-  let done = 0, str = 0, end = 0;
-  days.forEach((d, i) => {
+
+  var pill = document.getElementById('modePill');
+  if (isWife()) {
+    var phase = getPhaseForWeek(S.week);
+    pill.textContent = phase ? phase.name : '';
+    pill.className = 'pill phase-pill';
+  } else {
+    pill.textContent = S.mode === 'standard' ? 'Standard' : 'Taper / Deload';
+    pill.className = 'pill ' + (S.mode === 'standard' ? 'pill-standard' : 'pill-deload');
+  }
+
+  var done = 0, str = 0, end = 0;
+  days.forEach(function(d, i) {
     if (d.type === 'rest') return;
     if (S.completed[S.week + '-' + i]) { done++; if (d.type === 'strength' || d.type === 'both') str++; if (d.type === 'endurance' || d.type === 'both') end++; }
   });
-  const total = days.filter(d => d.type !== 'rest').length;
-  const pct = Math.round((done / total) * 100);
+  var total = days.filter(function(d) { return d.type !== 'rest'; }).length;
+  var pct = total ? Math.round((done / total) * 100) : 0;
+
   document.getElementById('statWeek').innerHTML = S.week + ' <span>/ ' + S.totalWeeks + '</span>';
-  document.getElementById('statMode').textContent = S.mode === 'standard' ? 'Standard Phase' : 'Taper/Deload Phase';
+  if (isWife()) {
+    var ph = getPhaseForWeek(S.week);
+    document.getElementById('statMode').textContent = ph ? ph.name + ' Phase' : '';
+  } else {
+    document.getElementById('statMode').textContent = S.mode === 'standard' ? 'Standard Phase' : 'Taper/Deload Phase';
+  }
   document.getElementById('statDone').innerHTML = done + ' <span>/ ' + total + '</span>';
-  document.getElementById('statStrength').innerHTML = str + ' <span>/ 3</span>';
-  document.getElementById('statEndurance').innerHTML = end + ' <span>/ 3</span>';
+
+  if (isWife()) {
+    document.getElementById('statStrength').innerHTML = str + ' <span>/ 4</span>';
+    var endCard = document.getElementById('statEnduranceCard');
+    if (endCard) endCard.style.display = 'none';
+  } else {
+    document.getElementById('statStrength').innerHTML = str + ' <span>/ 3</span>';
+    var endCard2 = document.getElementById('statEnduranceCard');
+    if (endCard2) { endCard2.style.display = ''; document.getElementById('statEndurance').innerHTML = end + ' <span>/ 3</span>'; }
+  }
+
   document.getElementById('statTotal').textContent = S.log ? S.log.length : 0;
   document.getElementById('progPct').textContent = pct + '%';
   document.getElementById('progFill').style.width = pct + '%';
   document.getElementById('wkNoteLabel').textContent = 'Week ' + S.week;
   document.getElementById('weekNotes').value = (S.notes && S.notes[S.week]) || '';
 
-  const grid = document.getElementById('daysGrid'); grid.innerHTML = '';
-  days.forEach((day, i) => {
-    const key = S.week + '-' + i;
-    const isComp = !!S.completed[key];
-    const bData = S.builders[key] || {};
-    const hasPlan = Object.keys(bData).some(k => !k.endsWith('-note') && bData[k] && bData[k] !== 'custom');
-    const card = document.createElement('div');
+  updateModeToggle();
+  updateNotesTab();
+
+  var grid = document.getElementById('daysGrid'); grid.innerHTML = '';
+  days.forEach(function(day, i) {
+    var key = S.week + '-' + i;
+    var isComp = !!S.completed[key];
+    var bData = S.builders[key] || {};
+    var hasPlan = Object.keys(bData).some(function(k) { return !k.endsWith('-note') && bData[k] && bData[k] !== 'custom'; });
+    var card = document.createElement('div');
     card.className = 'day-card' + (isComp ? ' completed' : '') + (day.type === 'rest' ? ' rest-day' : '');
     card.style.animationDelay = (i * .04) + 's';
+
     if (day.type === 'rest') {
-      card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><div style="width:25px"></div></div><div class="day-body"><div class="rest-content">\u2B24 Active Recovery</div></div>';
+      if (isWife() && day.sessionId === 'core') {
+        card.classList.remove('rest-day');
+        card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><button class="day-check" onclick="event.stopPropagation();toggleDay(' + i + ')">' + (isComp ? '\u2713' : '') + '</button></div><div class="day-body"><div style="text-align:center;padding:.5rem;color:var(--text-muted);font-size:.72rem">' + WIFE_CORE.name + ' \u2022 ' + WIFE_CORE.duration + '</div><button class="open-builder-btn" onclick="openBuilder(' + i + ',event)">View Core Routine</button></div>';
+      } else {
+        card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><div style="width:25px"></div></div><div class="day-body"><div class="rest-content">\u2B24 Active Recovery</div></div>';
+      }
+    } else if (isWife()) {
+      var session = WIFE_SESSIONS[day.sessionId];
+      var wbody = '';
+      if (session) {
+        wbody += '<div class="wife-day-blocks">';
+        session.blocks.forEach(function(block) {
+          var exNames = block.exercises.map(function(ex) { return ex.name; }).slice(0, 3).join(' \u00B7 ');
+          var more = block.exercises.length > 3 ? ' +' + (block.exercises.length - 3) : '';
+          wbody += '<div class="wife-day-block-summary"><strong style="color:var(--accent);font-size:.62rem">' + block.id + '</strong> ' + exNames + more + '</div>';
+        });
+        wbody += '</div>';
+      }
+      wbody += '<button class="open-builder-btn" onclick="openBuilder(' + i + ',event)">' + (hasPlan ? '\u270E View & Edit Workout' : 'View Full Workout') + '</button>';
+      card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><button class="day-check" onclick="event.stopPropagation();toggleDay(' + i + ')">' + (isComp ? '\u2713' : '') + '</button></div><div class="day-body">' + wbody + '</div>';
     } else {
-      let body = '';
+      var body = '';
       if (day.strength && day.strength.length) {
-        const isP = i === 2;
-        body += '<div class="workout-block"><span class="block-tag ' + (isP ? 'tag-plyo' : 'tag-strength') + '">' + (isP ? 'Plyometrics' : 'Strength') + '</span><ul class="workout-list">' + day.strength.map(s => '<li>' + s + '</li>').join('') + '</ul></div>';
+        var isP = i === 2;
+        body += '<div class="workout-block"><span class="block-tag ' + (isP ? 'tag-plyo' : 'tag-strength') + '">' + (isP ? 'Plyometrics' : 'Strength') + '</span><ul class="workout-list">' + day.strength.map(function(s) { return '<li>' + s + '</li>'; }).join('') + '</ul></div>';
       }
       if (day.endurance) body += '<div class="workout-block"><span class="block-tag tag-endurance">Endurance</span><div class="endurance-badge">' + day.endurance.label + '</div></div>';
-
-      const cfg = BUILDER[i];
+      var cfg = BUILDER[i];
       if (cfg && !hasPlan) {
-        const currentPhase = S.mode;
-        const relevantSlots = cfg.filter(sec => { const p = sec.phase || 'both'; return (p === 'both' || p === currentPhase) && sec.defaultNote; });
+        var currentPhase = S.mode;
+        var relevantSlots = cfg.filter(function(sec) { var p = sec.phase || 'both'; return (p === 'both' || p === currentPhase) && sec.defaultNote; });
         if (relevantSlots.length) {
           body += '<div class="workout-block" style="margin-top:.55rem"><span class="block-tag" style="background:rgba(232,184,75,.1);color:var(--gold)">Prescribed</span><ul class="workout-list">';
-          relevantSlots.forEach(sec => {
-            const bc = badgeColor(sec.badge || '');
+          relevantSlots.forEach(function(sec) {
+            var bc = badgeColor(sec.badge || '');
             body += '<li style="font-size:.68rem;line-height:1.5"><span style="color:' + bc + ';font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:.65rem;margin-right:.3rem">' + (sec.badge || '') + '</span><span style="color:var(--text-muted)">' + sec.title.replace(/\(.*?\)/g, '').trim() + '</span></li>';
           });
           body += '</ul></div>';
         }
       }
-
       if (hasPlan) {
-        const planned = Object.entries(bData).filter(([k, v]) => !k.endsWith('-note') && v && v !== 'custom').map(([, v]) => '<li>' + v + '</li>').join('');
+        var planned = Object.entries(bData).filter(function(e) { return !e[0].endsWith('-note') && e[1] && e[1] !== 'custom'; }).map(function(e) { return '<li>' + e[1] + '</li>'; }).join('');
         if (planned) body += '<div class="workout-block"><span class="block-tag tag-planned">Planned</span><ul class="workout-list">' + planned + '</ul></div>';
       }
       body += '<button class="open-builder-btn" onclick="openBuilder(' + i + ',event)">' + (hasPlan ? '\u270E Edit Workout Plan' : '+ Plan This Workout') + '</button>';
@@ -1019,6 +1096,16 @@ function render() {
     }
     grid.appendChild(card);
   });
+
+  var suppDiv = document.getElementById('wifeSupplemental');
+  if (suppDiv) {
+    if (isWife()) {
+      suppDiv.innerHTML = '<div style="margin-top:1.2rem"><div class="section-label"><h2>Supplemental Routines</h2><div class="pill phase-pill">Daily</div></div><div class="days-grid"><div class="day-card" style="cursor:pointer" onclick="openPrepModal()"><div class="day-header"><div class="day-label">Pre-Session</div><div class="day-title">Movement Prep</div><div style="width:25px"></div></div><div class="day-body"><div style="text-align:center;padding:.5rem;color:var(--text-muted);font-size:.72rem">' + WIFE_PREP.name + ' \u2022 ' + WIFE_PREP.duration + '</div></div></div><div class="day-card" style="cursor:pointer" onclick="openCoreModal()"><div class="day-header"><div class="day-label">Daily</div><div class="day-title">Core & Waist</div><div style="width:25px"></div></div><div class="day-body"><div style="text-align:center;padding:.5rem;color:var(--text-muted);font-size:.72rem">' + WIFE_CORE.name + ' \u2022 ' + WIFE_CORE.duration + '</div></div></div></div></div>';
+    } else {
+      suppDiv.innerHTML = '';
+    }
+  }
+
   renderLog();
 }
 
