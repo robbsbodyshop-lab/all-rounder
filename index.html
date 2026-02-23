@@ -313,10 +313,11 @@
         <span id="weekLabel">WEEK 1</span>
         <button onclick="changeWeek(1)">&rsaquo;</button>
       </div>
-      <div class="mode-toggle">
+      <div class="mode-toggle" id="modeToggle">
         <button class="active" id="btnStandard" onclick="setMode('standard')">Standard</button>
         <button id="btnDeload" onclick="setMode('deload')">Taper/Deload</button>
       </div>
+      <div id="phaseDisplay" style="display:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:#e8736f"></div>
       <button class="btn-sm btn-red" onclick="confirmReset()">Reset Week</button>
     </div>
   </div>
@@ -335,7 +336,7 @@
       <div class="stat-card"><div class="label">Week</div><div class="value" id="statWeek">1 <span>/ 12</span></div><div class="sub" id="statMode">Standard Phase</div></div>
       <div class="stat-card"><div class="label">Sessions Done</div><div class="value" id="statDone">0 <span>/ 6</span></div><div class="sub">This week</div></div>
       <div class="stat-card"><div class="label">Strength Days</div><div class="value" id="statStrength">0 <span>/ 3</span></div><div class="sub">Completed</div></div>
-      <div class="stat-card"><div class="label">Endurance Days</div><div class="value" id="statEndurance">0 <span>/ 3</span></div><div class="sub">Completed</div></div>
+      <div class="stat-card" id="statEnduranceCard"><div class="label">Endurance Days</div><div class="value" id="statEndurance">0 <span>/ 3</span></div><div class="sub">Completed</div></div>
       <div class="stat-card"><div class="label">Total Logged</div><div class="value" id="statTotal">0</div><div class="sub">All time</div></div>
     </div>
     <div class="prog-bar-container">
@@ -347,6 +348,7 @@
       <div class="pill pill-standard" id="modePill">Standard</div>
     </div>
     <div class="days-grid" id="daysGrid"></div>
+    <div id="wifeSupplemental"></div>
   </div>
 
   <div class="tab-panel" id="tab-log">
@@ -356,13 +358,6 @@
         <input type="date" id="logDate">
         <select id="logDay">
           <option value="">Select Session</option>
-          <option>Day 1 — Upper Push + MLSS+</option>
-          <option>Day 2 — Lower Hinge + Cyc AnA</option>
-          <option>Day 3 — Plyo Warm-Up + NT</option>
-          <option>Day 4 — Upper Pull + Cyc Endurance</option>
-          <option>Day 5 — Lower Push</option>
-          <option>Day 6 — LSD / Cyc Endurance</option>
-          <option>Day 7 — Rest</option>
         </select>
         <input type="text" id="logNote" placeholder="Notes (1RM, pace, RPE, exercises used...)">
         <button class="btn-log" onclick="addLog()">+ Add</button>
@@ -390,35 +385,7 @@
       <span class="wk-label" id="wkNoteLabel">Week 1</span>
       <textarea id="weekNotes" placeholder="How did this week feel? PRs, adjustments, soreness, threshold updates..." oninput="saveNotes()"></textarea>
     </div>
-    <div class="notes-grid">
-      <div class="notes-card"><h3>Strength Notes</h3><ul>
-        <li>Secondary lifts are emphasized — variety of implements and planes of movement build limit strength without attachment to the "big three." Primary lifts can be substituted.</li>
-        <li>Braced asymmetrical movements can rotate with secondary asymmetrical. Consider choosing asymmetrical for the secondary movement that begins each day.</li>
-        <li>Plyo warm-up midweek = 1–3 plyometric skills. Left open-ended — variety and week-to-week modifications are encouraged.</li>
-        <li><strong style="color:var(--cyan)">ME:</strong> 1–5 reps, 90–100%, 1–3 sets, no RIR target. <strong style="color:var(--cyan)">DE:</strong> 2–4 reps, 70–80%, max velocity, 4–6 sets. <strong style="color:var(--cyan)">SKILL:</strong> 3–5 reps, 75–85%, 3–4 RIR, 3–5 sets. <strong style="color:var(--cyan)">HYP:</strong> 6–12 reps, 0–2 RIR, 3–4 sets.</li>
-      </ul></div>
-      <div class="notes-card"><h3>Conditioning Notes</h3><ul>
-        <li>Hard work should be hard; easy work should be easy. Resist adding more difficulty or distance — adjust intensity and threshold estimates instead.</li>
-        <li>For a specific race, switch to a pivot program. One month on The Runner prior to a race-specific program returns the best pre-test results.</li>
-        <li>Cycling workouts can use a rower, ski erg, air bike, or any power-meter device. Running can be done on an elliptical or arc trainer — include some ground impact at least one day.</li>
-        <li>Weekend LSR can be a hike, long ride, or team sport day. Few changes are needed month-to-month beyond adjusting 1RM and threshold as fitness improves.</li>
-      </ul></div>
-      <div class="notes-card"><h3>Rep/Set Key</h3><ul>
-        <li><strong style="color:var(--cyan)">ME (Max Effort):</strong> Intentionally heavy, peak force. Stop short of failure. Bar speed secondary to moving the weight well.</li>
-        <li><strong style="color:var(--cyan)">DE (Dynamic Effort):</strong> Bar speed and quality of movement are primary. Treat every rep as if bar were maximal. Fatigue is discouraged.</li>
-        <li><strong style="color:var(--cyan)">SKILL:</strong> Purely patterning and movement practice. Form and consistency over velocity. Heavy enough to be a challenge.</li>
-        <li><strong style="color:var(--cyan)">HYP (Hypertrophy):</strong> Bodybuilding-style, steady controlled tempo. 0–2 RIR. Fatigue of all motor units is the target stimulus.</li>
-        <li><strong style="color:var(--gold)">RIR (Reps in Reserve):</strong> 2 RIR = 2 reps left before failure. 0 RIR = last rep completable, next would fail.</li>
-      </ul></div>
-      <div class="notes-card"><h3>Endurance Zones</h3><ul>
-        <li><strong style="color:var(--gold)">MLSS+:</strong> Maximal Lactate Steady State — maximize time in Zone 4 with equalized fatigue.</li>
-        <li><strong style="color:var(--gold)">NT (Near-Threshold):</strong> Shorter above-threshold or longer below-threshold intervals — maximize total time at this intensity.</li>
-        <li><strong style="color:var(--gold)">VT1:</strong> At or below ventilatory threshold 1. Duration-based. Use talk test to confirm zone (25–90+ min).</li>
-        <li><strong style="color:var(--gold)">LSD:</strong> Long Slow Distance — maximize time, primarily below VT1. Can be hike, run, ride. Rest pauses OK.</li>
-        <li><strong style="color:var(--gold)">Cyc AnA:</strong> Cycling anaerobic repeatability — 110–130% FTP. Use power floor as guideline, not strict target.</li>
-        <li><strong style="color:var(--gold)">Cyc Endurance:</strong> Straight or mixed-intensity cycling below 75%. Good for form and position practice.</li>
-      </ul></div>
-    </div>
+    <div class="notes-grid" id="notesGrid"></div>
   </div>
 </main>
 
@@ -757,6 +724,410 @@ const program = {
   ]
 };
 
+
+// ═══════════════════════════════════════════════════
+//  WIFE PROGRAM DATA & HELPERS
+// ═══════════════════════════════════════════════════
+const WIFE_PHASES = [
+  {weeks:'1–2',name:'Foundation',desc:'Master form. Moderate loads. RPE 6-7. Record all weights. Introduce Schroth breathing in warm-up.'},
+  {weeks:'3–4',name:'Loading',desc:'Add 5 lbs when top rep range hit with clean form on video. Add 1 set to 2 primary lifts. RPE 7-8.'},
+  {weeks:'5–6',name:'Volume Peak',desc:'Highest total volume. Add pause reps to goblet squat and hip thrust. RPE 8-9 on accessories. Film every session.'},
+  {weeks:'7–8',name:'Intensification',desc:'Reduce 1 accessory set. Increase primary lift weight by 5-10 lbs. RPE 8 on compounds. Begin drop sets on extensions.'},
+  {weeks:'9–10',name:'Peak & Test',desc:'Push PRs. Max effort on primary lifts. Taper volume (−2 sets/session). Final week: deload at 50% load, all sets.'}
+];
+
+const wifeProgram = {
+  standard:[
+    {day:'Mon',title:'Quad & Glute: Heavy Compound',type:'strength',sessionId:'day1'},
+    {day:'Tue',title:'Posterior Chain & Glute: Hip Dominant',type:'strength',sessionId:'day2'},
+    {day:'Wed',title:'Rest / Daily Core & Waist',type:'rest',sessionId:'core'},
+    {day:'Thu',title:'Quad & Glute: Volume & Machine',type:'strength',sessionId:'day3'},
+    {day:'Fri',title:'Full Lower Body + Back Strength',type:'strength',sessionId:'day4'},
+    {day:'Sat',title:'Rest / Daily Core & Waist',type:'rest',sessionId:'core'},
+    {day:'Sun',title:'Complete Rest',type:'rest',sessionId:null}
+  ]
+};
+
+﻿const WIFE_SESSIONS = {
+  day1:{
+    name:'DAY 1  \u2014  QUAD & GLUTE: HEAVY COMPOUND',duration:'70\u201380',
+    scoliosisNote:'Begin every set with Schroth pre-set protocol: exhale fully \u2192 brace 360\u00B0 \u2192 inhale into concave ribcage \u2192 hold correction \u2192 perform set. Film from behind every 2-3 sessions.',
+    blocks:[
+      {id:'A',label:'BLOCK A \u2014 SPINAL STABILIZATION ACTIVATION (perform before all main lifts, ~5 min)',exercises:[
+        {order:'A1',name:'McGill Curl-Up',equipment:'Mat',sets:'3',reps:'5-3-1 pyramid (8s hold each)',tempo:'Slow',rpe:'6',rest:'20s',scoliosisCue:'Inhale into concave ribcage side during hold. Lift evenly both sides \u2014 use mirror.',coachingCue:'Hands under lumbar arch as biofeedback. Neck in neutral. Do NOT crunch \u2014 rigid chest lift only.'},
+        {order:'A2',name:'Bird-Dog',equipment:'Mat',sets:'3',reps:'6 each side (3s pause)',tempo:'Slow',rpe:'6',rest:'20s',scoliosisCue:'Extra volume on weaker diagonal (concave side up). 2:1 ratio weaker:stronger side.',coachingCue:'Fist with extended hand. Glass of water on lower back cue. If ribs flare, stop.'},
+        {order:'A3',name:'Pallof Press (Anti-Rotation)',equipment:'Cable Tower',sets:'2',reps:'10 each side (3s hold)',tempo:'Controlled',rpe:'6',rest:'30s',scoliosisCue:'Extra sets resisting the rotation direction of your scoliotic curve. Right thoracic = anchor to the right more.',coachingCue:'Press straight out, resist all rotation. Shoulders square, feet hip-width.'},
+      ]},
+      {id:'B',label:'BLOCK B \u2014 PRIMARY COMPOUND LIFTS (main strength work)',exercises:[
+        {order:'B1',name:'Belt Squat',equipment:'Belt Squat Machine',sets:'4',reps:'8\u201310',tempo:'3s down, 1s pause, drive up',rpe:'7\u20138',rest:'2:30',scoliosisCue:'NO axial spinal load \u2014 this is your main quad compound. Crown of head to ceiling throughout.',coachingCue:'J3U: Deep squat, shoulder-width stance. Hit depth where thighs reach parallel or below. Knees track toes. Brace 360\u00B0 before descending.'},
+        {order:'B2',name:'Trap Bar Deadlift (High Handle)',equipment:'Trap Bar + Plates',sets:'4',reps:'6\u20138',tempo:'2s lowering, explosive drive',rpe:'7\u20138',rest:'2:30',scoliosisCue:'Film from behind every session. Both hips rise evenly \u2014 watch for one side compensating. If shift occurs, reduce weight.',coachingCue:'Sit into the lift, not over it. Hinge at hips. Brace before every single rep. Neutral spine. Push floor away on ascent.'},
+        {order:'B3',name:'Barbell Hip Thrust',equipment:'Barbell + Bench',sets:'4',reps:'10\u201312',tempo:'Controlled, 2s hold at top',rpe:'8\u20139',rest:'2:00',scoliosisCue:'Equal pressure through both feet. Ribs down at lockout \u2014 no hyperextension. Even glute squeeze left and right.',coachingCue:'J3U: Full lockout with ribcage depressed. Chin tucked, eyes forward. Drive through heels and midfoot.'},
+      ]},
+      {id:'C',label:'BLOCK C \u2014 UNILATERAL & ACCESSORY WORK',exercises:[
+        {order:'C1',name:'Bulgarian Split Squat (DBs)',equipment:'Dumbbells + Bench',sets:'3',reps:'10\u201312 each leg (weak leg first)',tempo:'3s down, 1s pause',rpe:'8',rest:'90s',scoliosisCue:'Halves axial spinal load vs. barbell. Corrects left-right asymmetry. Always start weak/concave side.',coachingCue:'J3U: Vertical shin, upright torso. Knee tracks toe line 3\u20134. Pelvis level \u2014 no hiking. Pause at full depth for 1 second.'},
+        {order:'C2',name:'Leg Press',equipment:'Leg Press Machine',sets:'3',reps:'12\u201315',tempo:'3s lowering, controlled push',rpe:'8\u20139',rest:'90s',scoliosisCue:'Feet shoulder-width, symmetric placement. Watch for one knee caving \u2014 place resistance band above knees if needed.',coachingCue:'Do NOT let pelvis tuck at bottom (lose lumbar arch). Stop the ROM before that point. Full quad engagement.'},
+        {order:'C3',name:'Machine Hip Abduction',equipment:'Hip Abduction Machine',sets:'3',reps:'15\u201320',tempo:'2s out, 2s return',rpe:'8\u20139',rest:'60s',scoliosisCue:'Critical for glute medius \u2014 often underdeveloped on concave side. Focus on equal activation both sides.',coachingCue:'J3U: Essential for full glute development. Slow controlled return \u2014 the eccentric builds muscle. Don\'t rush.'},
+        {order:'C4',name:'Lying Leg Curl',equipment:'Leg Curl Machine',sets:'3',reps:'12\u201315',tempo:'Controlled, 2s lowering',rpe:'8',rest:'60s',scoliosisCue:'Minimal spinal involvement. Good posterior chain balance exercise.',coachingCue:'Hips stay pressed into pad. Don\'t lift glutes off. Control the descent fully.'},
+      ]},
+      {id:'D',label:'BLOCK D \u2014 BACK & SPINE STRENGTHENING (scoliosis-specific)',exercises:[
+        {order:'D1',name:'Seated Cable Row (Wide Grip)',equipment:'Cable Tower + Wide Bar',sets:'3',reps:'12\u201315',tempo:'2s pull, 2s return',rpe:'8',rest:'60s',scoliosisCue:'Addresses paraspinal muscle asymmetry. Note which side fatigues first \u2014 that\'s the weaker side.',coachingCue:'Chest tall, shoulders back and down at contraction. Avoid shrugging. Row to lower sternum.'},
+        {order:'D2',name:'Single-Arm DB Row',equipment:'Dumbbell + Bench',sets:'3',reps:'12 each side',tempo:'Controlled',rpe:'8',rest:'60s',scoliosisCue:'ACE-recommended for scoliosis: unilateral rows target latent musculature on convex side. Equal reps each side.',coachingCue:'Full shoulder extension at top, full row at bottom. Elbow drives back past ribcage.'},
+        {order:'D3',name:'Side Plank (Scoliosis Protocol)',equipment:'Mat',sets:'Convex-down: 2\u00D725s / Concave-down: 1\u00D715s',reps:'Holds',tempo:'Static',rpe:'7',rest:'30s',scoliosisCue:'CONVEX SIDE DOWN = spine\'s most beneficial position (Fishman 2014). 2:1 ratio always. This is therapeutic.',coachingCue:'Straight line ear-shoulder-hip-ankle. Squeeze glutes hard. Breathe normally. Build to 45s convex-down over weeks.'},
+        {order:'D4',name:'Dead Bug (Slow)',equipment:'Mat',sets:'3',reps:'8 each side',tempo:'3s lowering, controlled',rpe:'7',rest:'45s',scoliosisCue:'Highest TvA activator. On exhale, direct breath into concave ribcage. Do not let lower back arch off floor.',coachingCue:'Press lower back into floor before moving. If back lifts = too much range. Exhale on every extension.'},
+      ]},
+    ]
+  },
+  day2:{
+    name:'DAY 2  \u2014  POSTERIOR CHAIN & GLUTE: HIP DOMINANT',duration:'65\u201375',
+    scoliosisNote:'Hip thrust is your primary glute builder today \u2014 weight should be challenging but form perfect. RDL loading requires strict hip hinge \u2014 if lower back rounds, reduce weight immediately.',
+    blocks:[
+      {id:'A',label:'BLOCK A \u2014 SPINAL STABILIZATION ACTIVATION (~5 min)',exercises:[
+        {order:'A1',name:'McGill Curl-Up',equipment:'Mat',sets:'3',reps:'5-3-1 pyramid (8s hold each)',tempo:'Slow',rpe:'6',rest:'20s',scoliosisCue:'Eyes at 45\u00B0. Both sides lift evenly. Hands feel no pressure change on lumbar arch.',coachingCue:'Rigid chest-up \u2014 not a crunch. Maintain lumbar curve throughout. Breathe normally during hold.'},
+        {order:'A2',name:'90/90 Hip Lift + Schroth Breathing',equipment:'Mat + Wall',sets:'1',reps:'5 breath cycles',tempo:'4s inhale, 8s exhale',rpe:'5',rest:'\u2014',scoliosisCue:'THE most important warm-up drill. Breathe INTO concave ribcage. Feel ribs expand outward on inhale. Hold correction on exhale.',coachingCue:'Feet flat on wall, knees 90\u00B0. Gentle posterior tilt. Lower back touches mat. This resets your posture pattern.'},
+        {order:'A3',name:'Pallof Press \u2014 Kneeling',equipment:'Cable Tower',sets:'2',reps:'10 each side (3s hold)',tempo:'Controlled',rpe:'6',rest:'30s',scoliosisCue:'Kneeling removes hip compensation. Isolates pure anti-rotation trunk strength. Extra load on scoliotic rotation side.',coachingCue:'Half-kneel with outside knee down. Perfect alignment before pressing. Rib cage over pelvis.'},
+      ]},
+      {id:'B',label:'BLOCK B \u2014 PRIMARY HIP DOMINANT LIFTS',exercises:[
+        {order:'B1',name:'Barbell Hip Thrust (Heavy)',equipment:'Barbell + Bench + Hip Pad',sets:'5',reps:'6\u20138 (Weeks 1-4) / 8\u201310 (Weeks 5-10)',tempo:'Controlled, 2s hold at top',rpe:'8\u20139',rest:'2:00',scoliosisCue:'Most glute-specific compound. No spinal axial load. Ribs stay DOWN at lockout \u2014 rib flare = lumbar hyperextension.',coachingCue:'J3U Primary: Chin tucked, eyes forward. Drive ribs down while squeezing glutes at top. Equal drive through both feet.'},
+        {order:'B2',name:'Romanian Deadlift (DBs or Barbell)',equipment:'Dumbbells or Barbell',sets:'4',reps:'10\u201312',tempo:'3s lowering, controlled',rpe:'7\u20138',rest:'2:00',scoliosisCue:'RDL preferred over conventional deadlift: reduced lumbar shear, more hip hinge control. Dumbbells allow independent arm path.',coachingCue:'J3U: Full stretch at bottom \u2014 push hips far back, feel deep glute and hamstring elongation. This is the money position.'},
+        {order:'B3',name:'Kickstand RDL (Single-Leg)',equipment:'Dumbbells or KB',sets:'3',reps:'10 each side (weaker side first)',tempo:'3s lowering, controlled',rpe:'8',rest:'90s',scoliosisCue:'Unilateral hinge eliminates asymmetric spinal loading. Best scoliosis-safe posterior chain exercise. Equal reps each side.',coachingCue:'Back foot lightly touches for balance only. Hinge fully \u2014 torso parallel to floor. Squeeze glute hard on drive up.'},
+      ]},
+      {id:'C',label:'BLOCK C \u2014 GLUTE ISOLATION & VOLUME',exercises:[
+        {order:'C1',name:'Cable Pull-Through',equipment:'Cable Tower + Rope',sets:'4',reps:'15\u201320',tempo:'2s hinge, squeeze at top',rpe:'8\u20139',rest:'60s',scoliosisCue:'Hip hinge pattern, no spinal load. Excellent glute activation at lengthened position. Great J3U-compatible exercise.',coachingCue:'Push hips back aggressively \u2014 rope between legs. Stand tall at top squeezing glutes. This is a hip hinge, not a squat.'},
+        {order:'C2',name:'Glute Kickback Machine / Cable',equipment:'Glute Kickback Machine or Cable',sets:'3',reps:'15\u201320 each side',tempo:'Slow controlled',rpe:'8',rest:'60s',scoliosisCue:'Isolation work. No spinal axial load. Good for targeting weaker glute on concave side.',coachingCue:'Squeeze peak contraction for 1 second. Stable standing leg. Hips stay level.'},
+        {order:'C3',name:'Sumo RDL',equipment:'Barbell or DBs',sets:'3',reps:'12\u201315',tempo:'3s lowering',rpe:'8',rest:'75s',scoliosisCue:'Wider stance loads adductors and inner glutes more. Variation from Day 1 RDL. Moderate axial load \u2014 maintain neutral spine.',coachingCue:'Toes out 45\u00B0. Bar stays close to legs. Feel inner thigh and glute stretch at bottom.'},
+        {order:'C4',name:'Seated Hip Abduction',equipment:'Hip Abduction Machine',sets:'3',reps:'20\u201325',tempo:'2s out, slow return',rpe:'9',rest:'60s',scoliosisCue:'Glute medius essential for pelvic stability. Weakness here = lateral trunk shift during squats \u2014 address aggressively.',coachingCue:'Sit tall, lean slightly forward. Don\'t hold your breath. High rep range for maximum pump and fiber recruitment.'},
+      ]},
+      {id:'D',label:'BLOCK D \u2014 BACK & SPINE STRENGTHENING',exercises:[
+        {order:'D1',name:'Lat Pulldown (Wide Grip)',equipment:'Lat Pulldown Machine',sets:'3',reps:'12\u201315',tempo:'2s pull, 2s return',rpe:'8',rest:'75s',scoliosisCue:'Vertical pulling \u2014 no axial spinal compression. Builds lat strength which supports thoracic spine.',coachingCue:'Lead with elbows. Chest tall. Pull to upper chest. Squeeze shoulder blades together at bottom of pull.'},
+        {order:'D2',name:'Back Extension (Controlled)',equipment:'Back Extension Machine/Bench',sets:'3',reps:'12\u201315',tempo:'Slow, no momentum',rpe:'7',rest:'60s',scoliosisCue:'IMPORTANT: Use body weight only or very light load initially. Avoid excessive hyperextension. Stop at neutral spine.',coachingCue:'Paraspinal muscle strengthening. Cross arms on chest. Lift to parallel only \u2014 not beyond. Squeeze glutes at top.'},
+        {order:'D3',name:'Side Plank (Scoliosis Protocol)',equipment:'Mat',sets:'Convex-down: 2\u00D725s / Concave-down: 1\u00D715s',reps:'Holds',tempo:'Static',rpe:'7',rest:'30s',scoliosisCue:'2:1 ratio convex-side-down always. Progress: feet stacked \u2192 feet staggered \u2192 hip abduction added in weeks 7-10.',coachingCue:'Perfect straight line. Breathe normally. If hips sag, drop to knee modification and build up.'},
+        {order:'D4',name:'Prone Contralateral Arm/Leg Raise (Superman)',equipment:'Mat',sets:'2',reps:'10 each side (3s hold)',tempo:'Slow with hold',rpe:'7',rest:'45s',scoliosisCue:'Strengthens paraspinal muscles and multifidus \u2014 the spine\'s deepest stabilizers. Essential for scoliosis management.',coachingCue:'Lift only 2\u20133 inches off floor. No momentum. Opposite arm and leg simultaneously. Hold at top for 3 seconds.'},
+      ]},
+    ]
+  },
+  day3:{
+    name:'DAY 3  \u2014  QUAD & GLUTE: VOLUME & MACHINE',duration:'65\u201375',
+    scoliosisNote:'This is your highest volume session \u2014 machine work allows you to push harder with less spinal risk. Drop sets on leg extensions in Weeks 5-10. Stay hydrated \u2014 high rep ranges generate significant fatigue.',
+    blocks:[
+      {id:'A',label:'BLOCK A \u2014 SPINAL STABILIZATION ACTIVATION (~5 min)',exercises:[
+        {order:'A1',name:'Dead Bug (Activation)',equipment:'Mat',sets:'2',reps:'8 each side',tempo:'3s lowering',rpe:'6',rest:'20s',scoliosisCue:'Activate transverse abdominis. Direct exhale into concave ribcage. Lower back pressed to floor throughout.',coachingCue:'Arms long, legs tabletop. Press lower back down before moving. Exhale on every extension.'},
+        {order:'A2',name:'Glute Bridge Activation',equipment:'Mat',sets:'2',reps:'15 with 2s hold at top',tempo:'Controlled',rpe:'5',rest:'20s',scoliosisCue:'Equal weight and pressure through both feet. Note any side-to-side glute activation difference \u2014 this is your asymmetry indicator.',coachingCue:'Feet shoulder-width. Neutral spine. Drive hips up evenly. Progress to single-leg bridge in weeks 5-10.'},
+        {order:'A3',name:'Band Clamshell',equipment:'Resistance Band',sets:'2',reps:'15 each side',tempo:'Controlled',rpe:'6',rest:'20s',scoliosisCue:'Activates glute medius before lower body training. Pay attention to the weaker/concave side.',coachingCue:'Hip stack, knees bent 45\u00B0. Rotate top knee open without rotating pelvis. Squeeze at top.'},
+      ]},
+      {id:'B',label:'BLOCK B \u2014 QUAD-DOMINANT VOLUME LIFTS',exercises:[
+        {order:'B1',name:'Goblet Squat (Pause Reps)',equipment:'Heavy Dumbbell or Kettlebell',sets:'4',reps:'12\u201315 (3s pause at bottom)',tempo:'3s down, 3s pause, drive up',rpe:'8\u20139',rest:'90s',scoliosisCue:'Front-loaded squat: significantly less axial spinal compression than barbell. J3U: pause at full depth loads lengthened glutes.',coachingCue:'Hold weight at chest. Deep as possible. Elbows inside knees at bottom. Pause is key \u2014 resist bouncing out.'},
+        {order:'B2',name:'Hack Squat Machine',equipment:'Hack Squat Machine',sets:'4',reps:'10\u201312',tempo:'3s lowering, explosive up',rpe:'8\u20139',rest:'2:00',scoliosisCue:'Machine-guided path reduces asymmetric loading risk. No free spinal loading. Excellent quad overloader.',coachingCue:'Feet shoulder-width on platform. Full depth. Don\'t let knees cave. Controlled descent every rep.'},
+        {order:'B3',name:'Walking Lunge (DBs)',equipment:'Dumbbells',sets:'3',reps:'12 each leg (24 total steps)',tempo:'Controlled step',rpe:'8',rest:'90s',scoliosisCue:'Unilateral loading \u2014 good for asymmetry correction. Keep torso upright; lateral lean = warning sign.',coachingCue:'Step length where front shin stays vertical. Back knee hovers above floor. Arms relaxed, don\'t grip for balance.'},
+      ]},
+      {id:'C',label:'BLOCK C \u2014 MACHINE ISOLATION & HIGH VOLUME',exercises:[
+        {order:'C1',name:'Leg Extension Machine',equipment:'Leg Extension Machine',sets:'4',reps:'15\u201320 (Drop set on last set)',tempo:'2s up, 3s lowering',rpe:'9',rest:'75s',scoliosisCue:'Pure quad isolation. No spinal load. Safe to push hard. Drop set: full reps to failure, drop 30%, continue.',coachingCue:'J3U: Full extension at top \u2014 squeeze hard for 1s. Slow lowering builds more quad hypertrophy than fast. Sit upright.'},
+        {order:'C2',name:'Single-Leg Leg Press',equipment:'Leg Press Machine',sets:'3',reps:'12\u201315 each leg',tempo:'3s lowering',rpe:'8\u20139',rest:'75s',scoliosisCue:'Unilateral version: confirms left-right strength balance. If one side is significantly weaker, note it \u2014 adjust programming.',coachingCue:'Same foot position as bilateral press. Push evenly through entire foot. Stop before pelvis tucks.'},
+        {order:'C3',name:'Hip Thrust (Pause Rep Focus)',equipment:'Barbell + Bench',sets:'3',reps:'12 (3s pause at top)',tempo:'Drive up, 3s hold at top',rpe:'8\u20139',rest:'90s',scoliosisCue:'Pause reps are a J3U technique intensifier. Longer time in peak glute contraction. Extra spine-safe loading.',coachingCue:'Ribs stay pinned down throughout the 3-second hold. This is hard. Breathe during the pause.'},
+        {order:'C4',name:'Reverse Lunge (Goblet Hold)',equipment:'Dumbbell',sets:'3',reps:'10 each leg',tempo:'3s lowering',rpe:'8',rest:'75s',scoliosisCue:'Stepping back (vs. forward) reduces anterior knee stress and is easier to maintain upright torso. Scoliosis-friendly.',coachingCue:'Step back until back knee hovers. Torso upright. Push through front heel to stand. Repeat before switching.'},
+      ]},
+      {id:'D',label:'BLOCK D \u2014 BACK, CORE & SPINE STRENGTHENING',exercises:[
+        {order:'D1',name:'Seated Row (Neutral Grip)',equipment:'Cable Tower + Neutral Handle',sets:'3',reps:'12\u201315',tempo:'2s pull, 2s return',rpe:'8',rest:'60s',scoliosisCue:'Mid-back strengthening. Note if one side fatigues significantly faster \u2014 that\'s the paraspinal weakness.',coachingCue:'Row handles to sides of torso. Elbows tight to body. Chest tall, don\'t round forward on return.'},
+        {order:'D2',name:'Face Pulls',equipment:'Cable Tower + Rope',sets:'3',reps:'15\u201320',tempo:'Controlled',rpe:'8',rest:'60s',scoliosisCue:'Posterior shoulder and mid-back. Critical for thoracic kyphosis correction that often accompanies scoliosis.',coachingCue:'Pull rope to forehead level, elbows high and wide. External rotate at end \u2014 thumbs point behind you.'},
+        {order:'D3',name:'McGill Big 3 (Full Protocol)',equipment:'Mat',sets:'See reps',reps:'Curl-up 5-3-1 / Bird-dog 6-6 / Side plank 25s/15s',tempo:'Isometric holds',rpe:'7',rest:'30s between each',scoliosisCue:'Full McGill Big 3 at end of session. This is your most important therapeutic work. Never skip.',coachingCue:'This is endurance-based core work. Never rush the holds. Quality over everything.'},
+        {order:'D4',name:'Suitcase Carry',equipment:'Heavy Kettlebell',sets:'3',reps:'30\u201340 sec each side',tempo:'Walk with control',rpe:'7',rest:'45s',scoliosisCue:'Trains lateral anti-flexion \u2014 resisting the scoliotic curve\'s tendency to laterally flex. Perfect scoliosis exercise.',coachingCue:'Stand perfectly tall with weight in one hand. Resist all lateral lean. Walk slowly. Shoulders level.'},
+      ]},
+    ]
+  },
+  day4:{
+    name:'DAY 4  \u2014  FULL LOWER BODY + BACK STRENGTH',duration:'70\u201380',
+    scoliosisNote:'Day 4 is your strength test day \u2014 heavier loads on primary lifts. Film deficit trap bar deadlift from behind. Watch for Schroth breathing pre-set on every compound movement.',
+    blocks:[
+      {id:'A',label:'BLOCK A \u2014 SPINAL STABILIZATION ACTIVATION (~5 min)',exercises:[
+        {order:'A1',name:'Quadruped Thoracic Rotation',equipment:'Mat',sets:'2',reps:'8 each side (hold 3s)',tempo:'Slow with hold',rpe:'5',rest:'20s',scoliosisCue:'Targets the rotational component of scoliosis. Exhale on rotation. Feel the thoracic spine open.',coachingCue:'Start in quadruped. Thread one arm under body, rotating thorax. Exhale fully on rotation. Don\'t move lower back.'},
+        {order:'A2',name:'Hip 90/90 Stretch + Schroth Breathing',equipment:'Mat',sets:'2',reps:'5 breaths each side',tempo:'Slow',rpe:'5',rest:'20s',scoliosisCue:'Hip mobility critical for symmetric squat pattern. Combined with Schroth breathing = therapeutic reset.',coachingCue:'Sit in 90/90 hip position. Breathe into the concave ribcage. Exhale and hold the expansion.'},
+        {order:'A3',name:'World\'s Greatest Stretch',equipment:'None',sets:'2',reps:'5 each side',tempo:'Slow, with breath',rpe:'5',rest:'20s',scoliosisCue:'Multi-joint mobility preparation. Keeps hips, thoracic spine, and shoulder mobile for compound movements.',coachingCue:'Lunge forward, inside hand to floor, inside elbow touches floor, rotate top hand to ceiling.'},
+      ]},
+      {id:'B',label:'BLOCK B \u2014 PRIMARY STRENGTH LIFTS',exercises:[
+        {order:'B1',name:'Front Squat (DBs or Safety Bar)',equipment:'Dumbbells or Safety Bar',sets:'4',reps:'8\u201310',tempo:'3s down, 1s pause, drive',rpe:'7\u20138',rest:'2:30',scoliosisCue:'Front-loaded = much safer than barbell back squat. Forces upright torso which reduces lumbar stress. J3U: full depth critical.',coachingCue:'Elbows high on front rack or DBs at shoulders. Knees out, deep squat. Less axial compression than back squat.'},
+        {order:'B2',name:'Trap Bar Deadlift (Variation: Deficit)',equipment:'Trap Bar + Plates + Small Plates for Deficit',sets:'4',reps:'5\u20136 (heavy, RPE 8-9)',tempo:'2s lowering, explosive',rpe:'8\u20139',rest:'3:00',scoliosisCue:'Deficit increases hip hinge range \u2014 more glute and hamstring length stimulus (J3U lengthened position). Keep spinal position perfect.',coachingCue:'Stand on 1-inch plates. Same form as normal trap bar. The extra range is the stimulus. Don\'t use this until Weeks 3+.'},
+        {order:'B3',name:'Landmine Romanian Deadlift',equipment:'Landmine + Barbell',sets:'3',reps:'10\u201312',tempo:'3s lowering',rpe:'8',rest:'90s',scoliosisCue:'Landmine angle reduces vertical spinal compression vs. straight bar RDL. Safe hip hinge variation.',coachingCue:'Hold bar with both hands, hinge back, feel the stretch. Stand tall at top. No rounding.'},
+      ]},
+      {id:'C',label:'BLOCK C \u2014 ACCESSORY & BALANCE WORK',exercises:[
+        {order:'C1',name:'Step-Up with Knee Drive (DBs)',equipment:'Plyometric Box + Dumbbells',sets:'3',reps:'12 each side',tempo:'Controlled',rpe:'8',rest:'75s',scoliosisCue:'Unilateral. Box height should allow ~90\u00B0 knee bend. Pelvic level is key \u2014 no hip drop on standing leg.',coachingCue:'Drive through heel of step-up foot. Drive opposite knee up at top. Slow controlled descent.'},
+        {order:'C2',name:'Leg Press (Narrow Stance \u2014 Quad Focus)',equipment:'Leg Press Machine',sets:'3',reps:'15\u201320',tempo:'3s lowering',rpe:'9',rest:'75s',scoliosisCue:'Narrow stance shifts emphasis to outer quad (vastus lateralis). Machine-guided = safe.',coachingCue:'Feet hip-width or closer, mid-platform. High rep for maximum quad pump and metabolic stimulus.'},
+        {order:'C3',name:'Cable Hip Abduction (Standing)',equipment:'Cable Tower + Ankle Cuff',sets:'3',reps:'15\u201320 each side',tempo:'2s out, 2s return',rpe:'8',rest:'60s',scoliosisCue:'Standing cable abduction trains glute medius in functional upright position. Often weaker on concave side \u2014 note difference.',coachingCue:'Hold cable tower for light balance support only. Kick leg out to side. Squeeze glute medius hard at peak.'},
+        {order:'C4',name:'Nordic Hamstring Curl',equipment:'Nordic Hamstring Curl Bench or Partner',sets:'2',reps:'5\u20138 (eccentric focus)',tempo:'4\u20135s lowering, pull back',rpe:'8',rest:'90s',scoliosisCue:'No spinal load. Eccentric hamstring loading reduces injury risk during intense glute/quad training. Critical balance exercise.',coachingCue:'Partner holds ankles or use Nordic bench. Lower as slowly as possible. Use arms on floor at bottom. Build to full range over weeks.'},
+      ]},
+      {id:'D',label:'BLOCK D \u2014 BACK STRENGTH & COMPREHENSIVE CORE',exercises:[
+        {order:'D1',name:'Pull-Up or Assisted Pull-Up',equipment:'Pull-Up Bar or Assisted Machine',sets:'3',reps:'6\u201310 (or as many as perfect form allows)',tempo:'2s up, 3s lowering',rpe:'8',rest:'90s',scoliosisCue:'Vertical pulling decompresses the spine. Some practitioners recommend dead hangs for traction effect. Excellent for thoracic scoliosis.',coachingCue:'Full hang at bottom. Drive elbows to pockets. Chin over bar. Controlled lowering builds lats most.'},
+        {order:'D2',name:'Chest-Supported DB Row',equipment:'Incline Bench + Dumbbells',sets:'3',reps:'12\u201315',tempo:'2s pull, 2s return',rpe:'8',rest:'75s',scoliosisCue:'Chest supported = spine fully offloaded during row. Can row heavier safely. Directly targets paraspinal and rhomboid asymmetry.',coachingCue:'Chest on pad. Arms hang freely. Row DBs to hips, not chest. Squeeze for 1s at top.'},
+        {order:'D3',name:'McGill Big 3 + Dead Bug Finisher',equipment:'Mat',sets:'See reps',reps:'Curl-up 5-3-1 / Bird-dog 6-6 / Side plank 25s/15s / Dead bug 8 each',tempo:'Isometric',rpe:'7',rest:'30s between',scoliosisCue:'Full core therapeutic protocol. This ends every week of training. Non-negotiable. Schroth breathing on side plank holds.',coachingCue:'You\'re fatigued from the session \u2014 core work quality still matters. Slow deliberate reps. Maintain perfect form.'},
+        {order:'D4',name:'Wall Angel',equipment:'Wall',sets:'2',reps:'10 slow reps',tempo:'Very slow, controlled',rpe:'5',rest:'30s',scoliosisCue:'Self-elongation + scapular mobility. Corrects forward head and rounded shoulder posture. Good session finisher.',coachingCue:'Back and head against wall. Arms in goalpost position. Slide arms overhead keeping full contact with wall. If you can\'t \u2014 reduce range.'},
+      ]},
+    ]
+  },
+};
+
+const WIFE_PREP = {
+  name:'PRE-LEG DAY MOVEMENT PREP \u2014 SCOLIOSIS EDITION',duration:'12 min',frequency:'Before every training session',
+  phases:[
+    {phase:1,label:'MYOFASCIAL RELEASE',duration:'3 min',exercises:[
+      {name:'Thoracic Spine Roll',equipment:'Foam Roller',duration:'2\u00D760s \u2014 slow passes over T5\u2013T12',sf:'Avoid rolling directly on apex of scoliotic curve. Feel each vertebral segment.'},
+      {name:'Lat Foam Roll (Concave Side Extra)',equipment:'Foam Roller',duration:'60s each side (add 30s concave)',sf:'The concave-side lat is often shortened and tight. Spend extra time here.'},
+      {name:'QL \u2014 Lacrosse Ball',equipment:'Lacrosse Ball + Wall',duration:'45s each side',sf:'The quadratus lumborum is almost always asymmetric in scoliosis. Release the tighter side first.'},
+      {name:'Hip Flexor Release',equipment:'Foam Roller',duration:'45s each side',sf:'Hip flexor tightness increases anterior pelvic tilt \u2014 worsens lumbar scoliotic stress.'},
+      {name:'Glute / Piriformis',equipment:'Foam Roller / Ball',duration:'45s each side',sf:'Piriformis tightness creates SI joint asymmetry that can aggravate scoliotic back pain.'},
+    ]},
+    {phase:2,label:'THORACIC & RIBCAGE MOBILITY',duration:'2.5 min',exercises:[
+      {name:'Cat-Cow (Segmental)',equipment:'Mat',duration:'2\u00D78 slow reps',sf:'Focus on thoracic segments \u2014 the ones most restricted by scoliotic rotation. Try to feel each joint move.'},
+      {name:'Open Book / Thread the Needle',equipment:'Mat',duration:'5 reps each side, 3s hold',sf:'Opens thoracic rotation \u2014 directly opposes scoliotic rotation restriction. This is therapeutic mobility work.'},
+      {name:'Foam Roller Thoracic Extension',equipment:'Foam Roller',duration:'T5\u2013T12 \u2014 8 reps',sf:'Gentle extension corrects the flexion pattern common in thoracic scoliosis. Never push into pain.'},
+      {name:'Quadruped Thoracic Rotation',equipment:'Mat',duration:'6 reps each side',sf:'Thread needle \u2014 exhale on rotation, feel thorax open. This is key for counteracting scoliotic rotation.'},
+    ]},
+    {phase:3,label:'SCHROTH BREATHING DRILL',duration:'2 min',exercises:[
+      {name:'90/90 Hip Lift Breathing',equipment:'Mat + Wall',duration:'5 complete breath cycles',sf:'THE most important warm-up drill for scoliosis. Resets spinal posture from inside. Never skip this.'},
+      {name:'Seated Schroth Directional Breathing',equipment:'Mat or Chair',duration:'5 targeted breaths',sf:'Place hands on concave ribcage. Breathe into that side specifically. Feel ribs push hands outward. Hold correction on exhale.'},
+    ]},
+    {phase:4,label:'DEEP STABILIZER ACTIVATION',duration:'2.5 min',exercises:[
+      {name:'TvA Draw-In',equipment:'Mat',duration:'8 reps \u00D7 5s hold',sf:'Activates deepest spinal stabilizer before loading. Creates pre-tension in spine for safer compound lifts.'},
+      {name:'Dead Bug (Basic)',equipment:'Mat',duration:'6 reps each side',sf:'TvA + contralateral limb coordination. Mirrors the coordination demands of scoliosis management.'},
+      {name:'Bird-Dog (Activation Weight)',equipment:'Mat',duration:'6 reps each side (3s pause)',sf:'Activate multifidus \u2014 the deepest paraspinal muscle. Critical for scoliosis management.'},
+      {name:'Glute Bridge (Activation Focus)',equipment:'Mat',duration:'10 reps \u00D7 2s hold',sf:'Equal bilateral glute activation before unilateral or loaded work. Feel any left-right difference.'},
+    ]},
+    {phase:5,label:'DYNAMIC WARM-UP',duration:'2 min',exercises:[
+      {name:'Inchworm',equipment:'None',duration:'5 reps',sf:'Full body neural warm-up. Wrist, shoulder, hip, and hamstring integration.'},
+      {name:'World\'s Greatest Stretch',equipment:'None',duration:'3 each side',sf:'Opens hip, thorax, and shoulder simultaneously. Perfect pre-squat and deadlift prep.'},
+      {name:'Bodyweight Goblet Squat (Hold at Bottom)',equipment:'None',duration:'5 reps \u00D7 3s hold',sf:'Activates the full squat pattern, lubricates hips and ankles, previews the movement.'},
+      {name:'Band Pull-Apart',equipment:'Resistance Band',duration:'12 reps',sf:'Scapular retraction and thoracic activation. Corrects forward shoulder posture from sitting.'},
+    ]},
+  ]
+};
+
+const WIFE_CORE = {
+  name:'DAILY WAIST TRAINING & CORE ROUTINE \u2014 SCOLIOSIS SPINE PROTOCOL',duration:'~19 min',frequency:'5\u20137 days per week',
+  blocks:[
+    {id:'A',label:'BLOCK A \u2014 BREATHING & DEEP CORE  (3 min)',exercises:[
+      {order:'A1',name:'Crocodile Breathing (Prone)',sets:'1 set \u00D7 6 breaths (5s inhale, 8s exhale)',reps:'',scoliosisCue:'Feel belly push into floor on inhale \u2014 this is diaphragmatic activation. Foundation for all subsequent exercises.',coachingCue:'Lie face down, hands under forehead. Allow belly to expand into floor. Full exhale squeezes all air out.',progression:'Add 2 breaths per week until reaching 10-breath cycles by Week 6.'},
+      {order:'A2',name:'Dead Bug \u2014 Isometric Hold',sets:'2 sets \u00D7 20s hold (no movement)',reps:'',scoliosisCue:'Press knees into hands, hands into knees with equal force. Builds isometric co-contraction that stabilizes scoliotic spine.',coachingCue:'Supine, arms up, legs 90/90. Press together without movement. Breathe normally. Lower back on floor.',progression:'Progress to 30s holds by Week 5. Weeks 7-10: add 5lb ankle weights.'},
+    ]},
+    {id:'B',label:'BLOCK B \u2014 ANTI-EXTENSION  (3 min)',exercises:[
+      {order:'B3',name:'Alternating Dead Bug (Slow)',sets:'3 sets \u00D7 8 each side (3s lowering)',reps:'',scoliosisCue:'Highest transverse abdominis activator. Direct exhale into concave ribcage during each extension. Anti-extension training.',coachingCue:'Exhale on limb extension. Lower back stays on floor \u2014 if it arches, range is too large. 3 full seconds to lower.',progression:'Weeks 5-10: add 2lb wrist weights + ankle weights for increased demand.'},
+      {order:'B4',name:'Forearm Plank',sets:'2 sets \u00D7 20s (build to 40s by Wk 5)',reps:'',scoliosisCue:'Isometric anti-extension. No rotation allowed. Focus on square shoulder alignment \u2014 scoliosis athletes often unconsciously rotate.',coachingCue:'Elbows under shoulders, body rigid, breathe normally. If hips pike or sag \u2014 stop. Form is everything.',progression:'Progress +5s every 2 weeks. Add shoulder taps in Weeks 7-10.'},
+    ]},
+    {id:'C',label:'BLOCK C \u2014 ANTI-ROTATION  (3.5 min)',exercises:[
+      {order:'C5',name:'Pallof Press \u2014 Standing',sets:'3 sets \u00D7 10 each side (3s hold extended)',reps:'',scoliosisCue:'The scoliosis anti-rotation workhorse. Extra loading biased toward your scoliotic rotation direction. Right thoracic = extra right-anchor work.',coachingCue:'Press straight out, resist rotation. Shoulders square. Exhale as you press. 3-second hold adds anti-rotation time under tension.',progression:'Weeks 5-10: add 1 rep per session until reaching 15 per side. Weeks 8-10: overhead Pallof reach.'},
+      {order:'C6',name:'Bird-Dog (Full Protocol)',sets:'Weaker diagonal: 3\u00D78 (3s pause) / Stronger: 2\u00D78',reps:'',scoliosisCue:'2:1 volume ratio for weaker diagonal (corresponds to concave side up). Most important asymmetric volume protocol in the program.',coachingCue:'Fist with extended hand. Squeeze glutes. \'Glass of water on back\' cue. Pause at full extension. Never rush.',progression:'Weeks 7-10: add resistance band around wrists for increased demand on shoulder stabilizers.'},
+    ]},
+    {id:'D',label:'BLOCK D \u2014 ANTI-LATERAL FLEXION & ASYMMETRIC WORK  (4.5 min)',exercises:[
+      {order:'D7',name:'Side Plank \u2014 Convex Side Down',sets:'2 sets \u00D7 25s convex / 1 set \u00D7 15s concave',reps:'',scoliosisCue:'THERAPEUTIC PRIORITY. 2:1 ratio convex-side-down always. This is your most direct scoliosis intervention in the program.',coachingCue:'Perfect straight line ear-hip-ankle. Squeeze glutes hard. Breathe normally. If hips sag = drop to knee variation.',progression:'Weeks 5-6: add top leg hip abduction during hold. Weeks 7-10: full side plank star (arm and leg raised).'},
+      {order:'D8',name:'Suitcase Carry',sets:'3 sets \u00D7 35s each side',reps:'',scoliosisCue:'Trains lateral anti-flexion \u2014 resists the tendency of scoliotic spine to laterally flex under load. Critical functional scoliosis exercise.',coachingCue:'Stand perfectly tall. Weight in one hand. Resist all lateral lean. Walk slowly. Equal time each side. Shoulders level.',progression:'Progress KB weight every 2 weeks when 35s feels easy. Weeks 7-10: add farmer carry (both hands, heavier) for variation.'},
+    ]},
+    {id:'E',label:'BLOCK E \u2014 POSTERIOR CHAIN  (3 min)',exercises:[
+      {order:'E9',name:'Glute Bridge (Progression)',sets:'2 sets \u00D7 12 reps, 2s hold at top',reps:'',scoliosisCue:'Equal activation both sides. Note any difference \u2014 this is your glute asymmetry indicator updated weekly.',coachingCue:'Feet shoulder-width. Equal pressure both heels. Drive hips fully to extension. Squeeze glutes equally.',progression:'Wks 1-4: bilateral. Wks 5-7: alternating single-leg. Wks 8-10: single-leg with 3s hold.'},
+      {order:'E10',name:'Prone Contralateral Raise (Mini Superman)',sets:'2 sets \u00D7 10 each side, 3s hold',reps:'',scoliosisCue:'Strengthens multifidus and paraspinal muscles \u2014 the spine\'s deepest stabilizers. Essential for scoliosis management.',coachingCue:'Lift only 2\u20133 inches off floor. Opposite arm and leg. Small controlled lift. Hold 3 full seconds.',progression:'Weeks 7-10: hold 5 seconds. Can add light 1\u20132lb wrist and ankle weights.'},
+    ]},
+    {id:'F',label:'BLOCK F \u2014 INTEGRATION & POSTURE RESET  (2 min)',exercises:[
+      {order:'F11',name:'Wall Angels',sets:'2 sets \u00D7 10 slow reps',reps:'',scoliosisCue:'Scapular and thoracic mobility. Corrects forward shoulder posture. Reveals thoracic restriction from scoliosis.',coachingCue:'Back, elbows, and head on wall. Arms in goalpost. Slide overhead keeping full contact. Reduce range if you can\'t maintain contact.',progression:'Weeks 5-10: progress to seated floor angels with light resistance band.'},
+      {order:'F12',name:'Standing Self-Elongation + Schroth Breathing',sets:'5 directional breath cycles',reps:'',scoliosisCue:'Session closing ritual. Actively lengthen spine, breathe into concave side, hold correction on exhale. Trains the correction pattern.',coachingCue:'Stand tall. Grow taller through crown of head. Hands on concave ribs. Inhale into that side. Exhale \u2014 hold the expansion.',progression:'Progress: perform with single-leg balance (eyes open \u2192 eyes closed) in weeks 7-10 for proprioceptive challenge.'},
+    ]},
+  ]
+};
+
+const WIFE_NOTES = {
+  strengthNotes:[
+    'Lengthened-position loading (J3U Core Principle): Maximize time under tension at the bottom of every rep \u2014 deep squats, full RDL, Bulgarian split squat.',
+    'Scoliosis-first exercise selection: Zero exercises with problematic axial spinal loading. Belt squat replaces barbell back squat. Trap bar replaces conventional deadlift.',
+    'Asymmetric volume programming: Unilateral exercises always lead with the weaker/concave side. Side planks 2:1 ratio convex-side-down.',
+    'Anti-movement core training: McGill Big 3 + Pallof press + Dead bugs target spinal stiffness, not mobility.',
+    'Progressive overload: Weight increases only when top rep range is achieved with clean technique on video. RPE 7-8 on compounds, RPE 8-9 on machines/accessories.',
+    'Schroth breathing integration: Before every compound set \u2014 exhale to brace, inhale into concave ribcage side, hold correction.'
+  ],
+  scoliosisRedFlags:[
+    'STOP the set immediately if you experience: sharp localized back pain, tingling/numbness in limbs, visible uncontrollable hip shift during ascent, or asymmetric spinal pain lasting >48 hrs post-session.',
+    'ALWAYS warm up with the Pre-Leg Day Movement Prep before training sessions. Never skip the Schroth breathing drill.',
+    'FILM yourself from behind every 2-3 sessions. A lateral trunk shift under fatigue is the primary warning sign for scoliosis athletes.',
+    'PROGRESS weight ONLY when the previous session\'s last set was clean on video. No exceptions for spinal-loading exercises.',
+    'CONSULT a Schroth-certified physical therapist before starting to determine your curve type (3-curve vs. 4-curve). Curve-specific exercise direction matters.',
+    'This program is not a substitute for medical care. Always work with your physician and/or physical therapist.'
+  ],
+  repSetKey:[
+    'RPE 5-6: Warm-up / activation intensity. Movement quality focus. Should feel light and controlled.',
+    'RPE 7-8: Working sets for compound lifts. Challenging but technique remains perfect on video.',
+    'RPE 8-9: High effort for machine and isolation work. Last 1-2 reps are difficult but form holds.',
+    'RPE 9-10: Max effort / test sets (Weeks 9-10 only). Reserved for primary lifts with spotter/safety.',
+    'Tempo notation: "3s down, 1s pause, drive up" = 3-second eccentric, 1-second pause at bottom, explosive concentric.',
+    'Sets notation: "Convex-down: 2\u00d725s / Concave-down: 1\u00d715s" = asymmetric hold durations for scoliosis protocol.'
+  ],
+  nutritionGuidelines:[
+    'Protein: 1.6\u20132.2g per kg bodyweight daily. Prioritize around training. Space across 4-5 meals.',
+    'Calories: Slight surplus (+200\u2013300 kcal) during Weeks 1-8 for hypertrophy. Maintenance during Weeks 9-10.',
+    'Hydration: 3+ liters daily. Extra 500ml per training session. Electrolytes if training >75 min.',
+    'Creatine: 5g monohydrate daily. Safe, well-researched, improves strength and recovery.',
+    'Sleep: 7-9 hours. This is when muscle repair and growth occurs. Non-negotiable for progress.',
+    'Anti-inflammatory foods: Omega-3s, turmeric, berries. Important for managing scoliosis-related inflammation.'
+  ]
+};
+
+const WIFE_DROPDOWN = [
+  'Day 1 \u2014 Heavy Compound (Mon)',
+  'Day 2 \u2014 Hip Dominant (Tue)',
+  'Day 3 \u2014 Volume & Machine (Thu)',
+  'Day 4 \u2014 Full Lower + Back (Fri)',
+  'Core & Waist Routine',
+  'Movement Prep'
+];
+
+const HUSBAND_DROPDOWN = [
+  'Day 1 \u2014 Upper Push + MLSS+',
+  'Day 2 \u2014 Lower Hinge + Cyc AnA',
+  'Day 3 \u2014 Plyo Warm-Up + NT',
+  'Day 4 \u2014 Upper Pull + Cyc Endurance',
+  'Day 5 \u2014 Lower Push',
+  'Day 6 \u2014 LSD / Cyc Endurance',
+  'Day 7 \u2014 Rest'
+];
+
+function isWife() { return currentUser === 'user2'; }
+function getProgram() { return isWife() ? wifeProgram : program; }
+function getTotalWeeks() { return isWife() ? 10 : 12; }
+
+function getPhaseForWeek(wk) {
+  if (wk <= 2) return WIFE_PHASES[0];
+  if (wk <= 4) return WIFE_PHASES[1];
+  if (wk <= 6) return WIFE_PHASES[2];
+  if (wk <= 8) return WIFE_PHASES[3];
+  return WIFE_PHASES[4];
+}
+
+function updateDropdown() {
+  var sel = document.getElementById('logDay');
+  var opts = isWife() ? WIFE_DROPDOWN : HUSBAND_DROPDOWN;
+  sel.innerHTML = '<option value="">Select Session</option>';
+  opts.forEach(function(o) { sel.innerHTML += '<option>' + o + '</option>'; });
+}
+
+function updateNotesTab() {
+  var grid = document.getElementById('notesGrid');
+  if (!grid) return;
+  if (isWife()) {
+    var phase = getPhaseForWeek(S.week);
+    var html = '';
+    html += '<div class="notes-card"><h3>10-Week Phase Plan</h3><ul>';
+    WIFE_PHASES.forEach(function(p) {
+      var isCurrent = p.name === phase.name;
+      html += '<li' + (isCurrent ? ' style="color:var(--text-primary);font-weight:600"' : '') + '><strong style="color:#e8736f">Weeks ' + p.weeks + ' \u2014 ' + p.name + (isCurrent ? ' \u25c0 CURRENT' : '') + ':</strong> ' + p.desc + '</li>';
+    });
+    html += '</ul></div>';
+    html += '<div class="notes-card"><h3>Strength & Training Notes</h3><ul>';
+    WIFE_NOTES.strengthNotes.forEach(function(n) { html += '<li>' + n + '</li>'; });
+    html += '</ul></div>';
+    html += '<div class="notes-card red-flags-card"><h3>\u26a0\ufe0f Scoliosis Red Flags</h3><ul>';
+    WIFE_NOTES.scoliosisRedFlags.forEach(function(n) { html += '<li style="color:#e8736f">' + n + '</li>'; });
+    html += '</ul></div>';
+    html += '<div class="notes-card"><h3>Rep/Set & Tempo Key</h3><ul>';
+    WIFE_NOTES.repSetKey.forEach(function(n) { html += '<li>' + n + '</li>'; });
+    html += '</ul></div>';
+    html += '<div class="notes-card nutrition-card"><h3>Nutrition Guidelines</h3><ul>';
+    WIFE_NOTES.nutritionGuidelines.forEach(function(n) { html += '<li>' + n + '</li>'; });
+    html += '</ul></div>';
+    grid.innerHTML = html;
+  } else {
+    grid.innerHTML = '<div class="notes-card"><h3>Strength Notes</h3><ul><li>Secondary lifts are emphasized \u2014 variety of implements and planes of movement build limit strength without attachment to the \u201cbig three.\u201d Primary lifts can be substituted.</li><li>Braced asymmetrical movements can rotate with secondary asymmetrical. Consider choosing asymmetrical for the secondary movement that begins each day.</li><li>Plyo warm-up midweek = 1\u20133 plyometric skills. Left open-ended \u2014 variety and week-to-week modifications are encouraged.</li><li><strong style="color:var(--cyan)">ME:</strong> 1\u20135 reps, 90\u2013100%, 1\u20133 sets, no RIR target. <strong style="color:var(--cyan)">DE:</strong> 2\u20134 reps, 70\u201380%, max velocity, 4\u20136 sets. <strong style="color:var(--cyan)">SKILL:</strong> 3\u20135 reps, 75\u201385%, 3\u20134 RIR, 3\u20135 sets. <strong style="color:var(--cyan)">HYP:</strong> 6\u201312 reps, 0\u20132 RIR, 3\u20134 sets.</li></ul></div><div class="notes-card"><h3>Conditioning Notes</h3><ul><li>Hard work should be hard; easy work should be easy. Resist adding more difficulty or distance \u2014 adjust intensity and threshold estimates instead.</li><li>For a specific race, switch to a pivot program. One month on The Runner prior to a race-specific program returns the best pre-test results.</li><li>Cycling workouts can use a rower, ski erg, air bike, or any power-meter device. Running can be done on an elliptical or arc trainer \u2014 include some ground impact at least one day.</li><li>Weekend LSR can be a hike, long ride, or team sport day. Few changes are needed month-to-month beyond adjusting 1RM and threshold as fitness improves.</li></ul></div><div class="notes-card"><h3>Rep/Set Key</h3><ul><li><strong style="color:var(--cyan)">ME (Max Effort):</strong> Intentionally heavy, peak force. Stop short of failure. Bar speed secondary to moving the weight well.</li><li><strong style="color:var(--cyan)">DE (Dynamic Effort):</strong> Bar speed and quality of movement are primary. Treat every rep as if bar were maximal. Fatigue is discouraged.</li><li><strong style="color:var(--cyan)">SKILL:</strong> Purely patterning and movement practice. Form and consistency over velocity. Heavy enough to be a challenge.</li><li><strong style="color:var(--cyan)">HYP (Hypertrophy):</strong> Bodybuilding-style, steady controlled tempo. 0\u20132 RIR. Fatigue of all motor units is the target stimulus.</li><li><strong style="color:var(--gold)">RIR (Reps in Reserve):</strong> 2 RIR = 2 reps left before failure. 0 RIR = last rep completable, next would fail.</li></ul></div><div class="notes-card"><h3>Endurance Zones</h3><ul><li><strong style="color:var(--gold)">MLSS+:</strong> Maximal Lactate Steady State \u2014 maximize time in Zone 4 with equalized fatigue.</li><li><strong style="color:var(--gold)">NT (Near-Threshold):</strong> Shorter above-threshold or longer below-threshold intervals \u2014 maximize total time at this intensity.</li><li><strong style="color:var(--gold)">VT1:</strong> At or below ventilatory threshold 1. Duration-based. Use talk test to confirm zone (25\u201390+ min).</li><li><strong style="color:var(--gold)">LSD:</strong> Long Slow Distance \u2014 maximize time, primarily below VT1. Can be hike, run, ride. Rest pauses OK.</li><li><strong style="color:var(--gold)">Cyc AnA:</strong> Cycling anaerobic repeatability \u2014 110\u2013130% FTP. Use power floor as guideline, not strict target.</li><li><strong style="color:var(--gold)">Cyc Endurance:</strong> Straight or mixed-intensity cycling below 75%. Good for form and position practice.</li></ul></div>';
+  }
+}
+
+function updateModeToggle() {
+  var mt = document.getElementById('modeToggle');
+  var pd = document.getElementById('phaseDisplay');
+  if (isWife()) {
+    mt.style.display = 'none';
+    pd.style.display = '';
+    var phase = getPhaseForWeek(S.week);
+    pd.textContent = phase.name + ' (Weeks ' + phase.weeks + ')';
+  } else {
+    mt.style.display = '';
+    pd.style.display = 'none';
+  }
+}
+
+function updateHeaderSubtitle() {
+  var el = document.getElementById('headerSubtitle');
+  el.textContent = isWife() ? 'Glute & Quad Hypertrophy + Scoliosis Program' : 'Hybrid Athlete Program Tracker';
+}
+
+function openPrepModal() {
+  currentDay = 'prep';
+  document.getElementById('modalTitle').textContent = WIFE_PREP.name;
+  var body = document.getElementById('modalBody');
+  renderWifePrep(body);
+  document.getElementById('builderModal').classList.add('open');
+}
+
+function openCoreModal() {
+  currentDay = 'core';
+  document.getElementById('modalTitle').textContent = WIFE_CORE.name;
+  var key = S.week + '-core';
+  var saved = S.builders[key] || {};
+  var body = document.getElementById('modalBody');
+  renderWifeCore(body, key, saved);
+  document.getElementById('builderModal').classList.add('open');
+}
+
+function openWifeBuilder(d, key, saved, body) {
+  var sid = d.sessionId;
+  if (!sid) { body.innerHTML = '<p style="color:var(--text-muted);font-size:.8rem;padding:.5rem">Complete rest day \u2014 no training.</p>'; document.getElementById('builderModal').classList.add('open'); return; }
+  if (sid === 'core') { renderWifeCore(body, key, saved); document.getElementById('builderModal').classList.add('open'); return; }
+  var session = WIFE_SESSIONS[sid];
+  if (!session) { body.innerHTML = '<p style="color:var(--text-muted)">Session not found.</p>'; document.getElementById('builderModal').classList.add('open'); return; }
+  var html = '';
+  if (session.scoliosisNote) html += '<div class="wife-session-note">\ud83d\udd34 SCOLIOSIS NOTE: ' + session.scoliosisNote + '</div>';
+  session.blocks.forEach(function(block) {
+    html += '<div class="wife-block-section"><div class="wife-block-label">' + block.label + '</div>';
+    block.exercises.forEach(function(ex) {
+      html += '<div class="wife-ex-card"><div class="wife-ex-header"><span class="wife-ex-order">' + ex.order + '</span><span class="wife-ex-name">' + ex.name + '</span><span class="wife-ex-equip">' + ex.equipment + '</span></div>';
+      html += '<div class="wife-ex-params"><span><span class="p-label">Sets</span>' + ex.sets + '</span><span><span class="p-label">Reps</span>' + ex.reps + '</span><span><span class="p-label">Tempo</span>' + ex.tempo + '</span><span><span class="p-label">RPE</span>' + ex.rpe + '</span><span><span class="p-label">Rest</span>' + ex.rest + '</span></div>';
+      if (ex.scoliosisCue) html += '<div class="scoliosis-cue">\ud83e\udeb4 ' + ex.scoliosisCue + '</div>';
+      if (ex.coachingCue) html += '<div class="coaching-cue">\ud83d\udca1 ' + ex.coachingCue + '</div>';
+      var nk = sid + '|' + ex.order;
+      var nv = saved[nk] || '';
+      html += '<input class="wife-ex-note" type="text" data-key="' + nk + '" placeholder="Notes: weight, reps achieved, form cues..." value="' + nv.replace(/"/g, '&quot;') + '" oninput="updB(this)">';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  body.innerHTML = html;
+  document.getElementById('builderModal').classList.add('open');
+}
+
+function renderWifeCore(body, key, saved) {
+  var html = '<div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.75rem;padding:.4rem .6rem;background:rgba(232,115,111,.06);border:1px solid rgba(232,115,111,.15);border-radius:5px;line-height:1.5">' + WIFE_CORE.duration + ' \u00b7 ' + WIFE_CORE.frequency + '</div>';
+  WIFE_CORE.blocks.forEach(function(block) {
+    html += '<div class="wife-block-section"><div class="wife-block-label">' + block.label + '</div>';
+    block.exercises.forEach(function(ex) {
+      html += '<div class="wife-ex-card"><div class="wife-ex-header"><span class="wife-ex-order">' + ex.order + '</span><span class="wife-ex-name">' + ex.name + '</span></div>';
+      html += '<div class="wife-ex-params"><span><span class="p-label">Sets/Reps</span>' + ex.sets + '</span></div>';
+      if (ex.scoliosisCue) html += '<div class="scoliosis-cue">\ud83e\udeb4 ' + ex.scoliosisCue + '</div>';
+      if (ex.coachingCue) html += '<div class="coaching-cue">\ud83d\udca1 ' + ex.coachingCue + '</div>';
+      if (ex.progression) html += '<div class="wife-progression">\ud83d\udcc8 ' + ex.progression + '</div>';
+      var nk = 'core|' + ex.order;
+      var nv = (saved && saved[nk]) || '';
+      html += '<input class="wife-ex-note" type="text" data-key="' + nk + '" placeholder="Notes..." value="' + nv.replace(/"/g, '&quot;') + '" oninput="updB(this)">';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  body.innerHTML = html;
+}
+
+function renderWifePrep(body) {
+  var html = '<div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.75rem;padding:.4rem .6rem;background:rgba(232,115,111,.06);border:1px solid rgba(232,115,111,.15);border-radius:5px;line-height:1.5">' + WIFE_PREP.duration + ' \u00b7 ' + WIFE_PREP.frequency + '</div>';
+  WIFE_PREP.phases.forEach(function(phase) {
+    html += '<div class="wife-prep-phase"><div class="wife-prep-label">Phase ' + phase.phase + ' \u2014 ' + phase.label + '</div><div class="wife-prep-dur">' + phase.duration + '</div>';
+    phase.exercises.forEach(function(ex) {
+      html += '<div class="wife-prep-ex"><strong>' + ex.name + '</strong> (' + ex.equipment + ') \u2014 ' + ex.duration;
+      if (ex.sf) html += '<span class="wife-prep-sf">' + ex.sf + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  body.innerHTML = html;
+}
+
 // ═══════════════════════════════════════════════════
 //  STATE MANAGEMENT (per-user, Firebase + localStorage)
 // ═══════════════════════════════════════════════════
@@ -772,8 +1143,9 @@ function cacheKey() { return 'ar_state_' + currentUser; }
 function loadUserData() {
   S = JSON.parse(localStorage.getItem(cacheKey()) || 'null') || JSON.parse(JSON.stringify(DEFAULT_STATE));
   if (!S.week) S.week = 1;
-  if (!S.totalWeeks) S.totalWeeks = 12;
+  S.totalWeeks = getTotalWeeks();
   if (!S.mode) S.mode = 'standard';
+  if (isWife()) S.mode = 'standard';
   if (!S.completed) S.completed = {};
   if (!S.log) S.log = [];
   if (!S.notes) S.notes = {};
@@ -787,6 +1159,8 @@ function loadUserData() {
       const remote = snap.val();
       if (remote) {
         S = remote;
+        S.totalWeeks = getTotalWeeks();
+        if (isWife()) S.mode = 'standard';
         if (!S.completed) S.completed = {};
         if (!S.log) S.log = [];
         if (!S.notes) S.notes = {};
@@ -814,6 +1188,8 @@ function startFirebaseListener() {
     const remote = snap.val();
     if (remote) {
       S = remote;
+      S.totalWeeks = getTotalWeeks();
+      if (isWife()) S.mode = 'standard';
       if (!S.completed) S.completed = {};
       if (!S.log) S.log = [];
       if (!S.notes) S.notes = {};
@@ -846,6 +1222,8 @@ function initUI() {
   document.getElementById('logDate').value = new Date().toISOString().slice(0, 10);
   document.getElementById('btnStandard').classList.toggle('active', S.mode === 'standard');
   document.getElementById('btnDeload').classList.toggle('active', S.mode === 'deload');
+  updateDropdown();
+  updateHeaderSubtitle();
   render();
 }
 
@@ -862,27 +1240,29 @@ function switchTab(id) {
 //  CONTROLS
 // ═══════════════════════════════════════════════════
 function changeWeek(d) { S.week = Math.max(1, Math.min(S.totalWeeks, S.week + d)); save(); render(); }
-function setMode(m) { S.mode = m; document.getElementById('btnStandard').classList.toggle('active', m === 'standard'); document.getElementById('btnDeload').classList.toggle('active', m === 'deload'); save(); render(); }
+function setMode(m) { if (isWife()) return; S.mode = m; document.getElementById('btnStandard').classList.toggle('active', m === 'standard'); document.getElementById('btnDeload').classList.toggle('active', m === 'deload'); save(); render(); }
 function confirmReset() { if (!confirm('Reset completion marks for Week ' + S.week + '?')) return; Object.keys(S.completed).filter(k => k.startsWith(S.week + '-')).forEach(k => delete S.completed[k]); save(); render(); showToast('Week ' + S.week + ' reset.'); }
 
 // ═══════════════════════════════════════════════════
 //  TOGGLE COMPLETE
 // ═══════════════════════════════════════════════════
 function toggleDay(i) {
+  var prog = getProgram();
+  var days = prog[S.mode] || prog.standard;
   const key = S.week + '-' + i;
-  const d = program[S.mode][i];
-  if (d.type === 'rest') return;
+  const d = days[i];
+  if (d.type === 'rest' && !(isWife() && d.sessionId === 'core')) return;
   const was = !!S.completed[key];
   S.completed[key] = !was;
   if (!was) {
     const bData = S.builders[key] || {};
-    const exList = Object.entries(bData).filter(([k, v]) => v && !k.endsWith('-note') && v !== '__other__').map(([k, v]) => v).join(' \u00B7 ');
-    S.log.unshift({ date: new Date().toISOString().slice(0, 10), session: d.day + ' \u2014 ' + d.title, week: S.week, mode: S.mode === 'standard' ? 'Standard' : 'Taper/Deload', note: exList || '' });
-    showToast('\u2713 ' + d.day + ' logged!');
+    const exList = Object.entries(bData).filter(([k, v]) => v && !k.endsWith('-note') && v !== '__other__').map(([k, v]) => v).join(' · ');
+    var modeLabel = isWife() ? getPhaseForWeek(S.week).name : (S.mode === 'standard' ? 'Standard' : 'Taper/Deload');
+    S.log.unshift({ date: new Date().toISOString().slice(0, 10), session: d.day + ' — ' + d.title, week: S.week, mode: modeLabel, note: exList || '' });
+    showToast('✓ ' + d.day + ' logged!');
   }
   save(); render();
 }
-
 // ═══════════════════════════════════════════════════
 //  BUILDER MODAL
 // ═══════════════════════════════════════════════════
@@ -892,50 +1272,52 @@ function badgeColor(b) { for (const k of Object.keys(BADGE_COLOR)) if (b && b.st
 function openBuilder(i, e) {
   if (e) e.stopPropagation();
   currentDay = i;
-  const d = program[S.mode][i];
-  const cfg = BUILDER[i];
+  var prog = getProgram();
+  var days = prog[S.mode] || prog.standard;
+  const d = days[i];
   document.getElementById('modalTitle').textContent = d.day + ' \u2014 ' + d.title;
   const key = S.week + '-' + i;
   const saved = S.builders[key] || {};
   const body = document.getElementById('modalBody');
+  if (isWife()) {
+    openWifeBuilder(d, key, saved, body);
+  } else {
+    openHusbandBuilder(i, d, key, saved, body);
+  }
+}
+
+function openHusbandBuilder(i, d, key, saved, body) {
+  var cfg = BUILDER[i];
   if (!cfg) { body.innerHTML = '<p style="color:var(--text-muted);font-size:.8rem;padding:.5rem">Rest day \u2014 no exercises to plan.</p>'; document.getElementById('builderModal').classList.add('open'); return; }
-
-  let html = '<div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.9rem;padding:.5rem .7rem;background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.15);border-radius:5px;line-height:1.6"><strong style="color:var(--gold)">Prescribed parameters auto-filled from Ch.9 & Ch.10 (Viada).</strong><br>Select your exercise from the dropdown, then adjust load/notes as needed. Greyed slots = other phase.</div>';
-
-  cfg.forEach(sec => {
-    const secPhase = sec.phase || 'both';
-    const relevant = secPhase === 'both' || secPhase === S.mode;
-    const ex = EX[sec.exKey];
-    const opts = ex ? ex.list.map(v => '<option value="' + v + '">' + v + '</option>').join('') : '';
-    const bc = badgeColor(sec.badge || '');
-    const opacity = relevant ? '1' : '0.38';
-    const badgeHtml = sec.badge ? '<span style="font-size:.58rem;padding:.1rem .45rem;border-radius:3px;background:' + bc + '22;border:1px solid ' + bc + '66;color:' + bc + ';margin-right:.4rem;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;letter-spacing:.12em">' + sec.badge + '</span>' : '';
-
+  var html = '<div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.9rem;padding:.5rem .7rem;background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.15);border-radius:5px;line-height:1.6"><strong style="color:var(--gold)">Prescribed parameters auto-filled from Ch.9 & Ch.10 (Viada).</strong><br>Select your exercise from the dropdown, then adjust load/notes as needed. Greyed slots = other phase.</div>';
+  cfg.forEach(function(sec) {
+    var secPhase = sec.phase || 'both';
+    var relevant = secPhase === 'both' || secPhase === S.mode;
+    var ex = EX[sec.exKey];
+    var opts = ex ? ex.list.map(function(v) { return '<option value="' + v + '">' + v + '</option>'; }).join('') : '';
+    var bc = badgeColor(sec.badge || '');
+    var opacity = relevant ? '1' : '0.38';
+    var badgeHtml = sec.badge ? '<span style="font-size:.58rem;padding:.1rem .45rem;border-radius:3px;background:' + bc + '22;border:1px solid ' + bc + '66;color:' + bc + ';margin-right:.4rem;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;letter-spacing:.12em">' + sec.badge + '</span>' : '';
     html += '<div class="builder-section" style="opacity:' + opacity + '"><h4 style="display:flex;align-items:center;gap:.2rem">' + badgeHtml + '<span>' + sec.title + '</span>' + (!relevant ? '<span style="margin-left:auto;font-size:.6rem;color:var(--muted);font-style:italic">other phase</span>' : '') + '</h4>';
-
-    if (sec.defaultNote) {
-      html += '<div style="font-size:.68rem;color:var(--gold);font-style:italic;margin-bottom:.4rem;background:rgba(232,184,75,.07);padding:.28rem .5rem;border-radius:3px;border-left:2px solid rgba(232,184,75,.5);line-height:1.5">' + sec.defaultNote + '</div>';
-    }
-
-    sec.slots.forEach(slot => {
-      const sk = sec.title + '|' + slot;
-      const sn = saved.hasOwnProperty(sk + '-note') ? saved[sk + '-note'] : (relevant ? (sec.defaultNote || '') : '');
-      const disAttr = relevant ? '' : ' disabled';
-      html += '<div class="exercise-row"><span class="slot-label">' + slot + '</span><select class="ex-select" data-key="' + sk + '" onchange="updB(this)"' + disAttr + '><option value="">\u2014 choose exercise \u2014</option>' + opts + '<option value="custom">Custom / Other</option></select><input class="ex-note" type="text" data-key="' + sk + '-note" placeholder="Sets \u00D7 reps \u00B7 load \u00B7 notes" value="' + (sn || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;') + '" oninput="updB(this)"' + disAttr + '></div>';
+    if (sec.defaultNote) html += '<div style="font-size:.68rem;color:var(--gold);font-style:italic;margin-bottom:.4rem;background:rgba(232,184,75,.07);padding:.28rem .5rem;border-radius:3px;border-left:2px solid rgba(232,184,75,.5);line-height:1.5">' + sec.defaultNote + '</div>';
+    sec.slots.forEach(function(slot) {
+      var sk = sec.title + '|' + slot;
+      var sn = saved.hasOwnProperty(sk + '-note') ? saved[sk + '-note'] : (relevant ? (sec.defaultNote || '') : '');
+      var disAttr = relevant ? '' : ' disabled';
+      html += '<div class="exercise-row"><span class="slot-label">' + slot + '</span><select class="ex-select" data-key="' + sk + '" onchange="updB(this)"' + disAttr + '><option value="">\u2014 choose exercise \u2014</option>' + opts + '<option value="custom">Custom / Other</option></select><input class="ex-note" type="text" data-key="' + sk + '-note" placeholder="Sets \u00d7 reps \u00b7 load \u00b7 notes" value="' + (sn || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;') + '" oninput="updB(this)"' + disAttr + '></div>';
     });
     html += '</div>';
   });
-
   body.innerHTML = html;
-  body.querySelectorAll('.ex-select').forEach(sel => {
-    const v = saved[sel.dataset.key] || '';
-    for (let o of sel.options) if (o.value === v) { sel.value = v; break; }
+  body.querySelectorAll('.ex-select').forEach(function(sel) {
+    var v = saved[sel.dataset.key] || '';
+    for (var o of sel.options) if (o.value === v) { sel.value = v; break; }
   });
-  cfg.forEach(sec => {
-    const secPhase = sec.phase || 'both';
+  cfg.forEach(function(sec) {
+    var secPhase = sec.phase || 'both';
     if (secPhase !== 'both' && secPhase !== S.mode) return;
-    sec.slots.forEach(slot => {
-      const sk = sec.title + '|' + slot;
+    sec.slots.forEach(function(slot) {
+      var sk = sec.title + '|' + slot;
       if (!saved.hasOwnProperty(sk + '-note') && sec.defaultNote) {
         if (!S.builders[key]) S.builders[key] = {};
         S.builders[key][sk + '-note'] = sec.defaultNote;
@@ -945,6 +1327,7 @@ function openBuilder(i, e) {
   save();
   document.getElementById('builderModal').classList.add('open');
 }
+
 function updB(el) { const k = S.week + '-' + currentDay; if (!S.builders[k]) S.builders[k] = {}; S.builders[k][el.dataset.key] = el.value; save(); }
 function saveBuilder() { closeBuilder(); showToast('Workout plan saved!'); render(); }
 function closeBuilder() { document.getElementById('builderModal').classList.remove('open'); }
@@ -958,7 +1341,8 @@ function addLog() {
   const session = document.getElementById('logDay').value;
   const note = document.getElementById('logNote').value.trim();
   if (!session) { showToast('Select a session', 'error'); return; }
-  S.log.unshift({ date, session, week: S.week, mode: S.mode === 'standard' ? 'Standard' : 'Taper/Deload', note });
+  var modeLabel = isWife() ? getPhaseForWeek(S.week).name : (S.mode === 'standard' ? 'Standard' : 'Taper/Deload');
+  S.log.unshift({ date, session, week: S.week, mode: modeLabel, note });
   document.getElementById('logDay').value = ''; document.getElementById('logNote').value = '';
   save(); renderLog(); showToast('Entry added!');
 }
@@ -968,7 +1352,7 @@ function renderLog() {
   const body = document.getElementById('logBody'), empty = document.getElementById('emptyLog');
   if (!S.log || !S.log.length) { body.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
-  body.innerHTML = S.log.map((e, i) => '<tr><td>' + e.date + '</td><td>' + e.session + '</td><td>Wk ' + e.week + '</td><td style="color:' + (e.mode === 'Standard' ? 'var(--cyan)' : 'var(--silver)') + '">' + e.mode + '</td><td style="color:var(--text-muted);max-width:220px;word-break:break-word;font-size:.71rem">' + (e.note || '\u2014') + '</td><td><button class="del-btn" onclick="deleteLog(' + i + ')">\u2715</button></td></tr>').join('');
+  body.innerHTML = S.log.map((e, i) => '<tr><td>' + e.date + '</td><td>' + e.session + '</td><td>Wk ' + e.week + '</td><td style="color:' + (e.mode === 'Standard' ? 'var(--cyan)' : (e.mode === 'Taper/Deload' ? 'var(--silver)' : '#e8736f')) + '">' + e.mode + '</td><td style="color:var(--text-muted);max-width:220px;word-break:break-word;font-size:.71rem">' + (e.note || '\u2014') + '</td><td><button class="del-btn" onclick="deleteLog(' + i + ')">\u2715</button></td></tr>').join('');
 }
 
 // ═══════════════════════════════════════════════════
@@ -989,123 +1373,116 @@ function render() {
   var prog = getProgram();
   var days = prog[S.mode] || prog.standard;
   document.getElementById('weekLabel').textContent = 'WEEK ' + S.week;
-
-  var pill = document.getElementById('modePill');
+  const pill = document.getElementById('modePill');
   if (isWife()) {
     var phase = getPhaseForWeek(S.week);
-    pill.textContent = phase ? phase.name : '';
+    pill.textContent = phase.name;
     pill.className = 'pill phase-pill';
   } else {
     pill.textContent = S.mode === 'standard' ? 'Standard' : 'Taper / Deload';
     pill.className = 'pill ' + (S.mode === 'standard' ? 'pill-standard' : 'pill-deload');
   }
-
-  var done = 0, str = 0, end = 0;
-  days.forEach(function(d, i) {
-    if (d.type === 'rest') return;
-    if (S.completed[S.week + '-' + i]) { done++; if (d.type === 'strength' || d.type === 'both') str++; if (d.type === 'endurance' || d.type === 'both') end++; }
+  let done = 0, str = 0, end = 0;
+  days.forEach((d, i) => {
+    if (d.type === 'rest' && !(isWife() && d.sessionId === 'core')) return;
+    if (S.completed[S.week + '-' + i]) { done++; if (d.type === 'strength') str++; if (d.type === 'both') { str++; end++; } if (d.type === 'endurance') end++; }
   });
-  var total = days.filter(function(d) { return d.type !== 'rest'; }).length;
-  var pct = total ? Math.round((done / total) * 100) : 0;
-
+  var totalAct = isWife() ? 4 : days.filter(d => d.type !== 'rest').length;
+  var strTotal = isWife() ? 4 : 3;
+  const pct = Math.round((done / totalAct) * 100);
   document.getElementById('statWeek').innerHTML = S.week + ' <span>/ ' + S.totalWeeks + '</span>';
   if (isWife()) {
     var ph = getPhaseForWeek(S.week);
-    document.getElementById('statMode').textContent = ph ? ph.name + ' Phase' : '';
+    document.getElementById('statMode').textContent = ph.name + ' Phase';
   } else {
     document.getElementById('statMode').textContent = S.mode === 'standard' ? 'Standard Phase' : 'Taper/Deload Phase';
   }
-  document.getElementById('statDone').innerHTML = done + ' <span>/ ' + total + '</span>';
-
+  document.getElementById('statDone').innerHTML = done + ' <span>/ ' + totalAct + '</span>';
+  document.getElementById('statStrength').innerHTML = str + ' <span>/ ' + strTotal + '</span>';
   if (isWife()) {
-    document.getElementById('statStrength').innerHTML = str + ' <span>/ 4</span>';
-    var endCard = document.getElementById('statEnduranceCard');
-    if (endCard) endCard.style.display = 'none';
+    document.getElementById('statEnduranceCard').style.display = 'none';
   } else {
-    document.getElementById('statStrength').innerHTML = str + ' <span>/ 3</span>';
-    var endCard2 = document.getElementById('statEnduranceCard');
-    if (endCard2) { endCard2.style.display = ''; document.getElementById('statEndurance').innerHTML = end + ' <span>/ 3</span>'; }
+    document.getElementById('statEnduranceCard').style.display = '';
+    document.getElementById('statEndurance').innerHTML = end + ' <span>/ 3</span>';
   }
-
   document.getElementById('statTotal').textContent = S.log ? S.log.length : 0;
   document.getElementById('progPct').textContent = pct + '%';
   document.getElementById('progFill').style.width = pct + '%';
   document.getElementById('wkNoteLabel').textContent = 'Week ' + S.week;
   document.getElementById('weekNotes').value = (S.notes && S.notes[S.week]) || '';
-
   updateModeToggle();
   updateNotesTab();
 
-  var grid = document.getElementById('daysGrid'); grid.innerHTML = '';
-  days.forEach(function(day, i) {
-    var key = S.week + '-' + i;
-    var isComp = !!S.completed[key];
-    var bData = S.builders[key] || {};
-    var hasPlan = Object.keys(bData).some(function(k) { return !k.endsWith('-note') && bData[k] && bData[k] !== 'custom'; });
-    var card = document.createElement('div');
-    card.className = 'day-card' + (isComp ? ' completed' : '') + (day.type === 'rest' ? ' rest-day' : '');
+  const grid = document.getElementById('daysGrid'); grid.innerHTML = '';
+  days.forEach((day, i) => {
+    const key = S.week + '-' + i;
+    const isComp = !!S.completed[key];
+    const bData = S.builders[key] || {};
+    const hasPlan = Object.keys(bData).some(k => !k.endsWith('-note') && bData[k] && bData[k] !== 'custom');
+    const card = document.createElement('div');
     card.style.animationDelay = (i * .04) + 's';
 
-    if (day.type === 'rest') {
-      if (isWife() && day.sessionId === 'core') {
-        card.classList.remove('rest-day');
+    if (isWife()) {
+      if (day.sessionId === 'core') {
+        card.className = 'day-card' + (isComp ? ' completed' : '');
         card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><button class="day-check" onclick="event.stopPropagation();toggleDay(' + i + ')">' + (isComp ? '\u2713' : '') + '</button></div><div class="day-body"><div style="text-align:center;padding:.5rem;color:var(--text-muted);font-size:.72rem">' + WIFE_CORE.name + ' \u2022 ' + WIFE_CORE.duration + '</div><button class="open-builder-btn" onclick="openBuilder(' + i + ',event)">View Core Routine</button></div>';
+      } else if (day.sessionId === null) {
+        card.className = 'day-card rest-day';
+        card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><div style="width:25px"></div></div><div class="day-body"><div class="rest-content">\u2b24 Complete Rest</div></div>';
       } else {
-        card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><div style="width:25px"></div></div><div class="day-body"><div class="rest-content">\u2B24 Active Recovery</div></div>';
-      }
-    } else if (isWife()) {
-      var session = WIFE_SESSIONS[day.sessionId];
-      var wbody = '';
-      if (session) {
-        wbody += '<div class="wife-day-blocks">';
-        session.blocks.forEach(function(block) {
-          var exNames = block.exercises.map(function(ex) { return ex.name; }).slice(0, 3).join(' \u00B7 ');
-          var more = block.exercises.length > 3 ? ' +' + (block.exercises.length - 3) : '';
-          wbody += '<div class="wife-day-block-summary"><strong style="color:var(--accent);font-size:.62rem">' + block.id + '</strong> ' + exNames + more + '</div>';
-        });
-        wbody += '</div>';
-      }
-      wbody += '<button class="open-builder-btn" onclick="openBuilder(' + i + ',event)">' + (hasPlan ? '\u270E View & Edit Workout' : 'View Full Workout') + '</button>';
-      card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><button class="day-check" onclick="event.stopPropagation();toggleDay(' + i + ')">' + (isComp ? '\u2713' : '') + '</button></div><div class="day-body">' + wbody + '</div>';
-    } else {
-      var body = '';
-      if (day.strength && day.strength.length) {
-        var isP = i === 2;
-        body += '<div class="workout-block"><span class="block-tag ' + (isP ? 'tag-plyo' : 'tag-strength') + '">' + (isP ? 'Plyometrics' : 'Strength') + '</span><ul class="workout-list">' + day.strength.map(function(s) { return '<li>' + s + '</li>'; }).join('') + '</ul></div>';
-      }
-      if (day.endurance) body += '<div class="workout-block"><span class="block-tag tag-endurance">Endurance</span><div class="endurance-badge">' + day.endurance.label + '</div></div>';
-      var cfg = BUILDER[i];
-      if (cfg && !hasPlan) {
-        var currentPhase = S.mode;
-        var relevantSlots = cfg.filter(function(sec) { var p = sec.phase || 'both'; return (p === 'both' || p === currentPhase) && sec.defaultNote; });
-        if (relevantSlots.length) {
-          body += '<div class="workout-block" style="margin-top:.55rem"><span class="block-tag" style="background:rgba(232,184,75,.1);color:var(--gold)">Prescribed</span><ul class="workout-list">';
-          relevantSlots.forEach(function(sec) {
-            var bc = badgeColor(sec.badge || '');
-            body += '<li style="font-size:.68rem;line-height:1.5"><span style="color:' + bc + ';font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:.65rem;margin-right:.3rem">' + (sec.badge || '') + '</span><span style="color:var(--text-muted)">' + sec.title.replace(/\(.*?\)/g, '').trim() + '</span></li>';
+        card.className = 'day-card' + (isComp ? ' completed' : '');
+        var session = WIFE_SESSIONS[day.sessionId];
+        var bodyHtml = '<div class="wife-day-blocks">';
+        if (session) {
+          session.blocks.forEach(function(block) {
+            bodyHtml += '<div class="wife-day-block-summary"><strong style="color:var(--accent)">' + block.id + ':</strong> ' + block.exercises.map(function(ex) { return ex.name; }).join(', ') + '</div>';
           });
-          body += '</ul></div>';
         }
+        bodyHtml += '</div>';
+        bodyHtml += '<button class="open-builder-btn" onclick="openBuilder(' + i + ',event)">View Full Workout</button>';
+        card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><button class="day-check" onclick="event.stopPropagation();toggleDay(' + i + ')">' + (isComp ? '\u2713' : '') + '</button></div><div class="day-body">' + bodyHtml + '</div>';
       }
-      if (hasPlan) {
-        var planned = Object.entries(bData).filter(function(e) { return !e[0].endsWith('-note') && e[1] && e[1] !== 'custom'; }).map(function(e) { return '<li>' + e[1] + '</li>'; }).join('');
-        if (planned) body += '<div class="workout-block"><span class="block-tag tag-planned">Planned</span><ul class="workout-list">' + planned + '</ul></div>';
+    } else {
+      card.className = 'day-card' + (isComp ? ' completed' : '') + (day.type === 'rest' ? ' rest-day' : '');
+      if (day.type === 'rest') {
+        card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><div style="width:25px"></div></div><div class="day-body"><div class="rest-content">\u2b24 Active Recovery</div></div>';
+      } else {
+        let body = '';
+        if (day.strength && day.strength.length) {
+          const isP = i === 2;
+          body += '<div class="workout-block"><span class="block-tag ' + (isP ? 'tag-plyo' : 'tag-strength') + '">' + (isP ? 'Plyometrics' : 'Strength') + '</span><ul class="workout-list">' + day.strength.map(s => '<li>' + s + '</li>').join('') + '</ul></div>';
+        }
+        if (day.endurance) body += '<div class="workout-block"><span class="block-tag tag-endurance">Endurance</span><div class="endurance-badge">' + day.endurance.label + '</div></div>';
+        const cfg = BUILDER[i];
+        if (cfg && !hasPlan) {
+          const currentPhase = S.mode;
+          const relevantSlots = cfg.filter(sec => { const p = sec.phase || 'both'; return (p === 'both' || p === currentPhase) && sec.defaultNote; });
+          if (relevantSlots.length) {
+            body += '<div class="workout-block" style="margin-top:.55rem"><span class="block-tag" style="background:rgba(232,184,75,.1);color:var(--gold)">Prescribed</span><ul class="workout-list">';
+            relevantSlots.forEach(sec => {
+              const bc = badgeColor(sec.badge || '');
+              body += '<li style="font-size:.68rem;line-height:1.5"><span style="color:' + bc + ';font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:.65rem;margin-right:.3rem">' + (sec.badge || '') + '</span><span style="color:var(--text-muted)">' + sec.title.replace(/\(.*?\)/g, '').trim() + '</span></li>';
+            });
+            body += '</ul></div>';
+          }
+        }
+        if (hasPlan) {
+          const planned = Object.entries(bData).filter(([k, v]) => !k.endsWith('-note') && v && v !== 'custom').map(([, v]) => '<li>' + v + '</li>').join('');
+          if (planned) body += '<div class="workout-block"><span class="block-tag tag-planned">Planned</span><ul class="workout-list">' + planned + '</ul></div>';
+        }
+        body += '<button class="open-builder-btn" onclick="openBuilder(' + i + ',event)">' + (hasPlan ? '\u270e Edit Workout Plan' : '+ Plan This Workout') + '</button>';
+        card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><button class="day-check" onclick="event.stopPropagation();toggleDay(' + i + ')">' + (isComp ? '\u2713' : '') + '</button></div><div class="day-body">' + body + '</div>';
       }
-      body += '<button class="open-builder-btn" onclick="openBuilder(' + i + ',event)">' + (hasPlan ? '\u270E Edit Workout Plan' : '+ Plan This Workout') + '</button>';
-      card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><button class="day-check" onclick="event.stopPropagation();toggleDay(' + i + ')">' + (isComp ? '\u2713' : '') + '</button></div><div class="day-body">' + body + '</div>';
     }
     grid.appendChild(card);
   });
 
   var suppDiv = document.getElementById('wifeSupplemental');
-  if (suppDiv) {
-    if (isWife()) {
-      suppDiv.innerHTML = '<div style="margin-top:1.2rem"><div class="section-label"><h2>Supplemental Routines</h2><div class="pill phase-pill">Daily</div></div><div class="days-grid"><div class="day-card" style="cursor:pointer" onclick="openPrepModal()"><div class="day-header"><div class="day-label">Pre-Session</div><div class="day-title">Movement Prep</div><div style="width:25px"></div></div><div class="day-body"><div style="text-align:center;padding:.5rem;color:var(--text-muted);font-size:.72rem">' + WIFE_PREP.name + ' \u2022 ' + WIFE_PREP.duration + '</div></div></div><div class="day-card" style="cursor:pointer" onclick="openCoreModal()"><div class="day-header"><div class="day-label">Daily</div><div class="day-title">Core & Waist</div><div style="width:25px"></div></div><div class="day-body"><div style="text-align:center;padding:.5rem;color:var(--text-muted);font-size:.72rem">' + WIFE_CORE.name + ' \u2022 ' + WIFE_CORE.duration + '</div></div></div></div></div>';
-    } else {
-      suppDiv.innerHTML = '';
-    }
+  if (isWife()) {
+    suppDiv.innerHTML = '<div style="margin-top:1.2rem"><div class="section-label"><h2>Supplemental Routines</h2><div class="pill phase-pill">Daily</div></div><div class="days-grid"><div class="day-card" style="cursor:pointer" onclick="openPrepModal()"><div class="day-header"><div class="day-label">Pre-Session</div><div class="day-title">Movement Prep</div><div style="width:25px"></div></div><div class="day-body"><div style="text-align:center;padding:.5rem;color:var(--text-muted);font-size:.72rem">' + WIFE_PREP.name + ' \u2022 ' + WIFE_PREP.duration + '</div></div></div><div class="day-card" style="cursor:pointer" onclick="openCoreModal()"><div class="day-header"><div class="day-label">Daily</div><div class="day-title">Core & Waist</div><div style="width:25px"></div></div><div class="day-body"><div style="text-align:center;padding:.5rem;color:var(--text-muted);font-size:.72rem">' + WIFE_CORE.name + ' \u2022 ' + WIFE_CORE.duration + '</div></div></div></div></div>';
+  } else {
+    suppDiv.innerHTML = '';
   }
-
   renderLog();
 }
 
