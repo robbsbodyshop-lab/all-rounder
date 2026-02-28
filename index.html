@@ -15,8 +15,10 @@
     --accent:var(--cyan);
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--bg-dark);color:var(--text-primary);font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden}
+  html{font-size:17px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  body{background:var(--bg-dark);color:var(--text-primary);font-family:'Barlow',sans-serif;line-height:1.5;min-height:100vh;overflow-x:hidden}
   body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(30,53,96,0.4),transparent 60%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(26,82,118,0.2),transparent 50%);pointer-events:none;z-index:0}
+  button,input,select,textarea{font-size:16px}
 
   /* ─── PROFILE SELECTOR ─── */
   .profile-overlay{position:fixed;inset:0;background:var(--bg-dark);z-index:2000;display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:1;transition:opacity .35s}
@@ -212,7 +214,28 @@
   .sync-indicator.offline{opacity:1;background:rgba(231,76,60,.15);color:var(--red)}
 
   @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-  @media(max-width:580px){.days-grid{grid-template-columns:1fr}.header-inner{flex-direction:column;align-items:flex-start}.stats-row{grid-template-columns:repeat(2,1fr)}.profile-cards{flex-direction:column;align-items:center}}
+  @media(max-width:580px){
+    html{font-size:18px}
+    .days-grid{grid-template-columns:1fr}
+    .header-inner{flex-direction:column;align-items:flex-start}
+    .stats-row{grid-template-columns:repeat(2,1fr)}
+    .profile-cards{flex-direction:column;align-items:center}
+    .tab-btn{font-size:.92rem;padding:.7rem .95rem}
+    .day-title{font-size:1.05rem}
+    .workout-list li,.notes-card ul li,.lib-list li,.wife-prep-ex,.wife-day-block-summary{font-size:.84rem}
+    .btn-sm{min-height:44px;padding:.52rem .9rem}
+    .open-builder-btn,.btn-log{min-height:44px}
+  }
+  @supports (padding: max(0px)) {
+    body{
+      padding-left:max(0px, env(safe-area-inset-left));
+      padding-right:max(0px, env(safe-area-inset-right));
+      padding-bottom:max(0px, env(safe-area-inset-bottom));
+    }
+    header{padding-top:max(0px, env(safe-area-inset-top))}
+    .toast{bottom:max(1rem, env(safe-area-inset-bottom))}
+    .sync-indicator{top:max(.6rem, env(safe-area-inset-top))}
+  }
 
   .wife-ex-card{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:6px;padding:.55rem .7rem;margin-bottom:.45rem}
   .wife-ex-header{display:flex;align-items:center;gap:.4rem;margin-bottom:.3rem;flex-wrap:wrap}
