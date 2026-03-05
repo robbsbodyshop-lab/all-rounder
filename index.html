@@ -1692,7 +1692,7 @@ function render() {
         }
         if (day.endurance) body += '<div class="workout-block"><span class="block-tag tag-endurance">Endurance</span><div class="endurance-badge">' + day.endurance.label + '</div></div>';
         const cfg = BUILDER[i];
-        if (cfg && !hasPlan) {
+        if (cfg && !hasPlan && !isJ3U()) {
           const currentPhase = S.mode;
           const relevantSlots = cfg.filter(sec => { const p = sec.phase || 'both'; return (p === 'both' || p === currentPhase) && sec.defaultNote; });
           if (relevantSlots.length) {
