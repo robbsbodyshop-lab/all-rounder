@@ -336,6 +336,10 @@
         <span id="weekLabel">WEEK 1</span>
         <button onclick="changeWeek(1)">&rsaquo;</button>
       </div>
+      <div class="mode-toggle" id="programToggle" style="display:none">
+        <button id="btnViada" onclick="setHusbandProgram('viada')">Viada</button>
+        <button id="btnJ3U" onclick="setHusbandProgram('j3u')">J3U / Wenning</button>
+      </div>
       <div class="mode-toggle" id="modeToggle">
         <button class="active" id="btnStandard" onclick="setMode('standard')">Standard</button>
         <button id="btnDeload" onclick="setMode('deload')">Taper/Deload</button>
@@ -638,7 +642,22 @@ const EX = {
   plyoFootspeed:{label:'Plyometrics — Footspeed & Movement',tag:'PLYO',color:'#f39c12',rep_guide:'Footspeed and movement drills — focus on foot/leg control.',list:['Ladder drills (footspeed and mobility)','Ickey Shuffle','Hopscotch']},
   enduranceRunning:{label:'Running — Modalities',tag:'ENDURANCE',color:'var(--gold)',rep_guide:'Paces = % of threshold speed (VT2 = 100%). Level 1/2/3 denotes volume/difficulty.',list:['Sprint / Power intervals (>vVO2 pace)','MLSS+ \u2014 Level 1 (Zone 4 work)','MLSS+ \u2014 Level 2 (Zone 4 work)','MLSS+ \u2014 Level 3 (Zone 4 work)','NT \u2014 Level 1 (near-threshold)','NT \u2014 Level 2 (near-threshold)','NT \u2014 Level 3 (near-threshold)','VT1 run \u2014 Level 1 (25\u201330 min)','VT1 run \u2014 Level 2 (45\u201360 min)','VT1 run \u2014 Level 3 (80\u201390 min)','LSD \u2014 Level 1 (45\u201390 min)','LSD \u2014 Level 2 (60\u2013150 min)','LSD \u2014 Level 3 (90+ min)','Race-specific NT \u2014 5K','Race-specific NT \u2014 10K','Race-specific NT \u2014 Half-marathon','Race-specific NT \u2014 Marathon']},
   enduranceCycling:{label:'Cycling — Modalities',tag:'ENDURANCE',color:'var(--gold)',rep_guide:'% = % of threshold power (FTP). Can substitute rower, ski erg, or air bike with known threshold.',list:['Cycling Sprints \u2014 Level 1 (max effort surges)','Cycling Sprints \u2014 Level 2','Cycling Sprints \u2014 Level 3','Cycling AnA \u2014 Level 1 (110\u2013130% FTP)','Cycling AnA \u2014 Level 2','Cycling AnA \u2014 Level 3','Cycling VO2 \u2014 Level 1 (110\u2013120% FTP)','Cycling VO2 \u2014 Level 2','Cycling VO2 \u2014 Level 3','Cycling Sweet Spot \u2014 Level 1 (80\u201395% FTP)','Cycling Sweet Spot \u2014 Level 2','Cycling Sweet Spot \u2014 Level 3','Cycling Endurance \u2014 Level 1 (60\u2013100 min below 75%)','Cycling Endurance \u2014 Level 2 (2.5\u20133.5 hr)','Cycling Endurance \u2014 Level 3 (3.5\u20135 hr)']},
-  enduranceSwimming:{label:'Swimming — Modalities',tag:'ENDURANCE',color:'var(--gold)',rep_guide:'Level 1 \u2248 45 min | Level 2 \u2248 60 min | Level 3 \u2248 90 min. Learn: catch-up, DPS, fist, kick, fingertip drag drills.',list:['Swim Endurance \u2014 Level 1','Swim Endurance \u2014 Level 2','Swim Endurance \u2014 Level 3','Swim Speed \u2014 Level 1','Swim Speed \u2014 Level 2','Swim Speed \u2014 Level 3','Open Water \u2014 Level 1','Open Water \u2014 Level 2','Open Water \u2014 Level 3 (extended distance, escort required)']}
+  enduranceSwimming:{label:'Swimming — Modalities',tag:'ENDURANCE',color:'var(--gold)',rep_guide:'Level 1 \u2248 45 min | Level 2 \u2248 60 min | Level 3 \u2248 90 min. Learn: catch-up, DPS, fist, kick, fingertip drag drills.',list:['Swim Endurance \u2014 Level 1','Swim Endurance \u2014 Level 2','Swim Endurance \u2014 Level 3','Swim Speed \u2014 Level 1','Swim Speed \u2014 Level 2','Swim Speed \u2014 Level 3','Open Water \u2014 Level 1','Open Water \u2014 Level 2','Open Water \u2014 Level 3 (extended distance, escort required)']},
+  // ── J3U / WENNING KEYS ───────────────────────────
+  wenningWarmupUpper:{label:'Wenning Warmup \u2014 Upper (Rear Delt / Lats / Triceps)',tag:'WARMUP',color:'#f39c12',rep_guide:'3\u20134 rounds \u00d7 15\u201325 reps \u00b7 Circuit \u2014 no rest between exercises, 60\u201390 s between rounds \u00b7 Light weight only \u2014 warm the muscle, do NOT fatigue it',list:['Band pull-apart (red band)','Cable face pull (rope)','Rear delt fly (cable or DB)','Incline dumbbell row','Wide-grip lat pulldown','Close-grip lat pulldown','Cable tricep pushdown (rope)','Cable tricep pushdown (bar)','Dumbbell lateral raise','Orange band face pull','Shoulder prone lateral rotation']},
+  wenningWarmupLower:{label:'Wenning Warmup \u2014 Lower (Hamstrings / Glutes / Low Back)',tag:'WARMUP',color:'#f39c12',rep_guide:'3\u20134 rounds \u00d7 15\u201325 reps \u00b7 Circuit \u2014 no rest between exercises, 60\u201390 s between rounds \u00b7 Light weight only \u2014 warm the muscle, do NOT fatigue it',list:['45-degree back extension','Hamstring curl (machine or band)','Decline sit-up','Reverse hyperextension','Cable crunch','Glute bridge (bodyweight)','Hip thruster (bodyweight)','Prone hamstring curl (red band)','Single-leg press (light)','Kettle bell squat','Leg curl (seated, light)']},
+  j3uCompoundHam:{label:'J3U Main Compound \u2014 Hamstring Dominant',tag:'MAIN',color:'var(--cyan)',rep_guide:'Ramp to working weight: 3\u20134 sets @ RIR 4\u20135 \u00b7 Working sets: 3 \u00d7 8\u201312 reps @ RIR 2 \u00b7 Explosive concentric \u00b7 2\u20133 s eccentric \u00b7 Rotate variation weekly (Wenning principle)',list:['Romanian deadlift (barbell)','Stiff-leg deadlift (barbell)','Romanian deadlift (dumbbell)','Good morning (barbell)','Safety bar RDL','Trap bar deadlift','Sumo deadlift','Glute ham raise (loaded)']},
+  j3uCompoundPush:{label:'J3U Main Compound \u2014 Push (Chest / Shoulders)',tag:'MAIN',color:'var(--cyan)',rep_guide:'Ramp to working weight: 3\u20134 sets @ RIR 4\u20135 \u00b7 Working sets: 3 \u00d7 8\u201312 reps @ RIR 2 \u00b7 Explosive concentric \u00b7 2\u20133 s eccentric \u00b7 Rotate variation weekly (Wenning principle)',list:['Flat barbell bench press','Incline barbell bench press','Close-grip bench press','Dumbbell bench press (flat)','Incline dumbbell press','Seated dumbbell shoulder press','Arnold press','Floor press (barbell)','Decline bench press']},
+  j3uCompoundQuad:{label:'J3U Main Compound \u2014 Quad Dominant',tag:'MAIN',color:'var(--cyan)',rep_guide:'Ramp to working weight: 3\u20134 sets @ RIR 4\u20135 \u00b7 Working sets: 3 \u00d7 8\u201312 reps @ RIR 2 \u00b7 Explosive concentric \u00b7 2\u20133 s eccentric \u00b7 Rotate variation weekly (Wenning principle)',list:['Back squat (barbell)','Front squat (barbell)','Safety bar squat','High-bar squat','Low-bar squat','Hack squat (machine)','Goblet squat','Zercher squat']},
+  j3uCompoundBack:{label:'J3U Main Compound \u2014 Vertical Pull (Back)',tag:'MAIN',color:'var(--cyan)',rep_guide:'Ramp to working weight: 3\u20134 sets @ RIR 4\u20135 \u00b7 Working sets: 3 \u00d7 8\u201312 reps @ RIR 2 \u00b7 Explosive concentric \u00b7 2\u20133 s eccentric \u00b7 Rotate grip / implement weekly (Wenning principle)',list:['Pull-up / chin-up (weighted)','Assisted pull-up machine','Lat pulldown (wide pronated grip)','Lat pulldown (close neutral grip)','Lat pulldown (supinated grip)','Lat pulldown (single arm)']},
+  j3uAccHam:{label:'J3U Accessory \u2014 Hamstrings / Glutes',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'3 sets \u00d7 10\u201315 reps \u00b7 RIR 1 \u00b7 2\u20133 s eccentric \u00b7 Progress: add reps to top of range, then add 5% weight',list:['Prone hamstring curl (machine)','Seated hamstring curl (machine)','Hip thrust (barbell)','Single-leg Romanian deadlift','Nordic curl','Cable kickback','Hamstring curl (band or cable)','Glute ham raise (bodyweight)']},
+  j3uAccPush:{label:'J3U Accessory \u2014 Chest / Anterior Shoulder',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'3 sets \u00d7 10\u201315 reps \u00b7 RIR 1 \u00b7 2\u20133 s eccentric \u00b7 Progress: add reps to top of range, then add 5% weight',list:['Incline dumbbell press','Cable fly (mid)','Cable fly (high to low)','Cable fly (low to high)','Dumbbell fly','Pec deck','Seated dumbbell shoulder press','Machine shoulder press','Cable lateral raise','Dumbbell lateral raise']},
+  j3uAccBack:{label:'J3U Accessory \u2014 Back (Horizontal Row)',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'3 sets \u00d7 8\u201312 reps \u00b7 RIR 2 \u00b7 2\u20133 s eccentric \u00b7 Progress: add reps to top of range, then add 5% weight',list:['Bent-over barbell row','Cable row (close neutral grip)','Cable row (wide pronated grip)','Dumbbell row (chest-supported)','Seated cable row','T-bar row','Pendlay row','Machine row','Dumbbell incline row']},
+  j3uAccDelt:{label:'J3U Accessory \u2014 Rear Delt / Lateral Delt',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'3 sets \u00d7 15\u201320 reps \u00b7 RIR 1 \u00b7 Full ROM \u00b7 Progress: add reps to top of range, then add 5% weight',list:['Rear delt fly (cable, pronated)','Rear delt fly (dumbbell, prone)','Face pull (rope cable)','Dumbbell lateral raise (pinkies up)','Cable lateral raise (single arm)','Machine rear delt fly','Band pull-apart','Rope rear delt pull']},
+  j3uAccQuad:{label:'J3U Accessory \u2014 Quad Isolation',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'3 sets \u00d7 12\u201315 reps \u00b7 RIR 1 \u00b7 Full ROM \u00b7 Progress: add reps to top of range, then add 5% weight',list:['Leg extension (machine)','Leg press','Hack squat (machine)','Walking lunges','Bulgarian split squat','Step-ups','Single-leg press','Leg press (single leg)']},
+  j3uTricep:{label:'J3U Accessory \u2014 Triceps',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'3 sets \u00d7 12\u201315 reps \u00b7 RIR 1 \u00b7 Full ROM \u00b7 Progress: add reps to top of range, then add 5% weight',list:['Tricep rope pushdown (cable)','Tricep bar pushdown (cable)','Skull crushers (EZ bar)','Overhead tricep extension (rope cable)','Overhead dumbbell tricep extension','Dips (weighted or bodyweight)','JM press','Behind-the-neck tricep ext. (DB)']},
+  j3uCalf:{label:'J3U Accessory \u2014 Calves',tag:'ACCESSORY',color:'var(--silver)',rep_guide:'3 sets \u00d7 12\u201315 reps \u00b7 Full stretch at bottom, squeeze at top \u00b7 2 s pause at peak contraction',list:['Seated calf raise (machine)','Standing calf raise (barbell or machine)','Leg press calf raise','Single-leg calf raise (bodyweight)']},
+  j3uBicep:{label:'J3U Accessory \u2014 Biceps (Optional Finisher)',tag:'ACCESSORY',color:'var(--silver)',rep_guide:'2\u20133 sets \u00d7 10\u201315 reps \u00b7 RIR 1 \u00b7 Optional finisher at end of Back+Delt day',list:['Barbell curl','Dumbbell curl (alternating)','Hammer curl','Incline dumbbell curl','Cable curl (rope)','Cable curl (bar)','Preacher curl']}
 };
 
 // ═══════════════════════════════════════════════════
@@ -659,7 +678,14 @@ const PRESC = {
   CycE1:'Cyc Endurance Level 1 \u00B7 60\u2013100 min easy ride below 75% FTP OR 20-min easy + intervals + 45-min VT1',
   LSD2:'LSD Level 2 \u00B7 60-min VT1 run w/ 2 surge sets OR 1.5\u20132.5 hr mixed terrain hike/VT1 jog',
   LSD1:'LSD Level 1 \u00B7 45-min VT1 run w/ 2 surge sets OR 30-min VT1 + 5-min race-pace finish OR 1\u20131.5 hr hike/jog',
-  LSD_C1:'LSD Level 1 OR Cyc Endurance Level 1 \u00B7 choose based on weekly loading \u2014 easy, below 75% effort'
+  LSD_C1:'LSD Level 1 OR Cyc Endurance Level 1 \u00B7 choose based on weekly loading \u2014 easy, below 75% effort',
+  // ── J3U / WENNING ──────────────────────────────────
+  J3U_WARMUP:'3\u20134 rounds \u00d7 15\u201325 reps \u00b7 Circuit \u2014 no rest between exercises \u00b7 60\u201390 s between rounds \u00b7 LIGHT weight only \u2014 warm the muscle, do NOT fatigue it \u00b7 Rotate exercise choice each week',
+  J3U_MAIN:'Ramp to work weight: 3\u20134 sets @ RIR 4\u20135 \u00b7 Working sets: 3 \u00d7 8\u201312 reps @ RIR 2 \u00b7 Explosive concentric \u00b7 2\u20133 s eccentric \u00b7 Full ROM \u00b7 Rotate variation / implement weekly (Wenning principle)',
+  J3U_ACC:'3 sets \u00d7 8\u201312 reps \u00b7 RIR 2 \u00b7 2\u20133 s eccentric \u00b7 Compound rest: ~2 min \u00b7 Progress: add reps until top of range, then add 5% weight',
+  J3U_ACC_ISO:'3 sets \u00d7 15\u201320 reps \u00b7 RIR 1 \u00b7 Full ROM \u00b7 Isolation rest: ~1 min \u00b7 Progress: add reps until top of range, then add 5% weight',
+  J3U_FINISHER:'3 sets \u00d7 12\u201315 reps \u00b7 RIR 0\u20131 \u00b7 Full ROM \u00b7 1 min rest',
+  J3U_DAILY:'Every morning fasted: 10 sets of abdominal vacuum holds \u2014 blow out all air, draw abdomen in tight, hold as long as possible, rest 30 s \u00b7 Wear a belt on all axial loading hard sets'
 };
 
 // ═══════════════════════════════════════════════════
@@ -722,6 +748,139 @@ const BUILDER = {
     {title:'(Alt) Swimming Endurance',exKey:'enduranceSwimming',slots:['If swimming'],defaultNote:'Swim endurance session Lv1\u20132 \u00B7 choose modality based on weekly loading',phase:'both',badge:'Alt'}
   ]
 };
+
+// ═══════════════════════════════════════════════════
+//  J3U / WENNING BUILDER CONFIG
+// ═══════════════════════════════════════════════════
+const BUILDER_J3U = {
+  // Day 1 — Legs A (Hamstring Dominant)
+  0:[
+    {title:'Warmup \u2014 Posterior Chain Ex. 1',exKey:'wenningWarmupLower',slots:['Exercise 1'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 1'},
+    {title:'Warmup \u2014 Posterior Chain Ex. 2',exKey:'wenningWarmupLower',slots:['Exercise 2'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 2'},
+    {title:'Warmup \u2014 Core / Abdominal',exKey:'wenningWarmupLower',slots:['Exercise 3'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 3'},
+    {title:'Main \u2014 Hamstring Compound',exKey:'j3uCompoundHam',slots:['Exercise'],defaultNote:PRESC.J3U_MAIN,phase:'both',badge:'MAIN'},
+    {title:'Accessory 1 \u2014 Hamstring Isolation',exKey:'j3uAccHam',slots:['Exercise'],defaultNote:PRESC.J3U_ACC_ISO,phase:'both',badge:'ACC 1'},
+    {title:'Accessory 2 \u2014 Glutes / Hip',exKey:'j3uAccHam',slots:['Exercise'],defaultNote:PRESC.J3U_ACC_ISO,phase:'both',badge:'ACC 2'},
+    {title:'Finisher \u2014 Calves',exKey:'j3uCalf',slots:['Exercise'],defaultNote:PRESC.J3U_FINISHER,phase:'both',badge:'FINISH'}
+  ],
+  // Day 2 — Push (Chest / Shoulders / Triceps)
+  1:[
+    {title:'Warmup \u2014 Posterior Shoulder / Rear Delt',exKey:'wenningWarmupUpper',slots:['Exercise 1'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 1'},
+    {title:'Warmup \u2014 Lats / Upper Back',exKey:'wenningWarmupUpper',slots:['Exercise 2'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 2'},
+    {title:'Warmup \u2014 Triceps',exKey:'wenningWarmupUpper',slots:['Exercise 3'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 3'},
+    {title:'Main \u2014 Push Compound',exKey:'j3uCompoundPush',slots:['Exercise'],defaultNote:PRESC.J3U_MAIN,phase:'both',badge:'MAIN'},
+    {title:'Accessory 1 \u2014 Chest / Anterior Shoulder',exKey:'j3uAccPush',slots:['Exercise'],defaultNote:PRESC.J3U_ACC,phase:'both',badge:'ACC 1'},
+    {title:'Accessory 2 \u2014 Lateral Delt',exKey:'j3uAccDelt',slots:['Exercise'],defaultNote:PRESC.J3U_ACC_ISO,phase:'both',badge:'ACC 2'},
+    {title:'Finisher \u2014 Triceps',exKey:'j3uTricep',slots:['Exercise'],defaultNote:PRESC.J3U_FINISHER,phase:'both',badge:'FINISH'}
+  ],
+  // Day 3 — Rest (no entry)
+  // Day 4 — Legs B (Quad Dominant)
+  3:[
+    {title:'Warmup \u2014 Hamstrings / Glutes',exKey:'wenningWarmupLower',slots:['Exercise 1'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 1'},
+    {title:'Warmup \u2014 Low Back / Posterior Chain',exKey:'wenningWarmupLower',slots:['Exercise 2'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 2'},
+    {title:'Warmup \u2014 Core / Abdominal',exKey:'wenningWarmupLower',slots:['Exercise 3'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 3'},
+    {title:'Main \u2014 Quad Compound',exKey:'j3uCompoundQuad',slots:['Exercise'],defaultNote:PRESC.J3U_MAIN,phase:'both',badge:'MAIN'},
+    {title:'Accessory 1 \u2014 Quad Compound (secondary)',exKey:'j3uAccQuad',slots:['Exercise'],defaultNote:PRESC.J3U_ACC,phase:'both',badge:'ACC 1'},
+    {title:'Accessory 2 \u2014 Quad Isolation',exKey:'j3uAccQuad',slots:['Exercise'],defaultNote:PRESC.J3U_ACC_ISO,phase:'both',badge:'ACC 2'},
+    {title:'Finisher \u2014 Calves',exKey:'j3uCalf',slots:['Exercise'],defaultNote:PRESC.J3U_FINISHER,phase:'both',badge:'FINISH'}
+  ],
+  // Day 5 — Back + Delts
+  4:[
+    {title:'Warmup \u2014 Rear Delt / Rotator Cuff',exKey:'wenningWarmupUpper',slots:['Exercise 1'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 1'},
+    {title:'Warmup \u2014 Lats / Upper Back',exKey:'wenningWarmupUpper',slots:['Exercise 2'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 2'},
+    {title:'Warmup \u2014 Posterior Shoulder',exKey:'wenningWarmupUpper',slots:['Exercise 3'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 3'},
+    {title:'Main \u2014 Vertical Pull (Back)',exKey:'j3uCompoundBack',slots:['Exercise'],defaultNote:PRESC.J3U_MAIN,phase:'both',badge:'MAIN'},
+    {title:'Accessory 1 \u2014 Horizontal Row',exKey:'j3uAccBack',slots:['Exercise'],defaultNote:PRESC.J3U_ACC,phase:'both',badge:'ACC 1'},
+    {title:'Accessory 2 \u2014 Rear Delt / Face Pull',exKey:'j3uAccDelt',slots:['Exercise'],defaultNote:PRESC.J3U_ACC_ISO,phase:'both',badge:'ACC 2'},
+    {title:'Accessory 3 \u2014 Lateral Delt',exKey:'j3uAccDelt',slots:['Exercise'],defaultNote:PRESC.J3U_ACC_ISO,phase:'both',badge:'ACC 3'},
+    {title:'Finisher \u2014 Biceps (Optional)',exKey:'j3uBicep',slots:['Exercise'],defaultNote:PRESC.J3U_FINISHER,phase:'both',badge:'FINISH'}
+  ]
+  // Days 5, 6 — Rest (no entries)
+};
+
+// ═══════════════════════════════════════════════════
+//  J3U / WENNING PROGRAM DATA
+// ═══════════════════════════════════════════════════
+const J3U_WENNING = {
+  standard:[
+    {day:'Day 1',title:'Legs A \u2014 Hamstring Dominant',type:'strength',strength:[
+      'Wenning Warmup: 3\u20134 rounds \u00d7 20\u201325 reps circuit (posterior chain / low back / core)',
+      'Main: Hamstring compound (RDL or variation) \u2014 3 \u00d7 8\u201312, RIR 2',
+      'Accessory 1: Hamstring isolation \u2014 3 \u00d7 10\u201315, RIR 1',
+      'Accessory 2: Glute / hip movement \u2014 3 \u00d7 10\u201312, RIR 1',
+      'Finisher: Calf raise \u2014 3 \u00d7 12\u201315'
+    ],endurance:null},
+    {day:'Day 2',title:'Push \u2014 Chest / Shoulders / Triceps',type:'strength',strength:[
+      'Wenning Warmup: 3 rounds \u00d7 25 reps circuit (rear delt / lats / triceps)',
+      'Main: Push compound (bench or variation) \u2014 3 \u00d7 8\u201312, RIR 2',
+      'Accessory 1: Chest / anterior shoulder \u2014 3 \u00d7 10\u201315, RIR 1',
+      'Accessory 2: Lateral delt \u2014 3 \u00d7 15\u201320, RIR 1',
+      'Finisher: Triceps \u2014 3 \u00d7 12\u201315, RIR 1'
+    ],endurance:null},
+    {day:'Day 3',title:'Rest',type:'rest',strength:[],endurance:null},
+    {day:'Day 4',title:'Legs B \u2014 Quad Dominant',type:'strength',strength:[
+      'Wenning Warmup: 4 rounds \u00d7 20 reps circuit (hamstrings / low back / core)',
+      'Main: Quad compound (squat or variation) \u2014 3 \u00d7 8\u201312, RIR 2',
+      'Accessory 1: Quad compound secondary \u2014 3 \u00d7 12\u201315, RIR 1',
+      'Accessory 2: Quad isolation \u2014 3 \u00d7 15\u201320, RIR 1',
+      'Finisher: Calf raise \u2014 3 \u00d7 12\u201315'
+    ],endurance:null},
+    {day:'Day 5',title:'Back + Delts',type:'strength',strength:[
+      'Wenning Warmup: 3 rounds \u00d7 20 reps circuit (rear delt / lats / upper back)',
+      'Main: Vertical pull (pull-up or lat pulldown) \u2014 3 \u00d7 8\u201312, RIR 2',
+      'Accessory 1: Horizontal row \u2014 3 \u00d7 8\u201312, RIR 2',
+      'Accessory 2: Rear delt / face pull \u2014 3 \u00d7 15\u201320, RIR 1',
+      'Accessory 3: Lateral delt \u2014 3 \u00d7 15\u201320, RIR 1',
+      'Finisher: Biceps (optional) \u2014 2\u20133 \u00d7 10\u201315'
+    ],endurance:null},
+    {day:'Day 6',title:'Rest',type:'rest',strength:[],endurance:null},
+    {day:'Day 7',title:'Rest',type:'rest',strength:[],endurance:null}
+  ],
+  deload:[
+    {day:'Day 1',title:'Legs A \u2014 Hamstring Dominant (Light)',type:'strength',strength:[
+      'Wenning Warmup: 3 rounds \u00d7 20 reps circuit (posterior chain / low back / core)',
+      'Main: Hamstring compound \u2014 2 \u00d7 12\u201315, RIR 3\u20134 (autoregulate)',
+      'Accessory 1: Hamstring isolation \u2014 2 \u00d7 15, RIR 2',
+      'Accessory 2: Glute / hip movement \u2014 2 \u00d7 15, RIR 2',
+      'Finisher: Calf raise \u2014 2 \u00d7 15'
+    ],endurance:null},
+    {day:'Day 2',title:'Push \u2014 Chest / Shoulders / Triceps (Light)',type:'strength',strength:[
+      'Wenning Warmup: 3 rounds \u00d7 25 reps circuit (rear delt / lats / triceps)',
+      'Main: Push compound \u2014 2 \u00d7 12\u201315, RIR 3\u20134 (autoregulate)',
+      'Accessory 1: Chest / anterior shoulder \u2014 2 \u00d7 15, RIR 2',
+      'Accessory 2: Lateral delt \u2014 2 \u00d7 20, RIR 2',
+      'Finisher: Triceps \u2014 2 \u00d7 15, RIR 2'
+    ],endurance:null},
+    {day:'Day 3',title:'Rest',type:'rest',strength:[],endurance:null},
+    {day:'Day 4',title:'Legs B \u2014 Quad Dominant (Light)',type:'strength',strength:[
+      'Wenning Warmup: 3 rounds \u00d7 20 reps circuit (hamstrings / low back / core)',
+      'Main: Quad compound \u2014 2 \u00d7 12\u201315, RIR 3\u20134 (autoregulate)',
+      'Accessory 1: Quad compound secondary \u2014 2 \u00d7 15, RIR 2',
+      'Accessory 2: Quad isolation \u2014 2 \u00d7 20, RIR 2',
+      'Finisher: Calf raise \u2014 2 \u00d7 15'
+    ],endurance:null},
+    {day:'Day 5',title:'Back + Delts (Light)',type:'strength',strength:[
+      'Wenning Warmup: 3 rounds \u00d7 20 reps circuit (rear delt / lats / upper back)',
+      'Main: Vertical pull \u2014 2 \u00d7 12\u201315, RIR 3\u20134 (autoregulate)',
+      'Accessory 1: Horizontal row \u2014 2 \u00d7 12, RIR 3',
+      'Accessory 2: Rear delt / face pull \u2014 2 \u00d7 20, RIR 2',
+      'Accessory 3: Lateral delt \u2014 2 \u00d7 20, RIR 2',
+      'Finisher: Biceps (optional) \u2014 2 \u00d7 15'
+    ],endurance:null},
+    {day:'Day 6',title:'Rest',type:'rest',strength:[],endurance:null},
+    {day:'Day 7',title:'Rest',type:'rest',strength:[],endurance:null}
+  ]
+};
+
+const HUSBAND_J3U_DROPDOWN = [
+  'Day 1 \u2014 Legs A (Hamstring Dominant)',
+  'Day 2 \u2014 Push (Chest / Shoulders / Triceps)',
+  'Day 3 \u2014 Rest',
+  'Day 4 \u2014 Legs B (Quad Dominant)',
+  'Day 5 \u2014 Back + Delts',
+  'Day 6 \u2014 Rest',
+  'Day 7 \u2014 Rest'
+];
 
 // ═══════════════════════════════════════════════════
 //  PROGRAM DATA
@@ -981,8 +1140,22 @@ const HUSBAND_DROPDOWN = [
 ];
 
 function isWife() { return currentUser === 'user2'; }
-function getProgram() { return isWife() ? wifeProgram : program; }
+function isJ3U() { return !isWife() && S.husbandProgram === 'j3u'; }
+function getProgram() { return isWife() ? wifeProgram : (isJ3U() ? J3U_WENNING : program); }
 function getTotalWeeks() { return isWife() ? 10 : 12; }
+
+function setHusbandProgram(p) {
+  if (isWife()) return;
+  S.husbandProgram = p;
+  document.getElementById('btnViada').classList.toggle('active', p === 'viada');
+  document.getElementById('btnJ3U').classList.toggle('active', p === 'j3u');
+  var mt = document.getElementById('modeToggle');
+  mt.style.display = (p === 'j3u') ? 'none' : '';
+  save();
+  updateDropdown();
+  updateHeaderSubtitle();
+  render();
+}
 
 function getPhaseForWeek(wk) {
   if (wk <= 2) return WIFE_PHASES[0];
@@ -994,7 +1167,7 @@ function getPhaseForWeek(wk) {
 
 function updateDropdown() {
   var sel = document.getElementById('logDay');
-  var opts = isWife() ? WIFE_DROPDOWN : HUSBAND_DROPDOWN;
+  var opts = isWife() ? WIFE_DROPDOWN : (isJ3U() ? HUSBAND_J3U_DROPDOWN : HUSBAND_DROPDOWN);
   sel.innerHTML = '<option value="">Select Session</option>';
   opts.forEach(function(o) { sel.innerHTML += '<option>' + o + '</option>'; });
 }
@@ -1024,6 +1197,48 @@ function updateNotesTab() {
     WIFE_NOTES.nutritionGuidelines.forEach(function(n) { html += '<li>' + n + '</li>'; });
     html += '</ul></div>';
     grid.innerHTML = html;
+  } else if (isJ3U()) {
+    grid.innerHTML = '<div class="notes-card"><h3>J3U / Wenning Program Overview</h3><ul>' +
+      '<li><strong style="color:var(--cyan)">Split:</strong> 4-day bodybuilding split \u2014 Day 1 Legs A (Ham) \u00b7 Day 2 Push \u00b7 Day 3 Off \u00b7 Day 4 Legs B (Quad) \u00b7 Day 5 Back+Delts \u00b7 Days 6\u20137 Off</li>' +
+      '<li><strong style="color:var(--cyan)">Goal:</strong> Bodybuilding hypertrophy with structural balance. Progress each exercise individually using the RIR + rep-range method.</li>' +
+      '<li><strong style="color:var(--gold)">Standard phase:</strong> Full volume \u2014 3 working sets per compound, 3 per accessory. <strong style="color:var(--silver)">Deload:</strong> Reduce to 2 sets, raise RIR by 2.</li>' +
+      '</ul></div>' +
+      '<div class="notes-card"><h3>Wenning Warmup Philosophy</h3><ul>' +
+      '<li>Every session opens with a <strong style="color:#f39c12">Wenning warmup circuit</strong> \u2014 3 exercises, 3\u20134 rounds, 15\u201325 reps, no rest between exercises, 60\u201390 s between rounds.</li>' +
+      '<li>Target <strong>weak points</strong> for that session \u2014 upper days: rear delt / rotator cuff, lats, triceps. Lower days: hamstrings, low back, core.</li>' +
+      '<li>Use light weight. The goal is to warm and potentiate the muscle, not fatigue it. The warmup should NOT impact your main lift.</li>' +
+      '<li><strong style="color:#f39c12">Variation rule (Wenning):</strong> Rotate at least one warmup exercise choice every week. Never let the circuit become static. This accumulates extra volume on weak points without overuse.</li>' +
+      '</ul></div>' +
+      '<div class="notes-card"><h3>J3U Progression System</h3><ul>' +
+      '<li>Pick a starting weight you can complete the <em>bottom</em> of the rep range at the prescribed RIR.</li>' +
+      '<li>Each session: aim to add reps. Once you hit the <em>top</em> of the rep range at the same RIR, add 5% weight the next session and work back up.</li>' +
+      '<li><strong>Example:</strong> Squat 3\u00d710 @ RIR 2 \u2192 next week 3\u00d712 @ RIR 2 \u2192 next week add 5% weight \u2192 3\u00d710 @ RIR 2 again.</li>' +
+      '<li>Log every set (load \u00d7 reps). The logbook is your diagnostic \u2014 if weight isn\'t moving over time, recovery is insufficient.</li>' +
+      '</ul></div>' +
+      '<div class="notes-card"><h3>Rep Execution (J3U)</h3><ul>' +
+      '<li><strong style="color:var(--cyan)">Concentric:</strong> Explosive, without using momentum or other muscles to initiate. Every rep the same speed.</li>' +
+      '<li><strong style="color:var(--cyan)">Eccentric:</strong> Controlled 2\u20133 second count \u2014 ALWAYS. The speed of rep 1 = the speed of the last rep.</li>' +
+      '<li><strong style="color:var(--cyan)">Range of motion:</strong> Full ROM on all exercises unless otherwise noted.</li>' +
+      '<li><strong style="color:var(--gold)">RIR (Reps in Reserve):</strong> 0 RIR = you have zero reps left before failure. 1 RIR = one rep left. 2 RIR = two reps left. This is your effort gauge \u2014 hitting the correct RIR is more important than hitting the exact rep number.</li>' +
+      '</ul></div>' +
+      '<div class="notes-card"><h3>Autoregulation</h3><ul>' +
+      '<li>Before training, assess: Is PRS &lt; 4? Was sleep poor? Was stress worse than normal? Were meals/fluids missed? Any joint pain?</li>' +
+      '<li><strong>2 or more YES \u2192 Light session:</strong> 12\u201315 reps per exercise, 1 set per exercise, RIR 1.</li>' +
+      '<li><strong>Only joint pain \u2192</strong> Avoid painful movements, keep reps above 15, same total volume.</li>' +
+      '<li>Wenning principle: <em>It\'s not what you can do, it\'s what you can recover from.</em></li>' +
+      '</ul></div>' +
+      '<div class="notes-card"><h3>Wenning Variation Principle</h3><ul>' +
+      '<li>Rotate at least one variable in the main compound lift each week: bar type, grip width, stance width, tempo, range of motion (deficit, pin, box), or resistance type (bands, chains).</li>' +
+      '<li>This prevents overuse injuries and forces the muscle to adapt to different stimuli \u2014 preventing accommodation plateaus.</li>' +
+      '<li>Example main lift rotations: Week 1 barbell RDL, Week 2 dumbbell RDL, Week 3 stiff-leg deadlift, Week 4 good morning, Week 5 safety bar RDL.</li>' +
+      '</ul></div>' +
+      '<div class="notes-card"><h3>Daily Waist Training (J3U)</h3><ul>' +
+      '<li>Every morning fasted: <strong style="color:var(--cyan)">10 sets of abdominal vacuum holds</strong>.</li>' +
+      '<li>Blow out all air, draw abdomen in as tight as possible, hold as long as you can.</li>' +
+      '<li>Rest 30 seconds between holds. Practice standing in front of a mirror.</li>' +
+      '<li>During rest: crunch down on abs and hold the contraction with controlled breathing.</li>' +
+      '<li>Wear a belt on all axial loading hard sets in the gym.</li>' +
+      '</ul></div>';
   } else {
     grid.innerHTML = '<div class="notes-card"><h3>Strength Notes</h3><ul><li>Secondary lifts are emphasized \u2014 variety of implements and planes of movement build limit strength without attachment to the \u201cbig three.\u201d Primary lifts can be substituted.</li><li>Braced asymmetrical movements can rotate with secondary asymmetrical. Consider choosing asymmetrical for the secondary movement that begins each day.</li><li>Plyo warm-up midweek = 1\u20133 plyometric skills. Left open-ended \u2014 variety and week-to-week modifications are encouraged.</li><li><strong style="color:var(--cyan)">ME:</strong> 1\u20135 reps, 90\u2013100%, 1\u20133 sets, no RIR target. <strong style="color:var(--cyan)">DE:</strong> 2\u20134 reps, 70\u201380%, max velocity, 4\u20136 sets. <strong style="color:var(--cyan)">SKILL:</strong> 3\u20135 reps, 75\u201385%, 3\u20134 RIR, 3\u20135 sets. <strong style="color:var(--cyan)">HYP:</strong> 6\u201312 reps, 0\u20132 RIR, 3\u20134 sets.</li></ul></div><div class="notes-card"><h3>Conditioning Notes</h3><ul><li>Hard work should be hard; easy work should be easy. Resist adding more difficulty or distance \u2014 adjust intensity and threshold estimates instead.</li><li>For a specific race, switch to a pivot program. One month on The Runner prior to a race-specific program returns the best pre-test results.</li><li>Cycling workouts can use a rower, ski erg, air bike, or any power-meter device. Running can be done on an elliptical or arc trainer \u2014 include some ground impact at least one day.</li><li>Weekend LSR can be a hike, long ride, or team sport day. Few changes are needed month-to-month beyond adjusting 1RM and threshold as fitness improves.</li></ul></div><div class="notes-card"><h3>Rep/Set Key</h3><ul><li><strong style="color:var(--cyan)">ME (Max Effort):</strong> Intentionally heavy, peak force. Stop short of failure. Bar speed secondary to moving the weight well.</li><li><strong style="color:var(--cyan)">DE (Dynamic Effort):</strong> Bar speed and quality of movement are primary. Treat every rep as if bar were maximal. Fatigue is discouraged.</li><li><strong style="color:var(--cyan)">SKILL:</strong> Purely patterning and movement practice. Form and consistency over velocity. Heavy enough to be a challenge.</li><li><strong style="color:var(--cyan)">HYP (Hypertrophy):</strong> Bodybuilding-style, steady controlled tempo. 0\u20132 RIR. Fatigue of all motor units is the target stimulus.</li><li><strong style="color:var(--gold)">RIR (Reps in Reserve):</strong> 2 RIR = 2 reps left before failure. 0 RIR = last rep completable, next would fail.</li></ul></div><div class="notes-card"><h3>Endurance Zones</h3><ul><li><strong style="color:var(--gold)">MLSS+:</strong> Maximal Lactate Steady State \u2014 maximize time in Zone 4 with equalized fatigue.</li><li><strong style="color:var(--gold)">NT (Near-Threshold):</strong> Shorter above-threshold or longer below-threshold intervals \u2014 maximize total time at this intensity.</li><li><strong style="color:var(--gold)">VT1:</strong> At or below ventilatory threshold 1. Duration-based. Use talk test to confirm zone (25\u201390+ min).</li><li><strong style="color:var(--gold)">LSD:</strong> Long Slow Distance \u2014 maximize time, primarily below VT1. Can be hike, run, ride. Rest pauses OK.</li><li><strong style="color:var(--gold)">Cyc AnA:</strong> Cycling anaerobic repeatability \u2014 110\u2013130% FTP. Use power floor as guideline, not strict target.</li><li><strong style="color:var(--gold)">Cyc Endurance:</strong> Straight or mixed-intensity cycling below 75%. Good for form and position practice.</li></ul></div>';
   }
@@ -1032,20 +1247,27 @@ function updateNotesTab() {
 function updateModeToggle() {
   var mt = document.getElementById('modeToggle');
   var pd = document.getElementById('phaseDisplay');
+  var pt = document.getElementById('programToggle');
   if (isWife()) {
+    pt.style.display = 'none';
     mt.style.display = 'none';
     pd.style.display = '';
     var phase = getPhaseForWeek(S.week);
     pd.textContent = phase.name + ' (Weeks ' + phase.weeks + ')';
   } else {
-    mt.style.display = '';
+    pt.style.display = '';
+    document.getElementById('btnViada').classList.toggle('active', !isJ3U());
+    document.getElementById('btnJ3U').classList.toggle('active', isJ3U());
+    mt.style.display = isJ3U() ? 'none' : '';
     pd.style.display = 'none';
   }
 }
 
 function updateHeaderSubtitle() {
   var el = document.getElementById('headerSubtitle');
-  el.textContent = isWife() ? 'Glute & Quad Hypertrophy + Scoliosis Program' : 'Hybrid Athlete Program Tracker';
+  if (isWife()) { el.textContent = 'Glute & Quad Hypertrophy + Scoliosis Program'; }
+  else if (isJ3U()) { el.textContent = 'J3U Bodybuilding + Wenning Warmup Protocol'; }
+  else { el.textContent = 'Hybrid Athlete Program Tracker'; }
 }
 
 function openPrepModal() {
@@ -1129,7 +1351,7 @@ function renderWifePrep(body) {
 // ═══════════════════════════════════════════════════
 //  STATE MANAGEMENT (per-user, Firebase + localStorage)
 // ═══════════════════════════════════════════════════
-const DEFAULT_STATE = { week:1, totalWeeks:12, mode:'standard', completed:{}, log:[], notes:{}, builders:{} };
+const DEFAULT_STATE = { week:1, totalWeeks:12, mode:'standard', husbandProgram:'viada', completed:{}, log:[], notes:{}, builders:{} };
 let S = {};
 let currentDay = null;
 let firebaseListener = null;
@@ -1144,6 +1366,7 @@ function loadUserData() {
   S.totalWeeks = getTotalWeeks();
   if (!S.mode) S.mode = 'standard';
   if (isWife()) S.mode = 'standard';
+  if (!S.husbandProgram) S.husbandProgram = 'viada';
   if (!S.completed) S.completed = {};
   if (!S.log) S.log = [];
   if (!S.notes) S.notes = {};
@@ -1159,6 +1382,7 @@ function loadUserData() {
         S = remote;
         S.totalWeeks = getTotalWeeks();
         if (isWife()) S.mode = 'standard';
+        if (!S.husbandProgram) S.husbandProgram = 'viada';
         if (!S.completed) S.completed = {};
         if (!S.log) S.log = [];
         if (!S.notes) S.notes = {};
@@ -1188,6 +1412,7 @@ function startFirebaseListener() {
       S = remote;
       S.totalWeeks = getTotalWeeks();
       if (isWife()) S.mode = 'standard';
+      if (!S.husbandProgram) S.husbandProgram = 'viada';
       if (!S.completed) S.completed = {};
       if (!S.log) S.log = [];
       if (!S.notes) S.notes = {};
@@ -1220,6 +1445,10 @@ function initUI() {
   document.getElementById('logDate').value = new Date().toISOString().slice(0, 10);
   document.getElementById('btnStandard').classList.toggle('active', S.mode === 'standard');
   document.getElementById('btnDeload').classList.toggle('active', S.mode === 'deload');
+  if (!isWife()) {
+    document.getElementById('btnViada').classList.toggle('active', !isJ3U());
+    document.getElementById('btnJ3U').classList.toggle('active', isJ3U());
+  }
   updateDropdown();
   updateHeaderSubtitle();
   render();
@@ -1264,7 +1493,7 @@ function toggleDay(i) {
 // ═══════════════════════════════════════════════════
 //  BUILDER MODAL
 // ═══════════════════════════════════════════════════
-const BADGE_COLOR = { ME:'#e74c3c', DE:'#e67e22', SKILL:'#9b59b6', HYP:'var(--cyan)', 'HYP SS':'var(--cyan)', PLYO:'#f39c12', 'MLSS+':'var(--gold)', NT:'var(--gold)', VT1:'var(--gold)', Cyc:'var(--gold)', LSD:'var(--gold)', Alt:'var(--muted)', paired:'rgba(46,134,193,0.4)' };
+const BADGE_COLOR = { ME:'#e74c3c', DE:'#e67e22', SKILL:'#9b59b6', HYP:'var(--cyan)', 'HYP SS':'var(--cyan)', PLYO:'#f39c12', 'MLSS+':'var(--gold)', NT:'var(--gold)', VT1:'var(--gold)', Cyc:'var(--gold)', LSD:'var(--gold)', Alt:'var(--muted)', paired:'rgba(46,134,193,0.4)', WU:'#f39c12', MAIN:'var(--cyan)', ACC:'var(--green-light)', FINISH:'var(--silver)' };
 function badgeColor(b) { for (const k of Object.keys(BADGE_COLOR)) if (b && b.startsWith(k)) return BADGE_COLOR[k]; return 'var(--steel)'; }
 
 function openBuilder(i, e) {
@@ -1285,9 +1514,12 @@ function openBuilder(i, e) {
 }
 
 function openHusbandBuilder(i, d, key, saved, body) {
-  var cfg = BUILDER[i];
+  var cfg = isJ3U() ? BUILDER_J3U[i] : BUILDER[i];
   if (!cfg) { body.innerHTML = '<p style="color:var(--text-muted);font-size:.8rem;padding:.5rem">Rest day \u2014 no exercises to plan.</p>'; document.getElementById('builderModal').classList.add('open'); return; }
-  var html = '<div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.9rem;padding:.5rem .7rem;background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.15);border-radius:5px;line-height:1.6"><strong style="color:var(--gold)">Prescribed parameters auto-filled from Ch.9 & Ch.10 (Viada).</strong><br>Select your exercise from the dropdown, then adjust load/notes as needed. Greyed slots = other phase.</div>';
+  var headerNote = isJ3U()
+    ? '<div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.9rem;padding:.5rem .7rem;background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.15);border-radius:5px;line-height:1.6"><strong style="color:var(--gold)">J3U Bodybuilding + Wenning Warmup.</strong> WU slots = Wenning warmup circuit (3\u20134 rounds \u00d7 15\u201325 reps, light). MAIN = J3U progressive compound. ACC / FINISH = J3U accessory work. Rotate exercises weekly (Wenning variation principle).</div>'
+    : '<div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.9rem;padding:.5rem .7rem;background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.15);border-radius:5px;line-height:1.6"><strong style="color:var(--gold)">Prescribed parameters auto-filled from Ch.9 & Ch.10 (Viada).</strong><br>Select your exercise from the dropdown, then adjust load/notes as needed. Greyed slots = other phase.</div>';
+  var html = headerNote;
   cfg.forEach(function(sec) {
     var secPhase = sec.phase || 'both';
     var relevant = secPhase === 'both' || secPhase === S.mode;
@@ -1376,6 +1608,9 @@ function render() {
     var phase = getPhaseForWeek(S.week);
     pill.textContent = phase.name;
     pill.className = 'pill phase-pill';
+  } else if (isJ3U()) {
+    pill.textContent = S.mode === 'standard' ? 'J3U Standard' : 'J3U Deload';
+    pill.className = 'pill ' + (S.mode === 'standard' ? 'pill-standard' : 'pill-deload');
   } else {
     pill.textContent = S.mode === 'standard' ? 'Standard' : 'Taper / Deload';
     pill.className = 'pill ' + (S.mode === 'standard' ? 'pill-standard' : 'pill-deload');
@@ -1386,18 +1621,20 @@ function render() {
     if (S.completed[S.week + '-' + i]) { done++; if (d.type === 'strength') str++; if (d.type === 'both') { str++; end++; } if (d.type === 'endurance') end++; }
   });
   var totalAct = isWife() ? 4 : days.filter(d => d.type !== 'rest').length;
-  var strTotal = isWife() ? 4 : 3;
+  var strTotal = isWife() ? 4 : (isJ3U() ? 4 : 3);
   const pct = Math.round((done / totalAct) * 100);
   document.getElementById('statWeek').innerHTML = S.week + ' <span>/ ' + S.totalWeeks + '</span>';
   if (isWife()) {
     var ph = getPhaseForWeek(S.week);
     document.getElementById('statMode').textContent = ph.name + ' Phase';
+  } else if (isJ3U()) {
+    document.getElementById('statMode').textContent = S.mode === 'standard' ? 'Standard Phase' : 'Deload Phase';
   } else {
     document.getElementById('statMode').textContent = S.mode === 'standard' ? 'Standard Phase' : 'Taper/Deload Phase';
   }
   document.getElementById('statDone').innerHTML = done + ' <span>/ ' + totalAct + '</span>';
   document.getElementById('statStrength').innerHTML = str + ' <span>/ ' + strTotal + '</span>';
-  if (isWife()) {
+  if (isWife() || isJ3U()) {
     document.getElementById('statEnduranceCard').style.display = 'none';
   } else {
     document.getElementById('statEnduranceCard').style.display = '';
