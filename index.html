@@ -1669,7 +1669,6 @@ function render() {
     const key = S.week + '-' + i;
     const isComp = !!S.completed[key];
     const bData = S.builders[key] || {};
-    const hasPlan = Object.keys(bData).some(k => !k.endsWith('-note') && bData[k] && bData[k] !== 'custom');
     const card = document.createElement('div');
     card.style.animationDelay = (i * .04) + 's';
 
@@ -1698,13 +1697,16 @@ function render() {
       if (day.type === 'rest') {
         card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><div style="width:25px"></div></div><div class="day-body"><div class="rest-content">\u2b24 Active Recovery</div></div>';
       } else {
+        const cfg = isJ3U() ? BUILDER_J3U[i] : BUILDER[i];
+        const allowedPrefixes = cfg ? cfg.map(sec => sec.title + '|') : [];
+        const planEntries = Object.entries(bData).filter(([k, v]) => !k.endsWith('-note') && v && v !== 'custom' && (!allowedPrefixes.length || allowedPrefixes.some(prefix => k.startsWith(prefix))));
+        const hasPlan = planEntries.length > 0;
         let body = '';
         if (day.strength && day.strength.length) {
           const isP = i === 2;
           body += '<div class="workout-block"><span class="block-tag ' + (isP ? 'tag-plyo' : 'tag-strength') + '">' + (isP ? 'Plyometrics' : 'Strength') + '</span><ul class="workout-list">' + day.strength.map(s => '<li>' + s + '</li>').join('') + '</ul></div>';
         }
         if (day.endurance) body += '<div class="workout-block"><span class="block-tag tag-endurance">Endurance</span><div class="endurance-badge">' + day.endurance.label + '</div></div>';
-        const cfg = BUILDER[i];
         if (cfg && !hasPlan) {
           const currentPhase = S.mode;
           const relevantSlots = cfg.filter(sec => { const p = sec.phase || 'both'; return (p === 'both' || p === currentPhase) && sec.defaultNote; });
@@ -1718,7 +1720,7 @@ function render() {
           }
         }
         if (hasPlan) {
-          const planned = Object.entries(bData).filter(([k, v]) => !k.endsWith('-note') && v && v !== 'custom').map(([, v]) => '<li>' + v + '</li>').join('');
+          const planned = planEntries.map(([, v]) => '<li>' + v + '</li>').join('');
           if (planned) body += '<div class="workout-block"><span class="block-tag tag-planned">Planned</span><ul class="workout-list">' + planned + '</ul></div>';
         }
         body += '<button class="open-builder-btn" onclick="openBuilder(' + i + ',event)">' + (hasPlan ? '\u270e Edit Workout Plan' : '+ Plan This Workout') + '</button>';
