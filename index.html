@@ -681,6 +681,7 @@ const PRESC = {
   LSD2:'LSD Level 2 \u00B7 60-min VT1 run w/ 2 surge sets OR 1.5\u20132.5 hr mixed terrain hike/VT1 jog',
   LSD1:'LSD Level 1 \u00B7 45-min VT1 run w/ 2 surge sets OR 30-min VT1 + 5-min race-pace finish OR 1\u20131.5 hr hike/jog',
   LSD_C1:'LSD Level 1 OR Cyc Endurance Level 1 \u00B7 choose based on weekly loading \u2014 easy, below 75% effort',
+  VIADA_WARMUP:'Wenning Warmup: 3\u20134 rounds \u00d7 15\u201325 reps \u00b7 Circuit \u2014 no rest between exercises \u00b7 60\u201390 s between rounds \u00b7 LIGHT weight only \u2014 warm and potentiate, do NOT fatigue \u00b7 Target weak points for the day',
   // ── J3U / WENNING ──────────────────────────────────
   J3U_WARMUP:'3\u20134 rounds \u00d7 15\u201325 reps \u00b7 Circuit \u2014 no rest between exercises \u00b7 60\u201390 s between rounds \u00b7 LIGHT weight only \u2014 warm the muscle, do NOT fatigue it \u00b7 Rotate exercise choice each week',
   J3U_MAIN:'Ramp to work weight: 3\u20134 sets @ RIR 4\u20135 \u00b7 Working sets: 3 \u00d7 8\u201312 reps @ RIR 2 \u00b7 Explosive concentric \u00b7 2\u20133 s eccentric \u00b7 Full ROM \u00b7 Rotate variation / implement weekly (Wenning principle)',
@@ -695,6 +696,9 @@ const PRESC = {
 // ═══════════════════════════════════════════════════
 const BUILDER = {
   0:[
+    {title:'Warmup \u2014 Posterior Shoulder / Rear Delt',exKey:'wenningWarmupUpper',slots:['Exercise 1'],defaultNote:PRESC.VIADA_WARMUP,phase:'both',badge:'WU 1'},
+    {title:'Warmup \u2014 Lats / Upper Back',exKey:'wenningWarmupUpper',slots:['Exercise 2'],defaultNote:PRESC.VIADA_WARMUP,phase:'both',badge:'WU 2'},
+    {title:'Warmup \u2014 Triceps / Shoulder Support',exKey:'wenningWarmupUpper',slots:['Exercise 3'],defaultNote:PRESC.VIADA_WARMUP,phase:'both',badge:'WU 3'},
     {title:'ME \u2014 Secondary Push Upper',exKey:'secondaryPushUpper',slots:['Exercise'],defaultNote:PRESC.ME,phase:'standard',badge:'1\u00D7 ME'},
     {title:'DE \u2014 Secondary Push Upper',exKey:'secondaryPushUpper',slots:['Exercise'],defaultNote:PRESC.DE,phase:'standard',badge:'1\u00D7 DE'},
     {title:'SKILL \u2014 Secondary Push Upper',exKey:'secondaryPushUpper',slots:['Exercise'],defaultNote:PRESC.SKILL,phase:'deload',badge:'1\u00D7 SKILL'},
@@ -707,6 +711,9 @@ const BUILDER = {
     {title:'(Alt Endurance) MLSS+ Cycling',exKey:'enduranceCycling',slots:['If cycling'],defaultNote:'Cyc AnA/VO2 equivalent to MLSS+ running effort \u00B7 use known FTP threshold',phase:'both',badge:'Alt'}
   ],
   1:[
+    {title:'Warmup \u2014 Hamstrings / Posterior Chain',exKey:'wenningWarmupLower',slots:['Exercise 1'],defaultNote:PRESC.VIADA_WARMUP,phase:'both',badge:'WU 1'},
+    {title:'Warmup \u2014 Glutes / Low Back',exKey:'wenningWarmupLower',slots:['Exercise 2'],defaultNote:PRESC.VIADA_WARMUP,phase:'both',badge:'WU 2'},
+    {title:'Warmup \u2014 Core / Abdominal',exKey:'wenningWarmupLower',slots:['Exercise 3'],defaultNote:PRESC.VIADA_WARMUP,phase:'both',badge:'WU 3'},
     {title:'ME \u2014 Secondary Hinge Lower',exKey:'secondaryHingeLower',slots:['Exercise'],defaultNote:PRESC.ME,phase:'standard',badge:'1\u00D7 ME'},
     {title:'DE \u2014 Secondary Hinge Lower',exKey:'secondaryHingeLower',slots:['Exercise'],defaultNote:PRESC.DE,phase:'deload',badge:'1\u00D7 DE'},
     {title:'HYP Superset A \u2014 Braced Hinge Lower',exKey:'bracedHingeLower',slots:['Exercise A'],defaultNote:PRESC.HYP_SS,phase:'standard',badge:'2\u00D7 HYP SS'},
@@ -725,6 +732,9 @@ const BUILDER = {
     {title:'(Alt Endurance) NT / VT1 Cycling',exKey:'enduranceCycling',slots:['If cycling'],defaultNote:'Cyc sweet spot equivalent to NT effort \u00B7 or easy spin for VT1 \u00B7 see Ch.9',phase:'both',badge:'Alt'}
   ],
   3:[
+    {title:'Warmup \u2014 Rear Delt / Rotator Cuff',exKey:'wenningWarmupUpper',slots:['Exercise 1'],defaultNote:PRESC.VIADA_WARMUP,phase:'both',badge:'WU 1'},
+    {title:'Warmup \u2014 Lats / Upper Back',exKey:'wenningWarmupUpper',slots:['Exercise 2'],defaultNote:PRESC.VIADA_WARMUP,phase:'both',badge:'WU 2'},
+    {title:'Warmup \u2014 Posterior Shoulder / Scapular Control',exKey:'wenningWarmupUpper',slots:['Exercise 3'],defaultNote:PRESC.VIADA_WARMUP,phase:'both',badge:'WU 3'},
     {title:'ME \u2014 Secondary Pull Upper',exKey:'secondaryPullUpper',slots:['Exercise'],defaultNote:PRESC.ME,phase:'standard',badge:'1\u00D7 ME'},
     {title:'DE \u2014 Secondary Pull Upper',exKey:'secondaryPullUpper',slots:['Exercise'],defaultNote:PRESC.DE,phase:'standard',badge:'1\u00D7 DE'},
     {title:'SKILL \u2014 Secondary Pull Upper',exKey:'secondaryPullUpper',slots:['Exercise'],defaultNote:PRESC.SKILL,phase:'deload',badge:'1\u00D7 SKILL'},
@@ -736,6 +746,9 @@ const BUILDER = {
     {title:'(Alt Endurance) Running Endurance',exKey:'enduranceRunning',slots:['If running'],defaultNote:'VT1 Lv1 running equivalent \u00B7 25\u201330 min at or below threshold',phase:'both',badge:'Alt'}
   ],
   4:[
+    {title:'Warmup \u2014 Hamstrings / Glutes',exKey:'wenningWarmupLower',slots:['Exercise 1'],defaultNote:PRESC.VIADA_WARMUP,phase:'both',badge:'WU 1'},
+    {title:'Warmup \u2014 Low Back / Posterior Chain',exKey:'wenningWarmupLower',slots:['Exercise 2'],defaultNote:PRESC.VIADA_WARMUP,phase:'both',badge:'WU 2'},
+    {title:'Warmup \u2014 Core / Abdominal',exKey:'wenningWarmupLower',slots:['Exercise 3'],defaultNote:PRESC.VIADA_WARMUP,phase:'both',badge:'WU 3'},
     {title:'ME \u2014 Secondary Push Lower',exKey:'secondaryPushLower',slots:['Exercise'],defaultNote:PRESC.ME,phase:'standard',badge:'1\u00D7 ME'},
     {title:'DE \u2014 Secondary Push Lower',exKey:'secondaryPushLower',slots:['Exercise'],defaultNote:PRESC.DE,phase:'deload',badge:'1\u00D7 DE'},
     {title:'HYP Superset A \u2014 Braced Hinge Lower',exKey:'bracedHingeLower',slots:['Exercise A'],defaultNote:PRESC.HYP_SS,phase:'standard',badge:'2\u00D7 HYP SS'},
@@ -889,20 +902,20 @@ const HUSBAND_J3U_DROPDOWN = [
 // ═══════════════════════════════════════════════════
 const program = {
   standard:[
-    {day:'Day 1',title:'Upper Body: Push',type:'both',strength:['1\u00D7 ME: Secondary push','1\u00D7 DE: Secondary push','1\u00D7 HYP: Braced push','2\u00D7 HYP: Focused push/pull arms superset','1\u00D7 HYP: Focused push'],endurance:{label:'MLSS+ (level 2)',tag:'MLSS+'}},
-    {day:'Day 2',title:'Lower Body: Hinge',type:'both',strength:['1\u00D7 ME: Secondary hinge','2\u00D7 HYP: Braced hinge / braced lower push superset','1\u00D7 HYP: Focused hamstring','1\u00D7 DE: Braced push (asymmetrical)'],endurance:{label:'Cyc AnA (level 1)',tag:'Cyc AnA'}},
+    {day:'Day 1',title:'Upper Body: Push',type:'both',strength:['Wenning Warmup: 3\u20134 rounds \u00d7 15\u201325 reps circuit (rear delt / lats / triceps)','1\u00D7 ME: Secondary push','1\u00D7 DE: Secondary push','1\u00D7 HYP: Braced push','2\u00D7 HYP: Focused push/pull arms superset','1\u00D7 HYP: Focused push'],endurance:{label:'MLSS+ (level 2)',tag:'MLSS+'}},
+    {day:'Day 2',title:'Lower Body: Hinge',type:'both',strength:['Wenning Warmup: 3\u20134 rounds \u00d7 15\u201325 reps circuit (hamstrings / low back / core)','1\u00D7 ME: Secondary hinge','2\u00D7 HYP: Braced hinge / braced lower push superset','1\u00D7 HYP: Focused hamstring','1\u00D7 DE: Braced push (asymmetrical)'],endurance:{label:'Cyc AnA (level 1)',tag:'Cyc AnA'}},
     {day:'Day 3',title:'Plyo Warm-Up',type:'both',strength:['Plyometric skill warm-up (1\u20133 skills; vary week to week)'],endurance:{label:'NT (level 2)',tag:'NT'}},
-    {day:'Day 4',title:'Upper Body: Pull',type:'both',strength:['1\u00D7 ME: Secondary pull','1\u00D7 DE: Secondary pull','1\u00D7 HYP: Braced pull','2\u00D7 HYP: Focused push/pull arms superset','1\u00D7 HYP: Focused pull'],endurance:{label:'Cyc endurance (level 1)',tag:'Cyc'}},
-    {day:'Day 5',title:'Lower Body: Push',type:'strength',strength:['1\u00D7 ME: Secondary push','2\u00D7 HYP: Braced hinge / braced lower push superset','1\u00D7 HYP: Focused quadriceps','1\u00D7 SKILL: Braced push (asymmetrical)'],endurance:null},
+    {day:'Day 4',title:'Upper Body: Pull',type:'both',strength:['Wenning Warmup: 3\u20134 rounds \u00d7 15\u201325 reps circuit (rear delt / lats / triceps)','1\u00D7 ME: Secondary pull','1\u00D7 DE: Secondary pull','1\u00D7 HYP: Braced pull','2\u00D7 HYP: Focused push/pull arms superset','1\u00D7 HYP: Focused pull'],endurance:{label:'Cyc endurance (level 1)',tag:'Cyc'}},
+    {day:'Day 5',title:'Lower Body: Push',type:'strength',strength:['Wenning Warmup: 3\u20134 rounds \u00d7 15\u201325 reps circuit (hamstrings / low back / core)','1\u00D7 ME: Secondary push','2\u00D7 HYP: Braced hinge / braced lower push superset','1\u00D7 HYP: Focused quadriceps','1\u00D7 SKILL: Braced push (asymmetrical)'],endurance:null},
     {day:'Day 6',title:'Long Slow Distance',type:'endurance',strength:[],endurance:{label:'LSD (level 2)',tag:'LSD'}},
     {day:'Day 7',title:'Rest',type:'rest',strength:[],endurance:null}
   ],
   deload:[
-    {day:'Day 1',title:'Upper Body: Push',type:'both',strength:['1\u00D7 SKILL: Secondary push','1\u00D7 HYP: Braced push','2\u00D7 HYP: Focused push/pull arms superset','1\u00D7 HYP: Focused push'],endurance:{label:'MLSS+ (level 1)',tag:'MLSS+'}},
-    {day:'Day 2',title:'Lower Body: Hinge',type:'strength',strength:['1\u00D7 DE: Secondary hinge','1\u00D7 HYP: Focused hamstring','1\u00D7 DE: Braced push (asymmetrical)'],endurance:null},
+    {day:'Day 1',title:'Upper Body: Push',type:'both',strength:['Wenning Warmup: 3 rounds \u00d7 15\u201320 reps circuit (rear delt / lats / triceps)','1\u00D7 SKILL: Secondary push','1\u00D7 HYP: Braced push','2\u00D7 HYP: Focused push/pull arms superset','1\u00D7 HYP: Focused push'],endurance:{label:'MLSS+ (level 1)',tag:'MLSS+'}},
+    {day:'Day 2',title:'Lower Body: Hinge',type:'strength',strength:['Wenning Warmup: 3 rounds \u00d7 15\u201320 reps circuit (hamstrings / low back / core)','1\u00D7 DE: Secondary hinge','1\u00D7 HYP: Focused hamstring','1\u00D7 DE: Braced push (asymmetrical)'],endurance:null},
     {day:'Day 3',title:'Plyo Warm-Up',type:'both',strength:['Plyometric skill warm-up (1\u20133 skills)'],endurance:{label:'VT1 (level 1)',tag:'VT1'}},
-    {day:'Day 4',title:'Upper Body: Pull',type:'both',strength:['1\u00D7 SKILL: Secondary pull','1\u00D7 HYP: Braced pull','2\u00D7 HYP: Focused push/pull arms superset','1\u00D7 HYP: Focused pull'],endurance:{label:'Cyc endurance (level 1)',tag:'Cyc'}},
-    {day:'Day 5',title:'Lower Body: Push',type:'strength',strength:['1\u00D7 DE: Secondary push','1\u00D7 HYP: Focused quadriceps','1\u00D7 SKILL: Braced push (asymmetrical)'],endurance:null},
+    {day:'Day 4',title:'Upper Body: Pull',type:'both',strength:['Wenning Warmup: 3 rounds \u00d7 15\u201320 reps circuit (rear delt / lats / triceps)','1\u00D7 SKILL: Secondary pull','1\u00D7 HYP: Braced pull','2\u00D7 HYP: Focused push/pull arms superset','1\u00D7 HYP: Focused pull'],endurance:{label:'Cyc endurance (level 1)',tag:'Cyc'}},
+    {day:'Day 5',title:'Lower Body: Push',type:'strength',strength:['Wenning Warmup: 3 rounds \u00d7 15\u201320 reps circuit (hamstrings / low back / core)','1\u00D7 DE: Secondary push','1\u00D7 HYP: Focused quadriceps','1\u00D7 SKILL: Braced push (asymmetrical)'],endurance:null},
     {day:'Day 6',title:'LSD / Cyc Endurance',type:'endurance',strength:[],endurance:{label:'LSD (level 1) or Cyc endurance (level 1)',tag:'LSD/Cyc'}},
     {day:'Day 7',title:'Rest',type:'rest',strength:[],endurance:null}
   ]
@@ -1521,7 +1534,7 @@ function openHusbandBuilder(i, d, key, saved, body) {
   if (!cfg) { body.innerHTML = '<p style="color:var(--text-muted);font-size:.8rem;padding:.5rem">Rest day \u2014 no exercises to plan.</p>'; document.getElementById('builderModal').classList.add('open'); return; }
   var headerNote = isJ3U()
     ? '<div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.9rem;padding:.5rem .7rem;background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.15);border-radius:5px;line-height:1.6"><strong style="color:var(--gold)">J3U Bodybuilding + Wenning Warmup.</strong> WU slots = Wenning warmup circuit (3\u20134 rounds \u00d7 15\u201325 reps, light). MAIN = J3U progressive compound. ACC / FINISH = J3U accessory work. Rotate exercises weekly (Wenning variation principle).</div>'
-    : '<div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.9rem;padding:.5rem .7rem;background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.15);border-radius:5px;line-height:1.6"><strong style="color:var(--gold)">Prescribed parameters auto-filled from Ch.9 & Ch.10 (Viada).</strong><br>Select your exercise from the dropdown, then adjust load/notes as needed. Greyed slots = other phase.</div>';
+    : '<div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.9rem;padding:.5rem .7rem;background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.15);border-radius:5px;line-height:1.6"><strong style="color:var(--gold)">Prescribed parameters auto-filled from Ch.9 & Ch.10 (Viada).</strong> WU slots now use Wenning warmup circuits (3\u20134 rounds \u00d7 15\u201325 reps, light).<br>Select your exercise from the dropdown, then adjust load/notes as needed. Greyed slots = other phase.</div>';
   var html = headerNote;
   cfg.forEach(function(sec) {
     var secPhase = sec.phase || 'both';
