@@ -376,10 +376,11 @@
         <span id="weekLabel">WEEK 1</span>
         <button onclick="changeWeek(1)">&rsaquo;</button>
       </div>
-      <div class="mode-toggle program-toggle" id="programToggle" style="display:none" title="Switch between Viada hybrid program and J3U bodybuilding + Wenning warmup">
+      <div class="mode-toggle program-toggle" id="programToggle" style="display:none" title="Switch between Viada hybrid, J3U bodybuilding, and Untamed Run & Lift">
         <span class="program-toggle-label">Program:</span>
         <button id="btnViada" onclick="setHusbandProgram('viada')">Viada</button>
         <button id="btnJ3U" onclick="setHusbandProgram('j3u')">J3U / Wenning</button>
+        <button id="btnUntamed" onclick="setHusbandProgram('untamed')">Untamed Run & Lift</button>
       </div>
       <div class="mode-toggle" id="modeToggle">
         <button class="active" id="btnStandard" onclick="setMode('standard')">Standard</button>
@@ -699,7 +700,25 @@ const EX = {
   j3uAccQuad:{label:'J3U Accessory \u2014 Quad Isolation',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'3 sets \u00d7 12\u201315 reps \u00b7 RIR 1 \u00b7 Full ROM \u00b7 Progress: add reps to top of range, then add 5% weight',list:['Leg extension (machine)','Leg press','Hack squat (machine)','Walking lunges','Bulgarian split squat','Step-ups','Single-leg press','Leg press (single leg)']},
   j3uTricep:{label:'J3U Accessory \u2014 Triceps',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'3 sets \u00d7 12\u201315 reps \u00b7 RIR 1 \u00b7 Full ROM \u00b7 Progress: add reps to top of range, then add 5% weight',list:['Tricep rope pushdown (cable)','Tricep bar pushdown (cable)','Skull crushers (EZ bar)','Overhead tricep extension (rope cable)','Overhead dumbbell tricep extension','Dips (weighted or bodyweight)','JM press','Behind-the-neck tricep ext. (DB)']},
   j3uCalf:{label:'J3U Accessory \u2014 Calves',tag:'ACCESSORY',color:'var(--silver)',rep_guide:'3 sets \u00d7 12\u201315 reps \u00b7 Full stretch at bottom, squeeze at top \u00b7 2 s pause at peak contraction',list:['Seated calf raise (machine)','Standing calf raise (barbell or machine)','Leg press calf raise','Single-leg calf raise (bodyweight)']},
-  j3uBicep:{label:'J3U Accessory \u2014 Biceps (Optional Finisher)',tag:'ACCESSORY',color:'var(--silver)',rep_guide:'2\u20133 sets \u00d7 10\u201315 reps \u00b7 RIR 1 \u00b7 Optional finisher at end of Back+Delt day',list:['Barbell curl','Dumbbell curl (alternating)','Hammer curl','Incline dumbbell curl','Cable curl (rope)','Cable curl (bar)','Preacher curl']}
+  j3uBicep:{label:'J3U Accessory \u2014 Biceps (Optional Finisher)',tag:'ACCESSORY',color:'var(--silver)',rep_guide:'2\u20133 sets \u00d7 10\u201315 reps \u00b7 RIR 1 \u00b7 Optional finisher at end of Back+Delt day',list:['Barbell curl','Dumbbell curl (alternating)','Hammer curl','Incline dumbbell curl','Cable curl (rope)','Cable curl (bar)','Preacher curl']},
+  // ── UNTAMED RUN & LIFT ───────────────────────────
+  untamedBench:{label:'Untamed \u2014 Bench Press',tag:'MAIN',color:'var(--cyan)',rep_guide:'RPE-based progression. Weeks 1\u20134: 6@RPE6, 6@RPE7, 6@RPE8x3. Weeks 5\u20138: 5@RPE7, 5@RPE8x2, -10%x7\u201310. Weeks 9\u201312: 1@RPE8\u20139, 3\u20135@RPE8\u20139, 10\u201316 total reps.',list:['Bench press (touch and go)','Bench press (paused)','Flat bench press','Incline bench press']},
+  untamedRows:{label:'Untamed \u2014 Chest Supported Rows',tag:'MAIN',color:'var(--cyan)',rep_guide:'8\u201312 reps @ RPE 8\u20139 x 3 sets. Double progression: hit top of range, then add weight.',list:['Dumbbell chest supported row','Seal row','Machine row','Cable row','Barbell row']},
+  untamedTricep:{label:'Untamed \u2014 Tricep Extensions',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'10\u201312 reps @ RPE 8\u201310 x 3 sets (Weeks 1\u20134). Reach behind head. EZ or straight bar, seated or prone.',list:['Tricep extension (EZ bar)','Tricep extension (straight bar)','Seated tricep extension','Prone tricep extension']},
+  untamedOHP:{label:'Untamed \u2014 Overhead Press',tag:'MAIN',color:'var(--cyan)',rep_guide:'RPE-based. Weeks 1\u20134: 6@RPE8x2\u20133, -10%x8\u201310. Weeks 5\u20138: 5@RPE8x3, -10%x7\u20139. Weeks 9\u201312: 4@RPE8x3, 1\u20133@RPE8x2.',list:['Overhead press (barbell)','Overhead press (dumbbell)','Seated press','Standing press']},
+  untamedPullup:{label:'Untamed \u2014 Pull-ups / Lat Pulldowns',tag:'MAIN',color:'var(--cyan)',rep_guide:'6\u20138 reps @ RPE 8\u20139 x 3 sets (Weeks 1\u20134). Pronated, supinated, or neutral grip.',list:['Pull-up (pronated)','Pull-up (supinated)','Pull-up (neutral)','Lat pulldown (pronated)','Lat pulldown (supinated)','Lat pulldown (neutral)']},
+  untamedRearDelt:{label:'Untamed \u2014 Rear Delts',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'8\u201312 reps @ RPE 7\u20138 x 2\u20134 sets. Y-raises or cable rear delt fly.',list:['Y-raises','Cable rear delt fly','Dumbbell rear delt fly']},
+  untamedCurl:{label:'Untamed \u2014 Curls',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'8\u201312 reps @ RPE 9\u201310 x 3 sets. Barbell, DB, EZ bar, cable, or machine.',list:['Barbell curl','Dumbbell curl','EZ bar curl','Cable curl','Machine curl']},
+  untamedSquat:{label:'Untamed \u2014 Squat',tag:'MAIN',color:'var(--cyan)',rep_guide:'RPE-based. Weeks 1\u20134: 5@RPE6, 5@RPE7, 5@RPE8x2. Weeks 5\u20138: 4@RPE6, 4@RPE8x3. Weeks 9\u201312: 1\u20133@RPE8, 3\u20134@RPE7\u20138, 10\u201312 total.',list:['High bar squat','Low bar squat','Front squat','Paused squat','Box squat','Pin squat']},
+  untamedDeadlift:{label:'Untamed \u2014 Deadlift',tag:'MAIN',color:'var(--cyan)',rep_guide:'RPE-based. Weeks 1\u20134: 8@RPE6\u20137, 6@RPE6\u20137, 4@RPE7\u20138x2\u20133. Weeks 5\u20138: 5@RPE7\u20138, 3@RPE7\u20138x4. Weeks 9\u201312: 5@RPE6\u20137, 4@RPE6\u20137, 1\u20133@RPE8x3.',list:['Conventional deadlift','Sumo deadlift','RDL','Deficit deadlift','Block pull','Paused deadlift']},
+  untamedNordic:{label:'Untamed \u2014 Nordic Hamstring Curls',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'4\u20136 reps @ RPE 8\u20139 x 2\u20133 sets. Machine alternative: 8\u201312 reps @ RPE 8\u201310 x 3 sets.',list:['Nordic hamstring curl','Hamstring curl (machine)','Hamstring curl (prone)','Hamstring curl (seated)']},
+  untamedLunge:{label:'Untamed \u2014 Stationary Reverse Lunge',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'6 reps/leg @ RPE 7 x 2\u20133 sets (Weeks 1\u20134). Barbell or safety squat bar.',list:['Reverse lunge (barbell)','Reverse lunge (safety squat bar)','Reverse lunge (dumbbell)']},
+  untamedJumpsHeight:{label:'Untamed \u2014 Jumps for Height',tag:'PLYO',color:'#f39c12',rep_guide:'1\u20136 reps per set. 3\u20135 warm-up sets, 3\u20135 working sets. Box jumps, hurdle jumps, tuck jumps, approach jumps.',list:['Box jumps','Hurdle jumps','Tuck jumps','Approach jumps']},
+  untamedJumpsDist:{label:'Untamed \u2014 Jumps for Distance',tag:'PLYO',color:'#f39c12',rep_guide:'1\u20136 rep sets. 3\u20135 warm-up sets, 3\u20135 working sets. Broad jumps, seated broad jump, single leg bounds, triple jump.',list:['Broad jumps','Seated broad jump','Single leg bounds','Triple jump']},
+  untamedCopenhagen:{label:'Untamed \u2014 Copenhagen Plank',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'30 secs/leg x 2 sets. Can also perform 10\u201312 reps on adductor or cable machine.',list:['Copenhagen plank','Adductor machine','Cable adductor']},
+  untamedSitup:{label:'Untamed \u2014 Decline Sit-Ups',tag:'ACCESSORY',color:'var(--green-light)',rep_guide:'6\u201310 reps @ RPE 8\u201310 x 3 sets. Straight leg sit-ups.',list:['Decline sit-up','Straight leg sit-up']},
+  untamedAMRAP:{label:'Untamed \u2014 Close Grip Bench / Dips / Push-Ups',tag:'MAIN',color:'var(--cyan)',rep_guide:'8 min AMRAP. Weight for 25\u201330 total reps (Weeks 1\u20134), 20\u201325 (5\u20138), 15\u201320 (9\u201312). 3\u20136 reps/set. Start 75\u201380% 1RM.',list:['Close grip bench press','Dips','Weighted push-ups']},
+  untamedUnilateralRow:{label:'Untamed \u2014 Unilateral Row',tag:'MAIN',color:'var(--cyan)',rep_guide:'12\u201315 reps/arm @ RPE 9\u201310 x 2\u20133 sets (Weeks 1\u20134). DB row, machine row, landmine row, meadows row.',list:['Dumbbell row','Machine row','Landmine row','Meadows row']}
 };
 
 // ═══════════════════════════════════════════════════
@@ -727,7 +746,11 @@ const PRESC = {
   J3U_ACC:'3 sets \u00d7 8\u201312 reps \u00b7 RIR 2 \u00b7 2\u20133 s eccentric \u00b7 Compound rest: ~2 min \u00b7 Progress: add reps until top of range, then add 5% weight',
   J3U_ACC_ISO:'3 sets \u00d7 15\u201320 reps \u00b7 RIR 1 \u00b7 Full ROM \u00b7 Isolation rest: ~1 min \u00b7 Progress: add reps until top of range, then add 5% weight',
   J3U_FINISHER:'3 sets \u00d7 12\u201315 reps \u00b7 RIR 0\u20131 \u00b7 Full ROM \u00b7 1 min rest',
-  J3U_DAILY:'Every morning fasted: 10 sets of abdominal vacuum holds \u2014 blow out all air, draw abdomen in tight, hold as long as possible, rest 30 s \u00b7 Wear a belt on all axial loading hard sets'
+  J3U_DAILY:'Every morning fasted: 10 sets of abdominal vacuum holds \u2014 blow out all air, draw abdomen in tight, hold as long as possible, rest 30 s \u00b7 Wear a belt on all axial loading hard sets',
+  // ── UNTAMED RUN & LIFT ───────────────────────────
+  UNTAMED_MAIN:'RPE-based progression. Use percentages as guide; follow RPE. Double progression: hit top of rep range for all sets, then add weight next week.',
+  UNTAMED_AMRAP:'8 min AMRAP. Select weight for target total reps. All sets 3\u20136 reps. Rest as needed. If &gt;30 reps, go heavier; if &lt;25, go lighter or adjust approach.',
+  UNTAMED_JUMPS:'1\u20136 reps per set \u00b7 3\u20135 warm-up sets \u00b7 3\u20135 working sets \u00b7 Perfect form only, ample rest between sets'
 };
 
 // ═══════════════════════════════════════════════════
@@ -856,6 +879,55 @@ const BUILDER_J3U = {
 };
 
 // ═══════════════════════════════════════════════════
+//  UNTAMED RUN & LIFT BUILDER CONFIG
+// ═══════════════════════════════════════════════════
+const BUILDER_UNTAMED = {
+  0:[
+    {title:'Wenning Warmup \u2014 Posterior Shoulder / Rear Delt',exKey:'wenningWarmupUpper',slots:['Exercise 1'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 1'},
+    {title:'Wenning Warmup \u2014 Lats / Upper Back',exKey:'wenningWarmupUpper',slots:['Exercise 2'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 2'},
+    {title:'Wenning Warmup \u2014 Triceps',exKey:'wenningWarmupUpper',slots:['Exercise 3'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 3'},
+    {title:'Bench Press',exKey:'untamedBench',slots:['Exercise'],defaultNote:PRESC.UNTAMED_MAIN,phase:'both',badge:'MAIN'},
+    {title:'Chest Supported Rows',exKey:'untamedRows',slots:['Exercise'],defaultNote:PRESC.UNTAMED_MAIN,phase:'both',badge:'MAIN'},
+    {title:'Tricep Extensions',exKey:'untamedTricep',slots:['Exercise'],defaultNote:PRESC.UNTAMED_MAIN,phase:'both',badge:'ACC'}
+  ],
+  1:[
+    {title:'Wenning Warmup \u2014 Posterior Chain Ex. 1',exKey:'wenningWarmupLower',slots:['Exercise 1'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 1'},
+    {title:'Wenning Warmup \u2014 Posterior Chain Ex. 2',exKey:'wenningWarmupLower',slots:['Exercise 2'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 2'},
+    {title:'Wenning Warmup \u2014 Core / Abdominal',exKey:'wenningWarmupLower',slots:['Exercise 3'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 3'},
+    {title:'Jumps for Height',exKey:'untamedJumpsHeight',slots:['Exercise'],defaultNote:PRESC.UNTAMED_JUMPS,phase:'both',badge:'PLYO'},
+    {title:'Squat',exKey:'untamedSquat',slots:['Exercise'],defaultNote:PRESC.UNTAMED_MAIN,phase:'both',badge:'MAIN'},
+    {title:'Nordic Hamstring Curls',exKey:'untamedNordic',slots:['Exercise'],defaultNote:PRESC.UNTAMED_MAIN,phase:'both',badge:'ACC'},
+    {title:'Copenhagen Plank',exKey:'untamedCopenhagen',slots:['Exercise'],defaultNote:'30 secs/leg x 2 sets',phase:'both',badge:'ACC'}
+  ],
+  2:[
+    {title:'Wenning Warmup \u2014 Rear Delt / Rotator Cuff',exKey:'wenningWarmupUpper',slots:['Exercise 1'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 1'},
+    {title:'Wenning Warmup \u2014 Lats / Upper Back',exKey:'wenningWarmupUpper',slots:['Exercise 2'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 2'},
+    {title:'Wenning Warmup \u2014 Posterior Shoulder',exKey:'wenningWarmupUpper',slots:['Exercise 3'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 3'},
+    {title:'Overhead Press',exKey:'untamedOHP',slots:['Exercise'],defaultNote:PRESC.UNTAMED_MAIN,phase:'both',badge:'MAIN'},
+    {title:'Pull-ups / Lat Pulldowns',exKey:'untamedPullup',slots:['Exercise'],defaultNote:PRESC.UNTAMED_MAIN,phase:'both',badge:'MAIN'},
+    {title:'Rear Delts',exKey:'untamedRearDelt',slots:['Exercise'],defaultNote:PRESC.UNTAMED_MAIN,phase:'both',badge:'ACC'},
+    {title:'Curls',exKey:'untamedCurl',slots:['Exercise'],defaultNote:PRESC.UNTAMED_MAIN,phase:'both',badge:'ACC'}
+  ],
+  3:[
+    {title:'Wenning Warmup \u2014 Hamstrings / Glutes',exKey:'wenningWarmupLower',slots:['Exercise 1'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 1'},
+    {title:'Wenning Warmup \u2014 Low Back / Posterior Chain',exKey:'wenningWarmupLower',slots:['Exercise 2'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 2'},
+    {title:'Wenning Warmup \u2014 Core / Abdominal',exKey:'wenningWarmupLower',slots:['Exercise 3'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 3'},
+    {title:'Jumps for Distance',exKey:'untamedJumpsDist',slots:['Exercise'],defaultNote:PRESC.UNTAMED_JUMPS,phase:'both',badge:'PLYO'},
+    {title:'Deadlift',exKey:'untamedDeadlift',slots:['Exercise'],defaultNote:PRESC.UNTAMED_MAIN,phase:'both',badge:'MAIN'},
+    {title:'Stationary Reverse Lunge',exKey:'untamedLunge',slots:['Exercise'],defaultNote:PRESC.UNTAMED_MAIN,phase:'both',badge:'ACC'},
+    {title:'Decline Sit-Ups',exKey:'untamedSitup',slots:['Exercise'],defaultNote:PRESC.UNTAMED_MAIN,phase:'both',badge:'ACC'}
+  ],
+  4:[
+    {title:'Wenning Warmup \u2014 Posterior Shoulder / Rear Delt',exKey:'wenningWarmupUpper',slots:['Exercise 1'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 1'},
+    {title:'Wenning Warmup \u2014 Lats / Upper Back',exKey:'wenningWarmupUpper',slots:['Exercise 2'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 2'},
+    {title:'Wenning Warmup \u2014 Triceps',exKey:'wenningWarmupUpper',slots:['Exercise 3'],defaultNote:PRESC.J3U_WARMUP,phase:'both',badge:'WU 3'},
+    {title:'Close Grip Bench / Dips / Push-Ups (AMRAP)',exKey:'untamedAMRAP',slots:['Exercise'],defaultNote:PRESC.UNTAMED_AMRAP,phase:'both',badge:'AMRAP'},
+    {title:'Unilateral Row',exKey:'untamedUnilateralRow',slots:['Exercise'],defaultNote:PRESC.UNTAMED_MAIN,phase:'both',badge:'MAIN'}
+  ]
+  // Day 5 = Run (no builder), Day 6 = Rest (no builder)
+};
+
+// ═══════════════════════════════════════════════════
 //  J3U / WENNING PROGRAM DATA
 // ═══════════════════════════════════════════════════
 const J3U_WENNING = {
@@ -936,6 +1008,58 @@ const HUSBAND_J3U_DROPDOWN = [
   'Day 4 \u2014 Legs B (Quad Dominant)',
   'Day 5 \u2014 Back + Delts',
   'Day 6 \u2014 Rest',
+  'Day 7 \u2014 Rest'
+];
+
+// ═══════════════════════════════════════════════════
+//  UNTAMED RUN & LIFT PROGRAM DATA (5-day variant)
+// ═══════════════════════════════════════════════════
+const UNTAMED_RUN_LIFT = {
+  standard:[
+    {day:'Day 1',title:'Upper \u2014 Bench / Rows / Triceps',type:'strength',strength:[
+      'Wenning Warmup: 3\u20134 rounds \u00d7 15\u201325 reps circuit (rear delt / lats / triceps)',
+      'Bench Press: 6 reps @ RPE 6, 6 @ RPE 7, 6 @ RPE 8 x 3 sets (touch and go, paused, flat, or incline)',
+      'Chest Supported Rows: 8\u201312 reps @ RPE 8\u20139 x 3 sets (DBs, seal row, machine/cable row)',
+      'Tricep Extensions: 10\u201312 reps @ RPE 8\u201310 x 3 sets (EZ or straight bar, seated or prone)'
+    ],endurance:null},
+    {day:'Day 2',title:'Lower \u2014 Jumps / Squat / Nordic',type:'strength',strength:[
+      'Wenning Warmup: 3\u20134 rounds \u00d7 15\u201325 reps circuit (posterior chain / low back / core)',
+      'Jumps for height: 1\u20136 reps per set, 3\u20135 warm-up sets, 3\u20135 working sets (box jumps, hurdle jumps, tuck jumps, etc.)',
+      'Squat: 5 reps @ RPE 6, 5 @ RPE 7, 5 @ RPE 8 x 2 sets (high bar, low bar, front squat, paused, box, pin squat)',
+      'Nordic Hamstring Curls: 4\u20136 reps @ RPE 8\u20139 x 2\u20133 sets (or machine: 8\u201312 @ RPE 8\u201310 x 3)',
+      'Copenhagen Plank: 30 secs/leg x 2 sets (or 10\u201312 reps on adductor/cable machine)'
+    ],endurance:null},
+    {day:'Day 3',title:'Upper \u2014 OHP / Pull-ups / Rear Delts',type:'strength',strength:[
+      'Wenning Warmup: 3\u20134 rounds \u00d7 15\u201325 reps circuit (rear delt / lats / upper back)',
+      'Overhead Press: 6 reps @ RPE 8 x 2\u20133 sets, -10% x 8\u201310 reps',
+      'Pull-ups / Lat Pulldowns: 6\u20138 reps @ RPE 8\u20139 x 3 sets (pronated, supinated, or neutral)',
+      'Rear Delts: 8\u201312 reps @ RPE 7\u20138 x 2\u20134 sets (Y-raises or cable rear delt fly)',
+      'Curls: 8\u201312 reps @ RPE 9\u201310 x 3 sets (barbell, DB, EZ bar, cable, or machine)'
+    ],endurance:null},
+    {day:'Day 4',title:'Lower \u2014 Jumps / Deadlift / Lunge',type:'strength',strength:[
+      'Wenning Warmup: 3\u20134 rounds \u00d7 15\u201325 reps circuit (hamstrings / low back / core)',
+      'Jumps for distance: 1\u20136 rep sets, 3\u20135 warm-up sets, 3\u20135 working sets (broad jumps, seated broad jump, single leg bounds, etc.)',
+      'Deadlift: 8 reps @ RPE 6\u20137, 6 @ RPE 6\u20137, 4 @ RPE 7\u20138 x 2\u20133 sets (floor, RDL, deficit, block pull, conventional, sumo)',
+      'Stationary Reverse Lunge: 6 reps/leg @ RPE 7 x 2\u20133 sets (barbell or safety squat bar)',
+      'Decline Sit-Ups: 6\u201310 reps @ RPE 8\u201310 x 3 sets (straight leg sit-ups)'
+    ],endurance:null},
+    {day:'Day 5',title:'Upper \u2014 AMRAP / Unilateral Row',type:'strength',strength:[
+      'Wenning Warmup: 3\u20134 rounds \u00d7 15\u201325 reps circuit (rear delt / lats / triceps)',
+      'Close Grip Bench / Dips / Weighted Push-Ups: 8 min AMRAP, 25\u201330 total reps target, 3\u20136 reps/set (start 75\u201380% 1RM)',
+      'Unilateral Row: 12\u201315 reps/arm @ RPE 9\u201310 x 2\u20133 sets (DB row, machine row, landmine row, meadows row)'
+    ],endurance:null},
+    {day:'Day 6',title:'Running',type:'endurance',strength:[],endurance:{label:'3 runs/week: Intervals, Steady, Incline',tag:'Run'}},
+    {day:'Day 7',title:'Rest',type:'rest',strength:[],endurance:null}
+  ]
+};
+
+const HUSBAND_UNTAMED_DROPDOWN = [
+  'Day 1 \u2014 Upper (Bench / Rows / Triceps)',
+  'Day 2 \u2014 Lower (Jumps / Squat / Nordic)',
+  'Day 3 \u2014 Upper (OHP / Pull-ups / Rear Delts)',
+  'Day 4 \u2014 Lower (Jumps / Deadlift / Lunge)',
+  'Day 5 \u2014 Upper (AMRAP / Unilateral Row)',
+  'Day 6 \u2014 Running',
   'Day 7 \u2014 Rest'
 ];
 
@@ -1198,7 +1322,8 @@ const HUSBAND_DROPDOWN = [
 
 function isWife() { return currentUser === 'user2'; }
 function isJ3U() { return !isWife() && S.husbandProgram === 'j3u'; }
-function getProgram() { return isWife() ? wifeProgram : (isJ3U() ? J3U_WENNING : program); }
+function isUntamed() { return !isWife() && S.husbandProgram === 'untamed'; }
+function getProgram() { return isWife() ? wifeProgram : (isJ3U() ? J3U_WENNING : (isUntamed() ? UNTAMED_RUN_LIFT : program)); }
 function getTotalWeeks() { return isWife() ? 10 : 12; }
 
 function setHusbandProgram(p) {
@@ -1206,8 +1331,9 @@ function setHusbandProgram(p) {
   S.husbandProgram = p;
   document.getElementById('btnViada').classList.toggle('active', p === 'viada');
   document.getElementById('btnJ3U').classList.toggle('active', p === 'j3u');
+  document.getElementById('btnUntamed').classList.toggle('active', p === 'untamed');
   var mt = document.getElementById('modeToggle');
-  mt.style.display = (p === 'j3u') ? 'none' : 'flex';
+  mt.style.display = (p === 'j3u' || p === 'untamed') ? 'none' : 'flex';
   save();
   updateDropdown();
   updateHeaderSubtitle();
@@ -1222,9 +1348,25 @@ function getPhaseForWeek(wk) {
   return WIFE_PHASES[4];
 }
 
+function getUntamedPhaseForWeek(wk) {
+  if (wk <= 4) return { name:'Weeks 1\u20134', weeks:'1\u20134' };
+  if (wk <= 8) return { name:'Weeks 5\u20138', weeks:'5\u20138' };
+  return { name:'Weeks 9\u201312', weeks:'9\u201312' };
+}
+
+function getUntamedRunProtocols(wk) {
+  if (wk <= 4) {
+    return { intervals:'5 min warm-up \u2014 5 min jog / 1 min walk, 4 min jog / 1 min walk, 3 min jog / 1 min walk, 2 min jog / 1 min walk, 1 min jog / 1 min walk', steady:'Jog or Stair Master 20\u201325 min', incline:'0% x 3 min, 5% x 3 min, 10% x 3 min = 1 round. 3\u20134 rounds.' };
+  }
+  if (wk <= 8) {
+    return { intervals:'5 min warm-up \u2014 2 min fast / 1 min walk, 2 min fast / 2 min walk \u00d7 3 rounds', steady:'Jog or Stair Master 20\u201325 min', incline:'0% x 3 min warm-up. 5% x 3 min, 10% x 2 min, 15% x 1 min. 5% x 2 min, 10% x 2 min, 15% x 2 min. 5% x 1 min, 10% x 2 min, 15% x 3 min.' };
+  }
+  return { intervals:'5 min warm-up \u2014 3 min fast / 1:30 walk, 2 min fast / 1 min walk, 1 min fast / 30 sec walk \u00d7 3 rounds', steady:'Jog or Stair Master 20\u201325 min', incline:'0% x 3 min warm-up. 7.5% x 4 min, 0% x 2 min. 15% x 4 min, 0% x 2 min. 7.5% x 4 min, 0% x 2 min. 15% x 4 min, 0% x 2 min.' };
+}
+
 function updateDropdown() {
   var sel = document.getElementById('logDay');
-  var opts = isWife() ? WIFE_DROPDOWN : (isJ3U() ? HUSBAND_J3U_DROPDOWN : HUSBAND_DROPDOWN);
+  var opts = isWife() ? WIFE_DROPDOWN : (isJ3U() ? HUSBAND_J3U_DROPDOWN : (isUntamed() ? HUSBAND_UNTAMED_DROPDOWN : HUSBAND_DROPDOWN));
   sel.innerHTML = '<option value="">Select Session</option>';
   opts.forEach(function(o) { sel.innerHTML += '<option>' + o + '</option>'; });
 }
@@ -1296,6 +1438,32 @@ function updateNotesTab() {
       '<li>During rest: crunch down on abs and hold the contraction with controlled breathing.</li>' +
       '<li>Wear a belt on all axial loading hard sets in the gym.</li>' +
       '</ul></div>';
+  } else if (isUntamed()) {
+    var uPhase = getUntamedPhaseForWeek(S.week);
+    var runP = getUntamedRunProtocols(S.week);
+    grid.innerHTML = '<div class="notes-card"><h3>Untamed Run & Lift \u2014 Overview</h3><ul>' +
+      '<li><strong style="color:var(--cyan)">Purpose:</strong> Balance running and lifting. Not a specialized strength or running program \u2014 hybrid approach.</li>' +
+      '<li><strong style="color:var(--cyan)">Schedule:</strong> 5 lifting days (Upper-Lower-Upper-Lower-Upper) + 3 runs/week. Runs: Intervals, Steady, Incline Treadmill.</li>' +
+      '<li><strong style="color:var(--gold)">Scheduling:</strong> Your schedule, energy, recovery, and preference reign. Run on non-lift days, upper days, or lower days. Running after lifting is suggested (pre-warmed, lifting acts as pre-fatigue for cardio benefits).</li>' +
+      '<li><strong style="color:var(--gold)">Progression:</strong> Sustainable pace. Increase intensity week to week. Don\'t dig a hole early. Let progress come to you.</li>' +
+      '</ul></div>' +
+      '<div class="notes-card"><h3>Wenning Warmup</h3><ul>' +
+      '<li>Every session opens with a <strong style="color:#f39c12">Wenning warmup circuit</strong> \u2014 3 exercises, 3\u20134 rounds, 15\u201325 reps, no rest between exercises, 60\u201390 s between rounds.</li>' +
+      '<li><strong>Upper days:</strong> Target rear delt / rotator cuff, lats, triceps. <strong>Lower days:</strong> Target hamstrings, low back, core.</li>' +
+      '<li>Use light weight only \u2014 warm the muscle, do NOT fatigue it. Rotate at least one exercise choice each week (Wenning variation principle).</li>' +
+      '</ul></div>' +
+      '<div class="notes-card"><h3>RPE & Double Progression</h3><ul>' +
+      '<li><strong style="color:var(--cyan)">RPE:</strong> Use RPE to guide effort. Percentages (e.g. 74% 1RM) are a guide for selecting weight \u2014 don\'t blindly follow if it doesn\'t match prescribed RPE.</li>' +
+      '<li><strong style="color:var(--cyan)">Double progression:</strong> Rep range 8\u201312 x 3 sets \u2192 hit 12 for all 3 sets with same weight \u2192 add weight next week. Example: Wk1 100x12,12,12 \u2192 Wk2 105x12,10,9 \u2192 build back to 12,12,12 \u2192 add weight again.</li>' +
+      '</ul></div>' +
+      '<div class="notes-card"><h3>Running Protocols \u2014 ' + uPhase.name + '</h3><ul>' +
+      '<li><strong>Workout 1 (Intervals):</strong> ' + runP.intervals + '</li>' +
+      '<li><strong>Workout 2 (Steady):</strong> ' + runP.steady + '</li>' +
+      '<li><strong>Workout 3 (Incline):</strong> ' + runP.incline + '</li>' +
+      '</ul></div>' +
+      '<div class="notes-card"><h3>Beginner Running Note</h3><ul>' +
+      '<li>If 0 miles/week: do 2\u20133 runs/week at no particular pace, 4\u20136 weekly miles or 40\u201360 min total, instead of the posted running workouts.</li>' +
+      '</ul></div>';
   } else {
     grid.innerHTML = '<div class="notes-card"><h3>Strength Notes</h3><ul><li>Secondary lifts are emphasized \u2014 variety of implements and planes of movement build limit strength without attachment to the \u201cbig three.\u201d Primary lifts can be substituted.</li><li>Braced asymmetrical movements can rotate with secondary asymmetrical. Consider choosing asymmetrical for the secondary movement that begins each day.</li><li>Plyo warm-up midweek = 1\u20133 plyometric skills. Left open-ended \u2014 variety and week-to-week modifications are encouraged.</li><li><strong style="color:var(--cyan)">ME:</strong> 1\u20135 reps, 90\u2013100%, 1\u20133 sets, no RIR target. <strong style="color:var(--cyan)">DE:</strong> 2\u20134 reps, 70\u201380%, max velocity, 4\u20136 sets. <strong style="color:var(--cyan)">SKILL:</strong> 3\u20135 reps, 75\u201385%, 3\u20134 RIR, 3\u20135 sets. <strong style="color:var(--cyan)">HYP:</strong> 6\u201312 reps, 0\u20132 RIR, 3\u20134 sets.</li></ul></div><div class="notes-card"><h3>Conditioning Notes</h3><ul><li>Hard work should be hard; easy work should be easy. Resist adding more difficulty or distance \u2014 adjust intensity and threshold estimates instead.</li><li>For a specific race, switch to a pivot program. One month on The Runner prior to a race-specific program returns the best pre-test results.</li><li>Cycling workouts can use a rower, ski erg, air bike, or any power-meter device. Running can be done on an elliptical or arc trainer \u2014 include some ground impact at least one day.</li><li>Weekend LSR can be a hike, long ride, or team sport day. Few changes are needed month-to-month beyond adjusting 1RM and threshold as fitness improves.</li></ul></div><div class="notes-card"><h3>Rep/Set Key</h3><ul><li><strong style="color:var(--cyan)">ME (Max Effort):</strong> Intentionally heavy, peak force. Stop short of failure. Bar speed secondary to moving the weight well.</li><li><strong style="color:var(--cyan)">DE (Dynamic Effort):</strong> Bar speed and quality of movement are primary. Treat every rep as if bar were maximal. Fatigue is discouraged.</li><li><strong style="color:var(--cyan)">SKILL:</strong> Purely patterning and movement practice. Form and consistency over velocity. Heavy enough to be a challenge.</li><li><strong style="color:var(--cyan)">HYP (Hypertrophy):</strong> Bodybuilding-style, steady controlled tempo. 0\u20132 RIR. Fatigue of all motor units is the target stimulus.</li><li><strong style="color:var(--gold)">RIR (Reps in Reserve):</strong> 2 RIR = 2 reps left before failure. 0 RIR = last rep completable, next would fail.</li></ul></div><div class="notes-card"><h3>Endurance Zones</h3><ul><li><strong style="color:var(--gold)">MLSS+:</strong> Maximal Lactate Steady State \u2014 maximize time in Zone 4 with equalized fatigue.</li><li><strong style="color:var(--gold)">NT (Near-Threshold):</strong> Shorter above-threshold or longer below-threshold intervals \u2014 maximize total time at this intensity.</li><li><strong style="color:var(--gold)">VT1:</strong> At or below ventilatory threshold 1. Duration-based. Use talk test to confirm zone (25\u201390+ min).</li><li><strong style="color:var(--gold)">LSD:</strong> Long Slow Distance \u2014 maximize time, primarily below VT1. Can be hike, run, ride. Rest pauses OK.</li><li><strong style="color:var(--gold)">Cyc AnA:</strong> Cycling anaerobic repeatability \u2014 110\u2013130% FTP. Use power floor as guideline, not strict target.</li><li><strong style="color:var(--gold)">Cyc Endurance:</strong> Straight or mixed-intensity cycling below 75%. Good for form and position practice.</li></ul></div>';
   }
@@ -1314,9 +1482,10 @@ function updateModeToggle() {
     pd.textContent = phase.name + ' (Weeks ' + phase.weeks + ')';
   } else {
     pt.style.display = 'flex';
-    document.getElementById('btnViada').classList.toggle('active', !isJ3U());
+    document.getElementById('btnViada').classList.toggle('active', S.husbandProgram === 'viada');
     document.getElementById('btnJ3U').classList.toggle('active', isJ3U());
-    mt.style.display = isJ3U() ? 'none' : 'flex';
+    document.getElementById('btnUntamed').classList.toggle('active', isUntamed());
+    mt.style.display = (isJ3U() || isUntamed()) ? 'none' : 'flex';
     pd.style.display = 'none';
   }
 }
@@ -1325,6 +1494,7 @@ function updateHeaderSubtitle() {
   var el = document.getElementById('headerSubtitle');
   if (isWife()) { el.textContent = 'Glute & Quad Hypertrophy + Scoliosis Program'; }
   else if (isJ3U()) { el.textContent = 'J3U Bodybuilding + Wenning Warmup Protocol'; }
+  else if (isUntamed()) { el.textContent = 'Untamed Run & Lift'; }
   else { el.textContent = 'Hybrid Athlete Program Tracker'; }
 }
 
@@ -1424,7 +1594,7 @@ function loadUserData() {
   S.totalWeeks = getTotalWeeks();
   if (!S.mode) S.mode = 'standard';
   if (isWife()) S.mode = 'standard';
-  if (!S.husbandProgram) S.husbandProgram = 'viada';
+  if (!S.husbandProgram || !['viada','j3u','untamed'].includes(S.husbandProgram)) S.husbandProgram = 'viada';
   if (!S.completed) S.completed = {};
   if (!S.log) S.log = [];
   if (!S.notes) S.notes = {};
@@ -1440,7 +1610,7 @@ function loadUserData() {
         S = remote;
         S.totalWeeks = getTotalWeeks();
         if (isWife()) S.mode = 'standard';
-        if (!S.husbandProgram) S.husbandProgram = 'viada';
+        if (!S.husbandProgram || !['viada','j3u','untamed'].includes(S.husbandProgram)) S.husbandProgram = 'viada';
         if (!S.completed) S.completed = {};
         if (!S.log) S.log = [];
         if (!S.notes) S.notes = {};
@@ -1470,7 +1640,7 @@ function startFirebaseListener() {
       S = remote;
       S.totalWeeks = getTotalWeeks();
       if (isWife()) S.mode = 'standard';
-      if (!S.husbandProgram) S.husbandProgram = 'viada';
+      if (!S.husbandProgram || !['viada','j3u','untamed'].includes(S.husbandProgram)) S.husbandProgram = 'viada';
       if (!S.completed) S.completed = {};
       if (!S.log) S.log = [];
       if (!S.notes) S.notes = {};
@@ -1504,8 +1674,9 @@ function initUI() {
   document.getElementById('btnStandard').classList.toggle('active', S.mode === 'standard');
   document.getElementById('btnDeload').classList.toggle('active', S.mode === 'deload');
   if (!isWife()) {
-    document.getElementById('btnViada').classList.toggle('active', !isJ3U());
+    document.getElementById('btnViada').classList.toggle('active', S.husbandProgram === 'viada');
     document.getElementById('btnJ3U').classList.toggle('active', isJ3U());
+    document.getElementById('btnUntamed').classList.toggle('active', isUntamed());
   }
   updateDropdown();
   updateHeaderSubtitle();
@@ -1542,7 +1713,7 @@ function toggleDay(i) {
   if (!was) {
     const bData = S.builders[key] || {};
     const exList = Object.entries(bData).filter(([k, v]) => v && !k.endsWith('-note') && v !== '__other__').map(([k, v]) => v).join(' · ');
-    var modeLabel = isWife() ? getPhaseForWeek(S.week).name : (S.mode === 'standard' ? 'Standard' : 'Taper/Deload');
+    var modeLabel = isWife() ? getPhaseForWeek(S.week).name : (isUntamed() ? getUntamedPhaseForWeek(S.week).name : (S.mode === 'standard' ? 'Standard' : 'Taper/Deload'));
     S.log.unshift({ date: new Date().toISOString().slice(0, 10), session: d.day + ' — ' + d.title, week: S.week, mode: modeLabel, note: exList || '' });
     showToast('✓ ' + d.day + ' logged!');
   }
@@ -1551,7 +1722,7 @@ function toggleDay(i) {
 // ═══════════════════════════════════════════════════
 //  BUILDER MODAL
 // ═══════════════════════════════════════════════════
-const BADGE_COLOR = { ME:'#e74c3c', DE:'#e67e22', SKILL:'#9b59b6', HYP:'var(--cyan)', 'HYP SS':'var(--cyan)', PLYO:'#f39c12', 'MLSS+':'var(--gold)', NT:'var(--gold)', VT1:'var(--gold)', Cyc:'var(--gold)', LSD:'var(--gold)', Alt:'var(--muted)', paired:'rgba(46,134,193,0.4)', WU:'#f39c12', MAIN:'var(--cyan)', ACC:'var(--green-light)', FINISH:'var(--silver)' };
+const BADGE_COLOR = { ME:'#e74c3c', DE:'#e67e22', SKILL:'#9b59b6', HYP:'var(--cyan)', 'HYP SS':'var(--cyan)', PLYO:'#f39c12', AMRAP:'#e67e22', 'MLSS+':'var(--gold)', NT:'var(--gold)', VT1:'var(--gold)', Cyc:'var(--gold)', LSD:'var(--gold)', Alt:'var(--muted)', paired:'rgba(46,134,193,0.4)', WU:'#f39c12', MAIN:'var(--cyan)', ACC:'var(--green-light)', FINISH:'var(--silver)' };
 function badgeColor(b) { for (const k of Object.keys(BADGE_COLOR)) if (b && b.startsWith(k)) return BADGE_COLOR[k]; return 'var(--steel)'; }
 
 function openBuilder(i, e) {
@@ -1572,10 +1743,12 @@ function openBuilder(i, e) {
 }
 
 function openHusbandBuilder(i, d, key, saved, body) {
-  var cfg = isJ3U() ? BUILDER_J3U[i] : BUILDER[i];
+  var cfg = isJ3U() ? BUILDER_J3U[i] : (isUntamed() ? BUILDER_UNTAMED[i] : BUILDER[i]);
   if (!cfg) { body.innerHTML = '<p style="color:var(--text-muted);font-size:.8rem;padding:.5rem">Rest day \u2014 no exercises to plan.</p>'; document.getElementById('builderModal').classList.add('open'); return; }
   var headerNote = isJ3U()
     ? '<div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.9rem;padding:.5rem .7rem;background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.15);border-radius:5px;line-height:1.6"><strong style="color:var(--gold)">J3U Bodybuilding + Wenning Warmup.</strong> WU slots = Wenning warmup circuit (3\u20134 rounds \u00d7 15\u201325 reps, light). MAIN = J3U progressive compound. ACC / FINISH = J3U accessory work. Rotate exercises weekly (Wenning variation principle).</div>'
+    : isUntamed()
+    ? '<div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.9rem;padding:.5rem .7rem;background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.15);border-radius:5px;line-height:1.6"><strong style="color:var(--gold)">Untamed Run & Lift + Wenning Warmup.</strong> WU slots = Wenning warmup circuit (3\u20134 rounds \u00d7 15\u201325 reps, light). Main work = RPE-based progression. Double progression: hit top of rep range for all sets, then add weight.</div>'
     : '<div style="font-size:.7rem;color:var(--text-muted);margin-bottom:.9rem;padding:.5rem .7rem;background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.15);border-radius:5px;line-height:1.6"><strong style="color:var(--gold)">Prescribed parameters auto-filled from Ch.9 & Ch.10 (Viada).</strong><br>WU slots = Wenning warmup circuit (3\u20134 rounds \u00d7 15\u201325 reps, light). Select your exercise from the dropdown, then adjust load/notes as needed. Greyed slots = other phase.</div>';
   var html = headerNote;
   cfg.forEach(function(sec) {
@@ -1629,7 +1802,7 @@ function addLog() {
   const session = document.getElementById('logDay').value;
   const note = document.getElementById('logNote').value.trim();
   if (!session) { showToast('Select a session', 'error'); return; }
-  var modeLabel = isWife() ? getPhaseForWeek(S.week).name : (S.mode === 'standard' ? 'Standard' : 'Taper/Deload');
+  var modeLabel = isWife() ? getPhaseForWeek(S.week).name : (isUntamed() ? getUntamedPhaseForWeek(S.week).name : (S.mode === 'standard' ? 'Standard' : 'Taper/Deload'));
   S.log.unshift({ date, session, week: S.week, mode: modeLabel, note });
   document.getElementById('logDay').value = ''; document.getElementById('logNote').value = '';
   save(); renderLog(); showToast('Entry added!');
@@ -1669,6 +1842,10 @@ function render() {
   } else if (isJ3U()) {
     pill.textContent = S.mode === 'standard' ? 'J3U Standard' : 'J3U Deload';
     pill.className = 'pill ' + (S.mode === 'standard' ? 'pill-standard' : 'pill-deload');
+  } else if (isUntamed()) {
+    var uPhase = getUntamedPhaseForWeek(S.week);
+    pill.textContent = uPhase.name;
+    pill.className = 'pill pill-standard';
   } else {
     pill.textContent = S.mode === 'standard' ? 'Standard' : 'Taper / Deload';
     pill.className = 'pill ' + (S.mode === 'standard' ? 'pill-standard' : 'pill-deload');
@@ -1679,7 +1856,7 @@ function render() {
     if (S.completed[S.week + '-' + i]) { done++; if (d.type === 'strength') str++; if (d.type === 'both') { str++; end++; } if (d.type === 'endurance') end++; }
   });
   var totalAct = isWife() ? 4 : days.filter(d => d.type !== 'rest').length;
-  var strTotal = isWife() ? 4 : (isJ3U() ? 4 : 3);
+  var strTotal = isWife() ? 4 : (isJ3U() ? 4 : (isUntamed() ? 5 : 3));
   const pct = Math.round((done / totalAct) * 100);
   document.getElementById('statWeek').innerHTML = S.week + ' <span>/ ' + S.totalWeeks + '</span>';
   if (isWife()) {
@@ -1687,6 +1864,8 @@ function render() {
     document.getElementById('statMode').textContent = ph.name + ' Phase';
   } else if (isJ3U()) {
     document.getElementById('statMode').textContent = S.mode === 'standard' ? 'Standard Phase' : 'Deload Phase';
+  } else if (isUntamed()) {
+    document.getElementById('statMode').textContent = getUntamedPhaseForWeek(S.week).name;
   } else {
     document.getElementById('statMode').textContent = S.mode === 'standard' ? 'Standard Phase' : 'Taper/Deload Phase';
   }
@@ -1694,6 +1873,9 @@ function render() {
   document.getElementById('statStrength').innerHTML = str + ' <span>/ ' + strTotal + '</span>';
   if (isWife() || isJ3U()) {
     document.getElementById('statEnduranceCard').style.display = 'none';
+  } else if (isUntamed()) {
+    document.getElementById('statEnduranceCard').style.display = '';
+    document.getElementById('statEndurance').innerHTML = end + ' <span>/ 1</span>';
   } else {
     document.getElementById('statEnduranceCard').style.display = '';
     document.getElementById('statEndurance').innerHTML = end + ' <span>/ 3</span>';
@@ -1745,8 +1927,15 @@ function render() {
           const isP = i === 2;
           body += '<div class="workout-block"><span class="block-tag ' + (isP ? 'tag-plyo' : 'tag-strength') + '">' + (isP ? 'Plyometrics' : 'Strength') + '</span><ul class="workout-list">' + day.strength.map(s => '<li>' + s + '</li>').join('') + '</ul></div>';
         }
-        if (day.endurance) body += '<div class="workout-block"><span class="block-tag tag-endurance">Endurance</span><div class="endurance-badge">' + day.endurance.label + '</div></div>';
-        const cfg = BUILDER[i];
+        if (day.endurance) {
+          if (isUntamed() && i === 5) {
+            var runP = getUntamedRunProtocols(S.week);
+            body += '<div class="workout-block"><span class="block-tag tag-endurance">Running (Weeks ' + getUntamedPhaseForWeek(S.week).weeks + ')</span><ul class="workout-list"><li><strong>Intervals:</strong> ' + runP.intervals + '</li><li><strong>Steady:</strong> ' + runP.steady + '</li><li><strong>Incline:</strong> ' + runP.incline + '</li></ul></div>';
+          } else {
+            body += '<div class="workout-block"><span class="block-tag tag-endurance">Endurance</span><div class="endurance-badge">' + day.endurance.label + '</div></div>';
+          }
+        }
+        const cfg = isJ3U() ? BUILDER_J3U[i] : (isUntamed() ? BUILDER_UNTAMED[i] : BUILDER[i]);
         if (cfg && !hasPlan && !isJ3U()) {
           const currentPhase = S.mode;
           const relevantSlots = cfg.filter(sec => { const p = sec.phase || 'both'; return (p === 'both' || p === currentPhase) && sec.defaultNote; });
@@ -1763,7 +1952,7 @@ function render() {
           const planned = Object.entries(bData).filter(([k, v]) => !k.endsWith('-note') && v && v !== 'custom').map(([, v]) => '<li>' + v + '</li>').join('');
           if (planned) body += '<div class="workout-block"><span class="block-tag tag-planned">Planned</span><ul class="workout-list">' + planned + '</ul></div>';
         }
-        body += '<button class="open-builder-btn" onclick="openBuilder(' + i + ',event)">' + (hasPlan ? '\u270e Edit Workout Plan' : '+ Plan This Workout') + '</button>';
+        if (cfg || day.type !== 'endurance') body += '<button class="open-builder-btn" onclick="openBuilder(' + i + ',event)">' + (hasPlan ? '\u270e Edit Workout Plan' : '+ Plan This Workout') + '</button>';
         card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><button class="day-check" onclick="event.stopPropagation();toggleDay(' + i + ')">' + (isComp ? '\u2713' : '') + '</button></div><div class="day-body">' + body + '</div>';
       }
     }
