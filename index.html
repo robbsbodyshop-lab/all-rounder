@@ -29,7 +29,6 @@
   .profile-overlay::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 30%,rgba(30,53,96,0.5),transparent 60%);pointer-events:none}
   .profile-title{position:relative;z-index:1;font-family:'Barlow Condensed',sans-serif;font-style:italic;font-weight:900;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:.04em;text-transform:uppercase;margin-bottom:.3rem;text-align:center}
   .profile-title span{color:var(--cyan)}
-  .profile-subtitle{position:relative;z-index:1;font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;color:var(--silver);margin-bottom:2.5rem;text-align:center}
   .profile-cards{position:relative;z-index:1;display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center;margin-bottom:2rem}
   .profile-card{width:220px;background:var(--card-bg);border:2px solid var(--border);border-radius:16px;padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:all .25s;backdrop-filter:blur(10px)}
   .profile-card:hover{border-color:var(--accent);transform:translateY(-4px)}
@@ -338,7 +337,6 @@
 <!-- PROFILE SELECTOR -->
 <div class="profile-overlay" id="profileOverlay">
   <h1 class="profile-title">THE <span>ALL</span> ROUNDER</h1>
-  <p class="profile-subtitle">Hybrid Athlete Program Tracker</p>
   <div class="profile-cards" id="profileCards"></div>
   <button class="btn-sm btn-cyan" onclick="openSetup()" style="position:relative;z-index:1">Customize Profiles</button>
 </div>
