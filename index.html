@@ -576,7 +576,7 @@ function renderProfileCards() {
     const p = profiles[uid];
     const colors = USER_COLORS[uid];
     const initial = (p.name || 'U')[0].toUpperCase();
-    return `<div class="profile-card user-${uid === 'user1' ? 'husband' : 'wife'}" onclick="selectProfile('${uid}')">
+    return `<div class="profile-card user-${uid === 'user1' ? 'husband' : 'wife'}" role="button" tabindex="0" onclick="selectProfile('${uid}')" onkeydown="if(event.key==='Enter'||event.key===' ')selectProfile('${uid}')">
       <div class="profile-avatar" style="background:${colors.accent}22;border-color:${colors.accent}88;color:${colors.accent}">${initial}</div>
       <div class="profile-name">${p.name || (uid === 'user1' ? 'Husband' : 'Wife')}</div>
       <div class="profile-role">${p.pin ? 'PIN Protected' : 'Tap to enter'}</div>
@@ -1551,7 +1551,7 @@ function openWifeBuilder(d, key, saved, body) {
       html += '<div class="wife-ex-params"><span><span class="p-label">Sets</span>' + ex.sets + '</span><span><span class="p-label">Reps</span>' + ex.reps + '</span><span><span class="p-label">Tempo</span>' + ex.tempo + '</span><span><span class="p-label">RPE</span>' + ex.rpe + '</span><span><span class="p-label">Rest</span>' + ex.rest + '</span></div>';
       if (ex.scoliosisCue) html += '<div class="scoliosis-cue">\ud83e\udeb4 ' + ex.scoliosisCue + '</div>';
       if (ex.coachingCue) html += '<div class="coaching-cue">\ud83d\udca1 ' + ex.coachingCue + '</div>';
-      var nk = sid + '|' + (ex.noteKey || ex.order);
+      var nk = sanitizeKey(sid + '|' + (ex.noteKey || ex.order));
       var nv = saved[nk] || '';
       html += '<input class="wife-ex-note" type="text" data-key="' + nk + '" placeholder="Notes: weight, reps achieved, form cues..." value="' + nv.replace(/"/g, '&quot;') + '" oninput="updB(this)">';
       html += '</div>';
@@ -1572,7 +1572,7 @@ function renderWifeCore(body, key, saved) {
       if (ex.scoliosisCue) html += '<div class="scoliosis-cue">\ud83e\udeb4 ' + ex.scoliosisCue + '</div>';
       if (ex.coachingCue) html += '<div class="coaching-cue">\ud83d\udca1 ' + ex.coachingCue + '</div>';
       if (ex.progression) html += '<div class="wife-progression">\ud83d\udcc8 ' + ex.progression + '</div>';
-      var nk = 'core|' + ex.order;
+      var nk = sanitizeKey('core|' + ex.order);
       var nv = (saved && saved[nk]) || '';
       html += '<input class="wife-ex-note" type="text" data-key="' + nk + '" placeholder="Notes..." value="' + nv.replace(/"/g, '&quot;') + '" oninput="updB(this)">';
       html += '</div>';
@@ -1607,6 +1607,7 @@ let savePending = false;
 let saveTimer = null;
 
 function cacheKey() { return 'ar_state_' + currentUser; }
+function sanitizeKey(k) { return String(k).replace(/[.#$\/\[\]]/g, '_'); }
 
 function loadUserData() {
   S = JSON.parse(localStorage.getItem(cacheKey()) || 'null') || JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -1782,7 +1783,7 @@ function openHusbandBuilder(i, d, key, saved, body) {
     html += '<div class="builder-section" style="opacity:' + opacity + '"><h4 style="display:flex;align-items:center;gap:.2rem">' + badgeHtml + '<span>' + sec.title + '</span>' + (!relevant ? '<span style="margin-left:auto;font-size:.6rem;color:var(--muted);font-style:italic">other phase</span>' : '') + '</h4>';
     if (sec.defaultNote) html += '<div style="font-size:.68rem;color:var(--gold);font-style:italic;margin-bottom:.4rem;background:rgba(232,184,75,.07);padding:.28rem .5rem;border-radius:3px;border-left:2px solid rgba(232,184,75,.5);line-height:1.5">' + sec.defaultNote + '</div>';
     sec.slots.forEach(function(slot) {
-      var sk = sec.title + '|' + slot;
+      var sk = sanitizeKey(sec.title + '|' + slot);
       var sn = saved.hasOwnProperty(sk + '-note') ? saved[sk + '-note'] : (relevant ? (sec.defaultNote || '') : '');
       var disAttr = relevant ? '' : ' disabled';
       html += '<div class="exercise-row"><span class="slot-label">' + slot + '</span><select class="ex-select" data-key="' + sk + '" onchange="updB(this)"' + disAttr + '><option value="">\u2014 choose exercise \u2014</option>' + opts + '<option value="custom">Custom / Other</option></select><input class="ex-note" type="text" data-key="' + sk + '-note" placeholder="Sets \u00d7 reps \u00b7 load \u00b7 notes" value="' + (sn || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;') + '" oninput="updB(this)"' + disAttr + '></div>';
@@ -1798,7 +1799,7 @@ function openHusbandBuilder(i, d, key, saved, body) {
     var secPhase = sec.phase || 'both';
     if (secPhase !== 'both' && secPhase !== S.mode) return;
     sec.slots.forEach(function(slot) {
-      var sk = sec.title + '|' + slot;
+      var sk = sanitizeKey(sec.title + '|' + slot);
       if (!saved.hasOwnProperty(sk + '-note') && sec.defaultNote) {
         if (!S.builders[key]) S.builders[key] = {};
         S.builders[key][sk + '-note'] = sec.defaultNote;
