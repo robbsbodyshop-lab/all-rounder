@@ -6,39 +6,46 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>The All Rounder — Program Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --navy:#0d1525; --navy-mid:#162238; --blue-accent:#22a8d4; --cyan:#22d3ee;
     --silver:#9cb4cc; --muted:#5a7290; --bg-dark:#0d1525;
     --text-primary:#eef2f7; --text-secondary:#a8bfd8; --text-muted:#6b8aaa;
     --gold:#fbbf24; --green:#34d399; --green-light:#4ade80; --red:#e74c3c;
-    --border:rgba(34,211,238,0.15); --card-bg:rgba(22,34,56,0.5);
+    --coral:#e8736f; --border:rgba(34,211,238,0.15); --card-bg:rgba(22,34,56,0.5);
     --card-shadow:0 4px 24px rgba(0,0,0,.15); --accent:var(--cyan);
+    --completion-glow:rgba(52,211,153,.2);
+    --ambient-coral:rgba(232,115,111,0.12); --ambient-amber:rgba(251,191,36,0.1);
+    --card-bg-warm:rgba(28,38,58,0.52);
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
   html{font-size:18px;-webkit-text-size-adjust:100%;text-size-adjust:100%;min-height:100%;min-height:100dvh;min-height:-webkit-fill-available}
   body{background:var(--bg-dark);color:var(--text-primary);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,'Barlow',sans-serif;line-height:1.55;min-height:100vh;min-height:100dvh;min-height:-webkit-fill-available;overflow-x:hidden}
-  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(34,211,238,0.08),transparent 55%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(251,191,36,0.05),transparent 50%),radial-gradient(ellipse 50% 30% at 50% 50%,rgba(22,34,56,0.6),transparent 70%);pointer-events:none;z-index:0}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 90% 60% at 15% 15%,rgba(232,115,111,0.12),transparent 50%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(251,191,36,0.1),transparent 55%),radial-gradient(ellipse 80% 50% at 50% 50%,rgba(34,211,238,0.06),transparent 60%),radial-gradient(ellipse 60% 40% at 75% 25%,rgba(167,139,250,0.05),transparent 50%);pointer-events:none;z-index:0}
+  body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.025;pointer-events:none;z-index:0}
   button,input,select,textarea{font-size:16px}
 
   /* ─── PROFILE SELECTOR ─── */
   .profile-overlay{position:fixed;inset:0;background:var(--bg-dark);z-index:2000;display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:1;transition:opacity .35s}
   .profile-overlay.hidden{opacity:0;pointer-events:none}
-  .profile-overlay::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 30%,rgba(34,211,238,0.06),transparent 55%);pointer-events:none}
-  .profile-title{position:relative;z-index:1;font-family:'Barlow Condensed',sans-serif;font-style:italic;font-weight:900;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:.04em;text-transform:uppercase;margin-bottom:.3rem;text-align:center}
+  .profile-overlay::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 90% 60% at 20% 25%,rgba(232,115,111,0.1),transparent 50%),radial-gradient(ellipse 70% 50% at 80% 70%,rgba(251,191,36,0.08),transparent 55%),radial-gradient(ellipse 80% 50% at 50% 30%,rgba(34,211,238,0.06),transparent 55%),radial-gradient(ellipse 60% 40% at 75% 20%,rgba(167,139,250,0.04),transparent 50%);pointer-events:none}
+  .profile-title{position:relative;z-index:1;font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:.02em;text-transform:uppercase;margin-bottom:.2rem;text-align:center}
   .profile-title span{color:var(--cyan)}
+  .profile-title .nb-excl{font-weight:800;color:var(--cyan);margin-right:.08em}
+  .profile-subtitle{position:relative;z-index:1;font-size:.85rem;color:var(--text-muted);margin-bottom:.6rem;text-align:center}
+  .profile-lets-play{position:relative;z-index:1;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1.2rem;text-align:center}
   .profile-cards{position:relative;z-index:1;display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center;margin-bottom:2rem}
-  .profile-card{width:220px;background:var(--card-bg);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:all .3s ease;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--card-shadow)}
-  .profile-card:hover{border-color:var(--accent);transform:translateY(-4px) scale(1.02);box-shadow:0 8px 32px rgba(0,0,0,.2)}
-  .profile-card.user-husband:hover{border-color:var(--cyan)}
-  .profile-card.user-wife:hover{border-color:#e8736f}
+  .profile-card{width:220px;background:var(--card-bg-warm);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:all .35s cubic-bezier(.25,.46,.45,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--card-shadow),inset 0 1px 0 rgba(255,255,255,.04)}
+  .profile-card:hover{border-color:var(--profile-accent,var(--accent));transform:translateY(-6px) scale(1.02);box-shadow:0 12px 40px rgba(0,0,0,.25),0 0 0 1px rgba(255,255,255,.06),0 0 24px rgba(251,191,36,.08),inset 0 1px 0 rgba(255,255,255,.06)}
+  .profile-card:hover:not(.add-user-card){border-color:var(--profile-accent,var(--accent))}
   .profile-avatar{width:72px;height:72px;border-radius:50%;margin:0 auto .9rem;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;font-family:'Barlow Condensed',sans-serif}
-  .user-husband .profile-avatar{background:rgba(34,211,238,.2);border:2px solid rgba(34,211,238,.5);color:var(--cyan)}
-  .user-wife .profile-avatar{background:rgba(232,115,111,.15);border:2px solid rgba(232,115,111,.4);color:#e8736f}
-  .profile-card .profile-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.3rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem}
+  .profile-card .profile-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.3rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.2rem}
   .profile-card .profile-role{font-size:.7rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase}
+  .add-user-card .profile-avatar.add-avatar{background:rgba(255,255,255,.06);border:2px dashed rgba(255,255,255,.2);color:var(--text-muted);font-size:2.5rem}
+  .add-user-card:hover{border-color:var(--accent)}
+  .add-user-card:hover .add-avatar{color:var(--accent);border-color:var(--accent)}
 
   .pin-overlay{position:fixed;inset:0;background:rgba(5,10,22,.92);z-index:2100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
   .pin-overlay.open{opacity:1;pointer-events:all}
@@ -57,15 +64,25 @@
   .setup-row{display:flex;gap:.8rem;align-items:center;margin-bottom:.8rem}
   .setup-row label{font-size:.72rem;color:var(--text-muted);min-width:80px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
   .setup-row input{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text-primary);border-radius:6px;padding:.5rem .7rem;font-family:'Barlow',sans-serif;font-size:.82rem;outline:none}
-  .setup-row input:focus{border-color:var(--cyan)}
+  .setup-row input:focus,.setup-row select:focus{border-color:var(--cyan)}
+  .setup-row select{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text-primary);border-radius:6px;padding:.5rem .7rem;font-family:'Barlow',sans-serif;font-size:.82rem;outline:none}
   .setup-actions{display:flex;gap:.8rem;justify-content:flex-end;margin-top:1.4rem}
+  .manage-account-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.6rem 0;border-bottom:1px solid var(--border)}
+  .manage-account-row:last-child{border-bottom:none}
+  .manage-account-info{display:flex;flex-direction:column;gap:.15rem}
+  .manage-account-name{font-weight:600;color:var(--text-primary)}
+  .manage-account-program{font-size:.68rem;color:var(--text-muted);letter-spacing:.1em}
+  .manage-account-actions{display:flex;gap:.4rem}
+  .manage-empty{color:var(--text-muted);font-size:.85rem;padding:1rem 0;text-align:center}
 
   /* ─── HEADER ─── */
-  header{position:relative;z-index:10;background:linear-gradient(135deg,var(--navy),var(--navy-mid) 50%,#162238);border-bottom:1px solid rgba(34,211,238,.2);padding:0 2rem}
+  header{position:relative;z-index:10;background:linear-gradient(135deg,var(--navy),var(--navy-mid) 40%,#1a2840 70%,#162238);border-bottom:1px solid rgba(34,211,238,.2);padding:0 2rem}
+  header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 90% 50%,rgba(251,191,36,0.04),transparent 60%);pointer-events:none}
   header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 10%,var(--accent) 50%,transparent 90%);opacity:.6}
   .header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:1.15rem 0;gap:1rem;flex-wrap:wrap}
-  .logo-block h1{font-family:'Barlow Condensed',sans-serif;font-style:italic;font-weight:900;font-size:clamp(1.7rem,4vw,2.8rem);letter-spacing:.04em;text-transform:uppercase;line-height:1}
+  .logo-block h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.7rem,4vw,2.8rem);letter-spacing:.02em;text-transform:uppercase;line-height:1}
   .logo-block h1 span{color:var(--accent)}
+  .logo-block h1 .nb-excl{color:var(--accent)}
   .logo-block p{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--silver);margin-top:.2rem}
   .header-controls{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap}
 
@@ -75,17 +92,19 @@
   .user-badge-switch{background:none;border:none;color:var(--text-muted);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer;padding:.25rem .45rem;border-radius:4px;transition:all .2s}
   .user-badge-switch:hover{color:var(--text-primary);background:rgba(255,255,255,.06)}
 
-  .week-nav{display:flex;align-items:center;gap:.35rem;background:var(--card-bg);border:1px solid var(--border);border-radius:6px;padding:.3rem .65rem}
-  .week-nav button{background:none;border:none;color:var(--accent);font-size:1rem;cursor:pointer;padding:0 .2rem;transition:color .2s}
+  .week-nav{display:flex;align-items:center;gap:.35rem;background:var(--card-bg);border:1px solid var(--border);border-radius:6px;padding:.3rem .65rem;transition:transform .2s}
+  .week-nav.week-bounce{animation:weekBounce .4s cubic-bezier(.34,1.56,.64,1)}
+  .week-nav button{background:none;border:none;color:var(--accent);font-size:1rem;cursor:pointer;padding:0 .2rem;transition:color .2s,transform .2s}
   .week-nav button:hover{color:var(--text-primary)}
+  .week-nav button:active{transform:scale(0.9)}
   .week-nav span{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.1em;color:var(--text-primary);min-width:70px;text-align:center}
   .mode-toggle{display:flex;background:var(--card-bg);border:1px solid var(--border);border-radius:6px;overflow:hidden}
   .mode-toggle button{padding:.4rem .85rem;background:none;border:none;color:var(--text-muted);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:all .2s}
   .mode-toggle button.active{background:var(--accent);color:#fff}
-  .mode-toggle button:active,.program-toggle button:active{transform:scale(0.98)}
+  .mode-toggle button:active,.program-toggle button:active{transform:scale(0.96)}
   .program-toggle .program-toggle-label{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);align-self:center;padding:0 .5rem;font-family:'Barlow Condensed',sans-serif;font-weight:700}
   .btn-sm{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:.4rem .8rem;border-radius:6px;cursor:pointer;transition:all .2s;border:1px solid}
-  .btn-sm:active{transform:scale(0.98)}
+  .btn-sm:active{transform:scale(0.96);opacity:.9}
   .btn-red{background:rgba(231,76,60,.12);border-color:rgba(231,76,60,.3);color:#e74c3c}
   .btn-red:hover{background:rgba(231,76,60,.28)}
   .btn-cyan{background:rgba(34,211,238,.15);border-color:rgba(34,211,238,.4);color:var(--cyan)}
@@ -94,45 +113,50 @@
   main{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:1.5rem 1.5rem 4rem}
 
   .tabs{display:flex;gap:.4rem;margin-bottom:1.1rem;border-bottom:1px solid var(--border);padding-bottom:0}
-  .tab-btn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.15em;text-transform:uppercase;padding:.55rem 1.1rem;background:none;border:none;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .25s,border-color .25s;position:relative}
-  .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
-  .tab-btn:active{transform:scale(0.98)}
+  .tab-btn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.15em;text-transform:uppercase;padding:.55rem 1.1rem;background:none;border:none;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .25s,border-color .25s,transform .2s;position:relative}
+  .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);transform:scale(1.02)}
+  .tab-btn:active{transform:scale(0.96)}
   .tab-panel{display:none}
   .tab-panel.active{display:block}
 
   .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-bottom:1.25rem}
-  .stat-card{background:var(--card-bg);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:.95rem 1.1rem;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--card-shadow);transition:border-color .2s,box-shadow .2s}
-  .stat-card:hover{border-color:rgba(34,211,238,.3);box-shadow:0 6px 28px rgba(0,0,0,.18)}
+  .stat-card{background:var(--card-bg-warm);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:.95rem 1.1rem;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--card-shadow),inset 0 1px 0 rgba(255,255,255,.03);transition:border-color .25s,box-shadow .25s,transform .25s}
+  .stat-card:hover{border-color:rgba(34,211,238,.35);box-shadow:0 8px 32px rgba(0,0,0,.2),0 0 20px rgba(251,191,36,.06),inset 0 1px 0 rgba(255,255,255,.05);transform:translateY(-1px)}
   .stat-card .label{font-size:.63rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted)}
   .stat-card .value{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.8rem;line-height:1.1;color:var(--text-primary)}
   .stat-card .value span{color:var(--accent);font-size:.85rem}
   .stat-card .sub{font-size:.65rem;color:var(--text-secondary);margin-top:.1rem}
 
-  .prog-bar-container{background:var(--card-bg);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:.95rem 1.2rem;margin-bottom:1.1rem;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--card-shadow)}
+  .prog-bar-container{background:var(--card-bg-warm);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:.95rem 1.2rem;margin-bottom:1.1rem;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--card-shadow)}
   .prog-bar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem}
   .prog-bar-header span:first-child{font-size:.63rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted)}
   .prog-bar-header span:last-child{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;color:var(--accent)}
   .prog-bar{height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden}
   .prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue-accent),var(--accent));border-radius:4px;transition:width .6s cubic-bezier(.25,.46,.45,.94)}
+  .prog-bar-container.week-complete .prog-bar-fill{animation:progShimmer 1.5s ease-in-out}
+  @keyframes progShimmer{0%,100%{opacity:1}50%{opacity:.85}}
 
   .section-label{display:flex;align-items:center;gap:.85rem;margin-bottom:1rem}
-  .section-label h2{font-family:'Barlow Condensed',sans-serif;font-style:italic;font-weight:900;font-size:1.25rem;letter-spacing:.08em;text-transform:uppercase}
+  .section-label h2{font-family:'Syne',sans-serif;font-weight:700;font-size:1.25rem;letter-spacing:.06em;text-transform:uppercase}
   .pill{font-size:.63rem;letter-spacing:.2em;text-transform:uppercase;padding:.16rem .6rem;border-radius:20px;font-weight:700;border:1px solid}
   .pill-standard{background:rgba(34,211,238,.15);border-color:rgba(34,211,238,.4);color:var(--accent)}
   .pill-deload{background:rgba(142,168,195,.1);border-color:rgba(142,168,195,.3);color:var(--silver)}
 
-  .days-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:1rem}
-  .day-card{position:relative;background:var(--card-bg);border:1px solid rgba(255,255,255,.06);border-radius:12px;overflow:hidden;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--card-shadow);transition:border-color .25s,transform .2s,box-shadow .25s;animation:fadeInUp .3s ease both}
-  .day-card:not(.rest-day):hover{border-color:rgba(34,211,238,.35);transform:translateY(-2px);box-shadow:0 6px 28px rgba(0,0,0,.18)}
-  .day-card.completed{border-color:rgba(52,211,153,.5);background:rgba(52,211,153,.06);box-shadow:0 4px 24px rgba(52,211,153,.12)}
-  .day-card.completed::before{content:'';position:absolute;inset:0;pointer-events:none;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(52,211,153,.15)}
+  .days-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:1rem;transition:transform .1s}
+  .days-grid.day-shake{animation:dayShake .45s ease-out}
+  .day-card{position:relative;background:var(--card-bg-warm);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--card-shadow),inset 0 1px 0 rgba(255,255,255,.03);transition:border-color .25s,transform .25s,box-shadow .25s;animation:fadeInUp .3s ease both}
+  .day-card:not(.rest-day):hover{border-color:rgba(34,211,238,.4);transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.2),0 0 0 1px rgba(34,211,238,.1),0 0 20px rgba(251,191,36,.06),inset 0 1px 0 rgba(255,255,255,.04)}
+  .day-card.completed{border-color:rgba(52,211,153,.5);background:rgba(52,211,153,.06);box-shadow:0 4px 24px rgba(52,211,153,.12),0 0 32px rgba(52,211,153,.15)}
+  .day-card.completed::before{content:'';position:absolute;inset:0;pointer-events:none;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(52,211,153,.25);animation:completedPulse 2s ease-in-out infinite}
   .day-card.rest-day{background:rgba(13,21,37,.5)}
   .day-header{display:flex;align-items:center;justify-content:space-between;padding:.6rem .85rem;border-bottom:1px solid var(--border);gap:.5rem}
   .day-label{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted)}
   .day-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;color:var(--text-primary);flex:1;text-align:center}
-  .day-check{width:25px;height:25px;border-radius:50%;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;font-size:.78rem;transition:border-color .2s,background .2s,color .2s;flex-shrink:0;background:none;cursor:pointer;color:transparent}
+  .day-check{position:relative;width:25px;height:25px;border-radius:50%;border:2px solid var(--muted);display:flex;align-items:center;justify-content:center;font-size:.78rem;transition:border-color .2s,background .2s,color .2s;flex-shrink:0;background:none;cursor:pointer;color:transparent;overflow:visible}
+  .day-check::after{content:'';position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(circle,rgba(52,211,153,.5) 0%,rgba(52,211,153,.2) 40%,transparent 70%);opacity:0;pointer-events:none}
   .day-check:active{transform:scale(0.92)}
-  .day-card.completed .day-check{border-color:var(--green);background:var(--green);color:#fff;animation:checkBounce .4s cubic-bezier(.34,1.56,.64,1) both}
+  .day-card.completed .day-check{border-color:var(--green);background:var(--green);color:#fff;animation:checkBounce .5s cubic-bezier(.34,1.56,.64,1) both}
+  .day-card.completed .day-check::after{animation:burstGlow .5s ease-out both}
   .day-body{padding:.85rem 1rem;min-height:80px}
   .block-tag{display:inline-block;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;padding:.1rem .42rem;border-radius:3px;margin-bottom:.3rem}
   .tag-strength{background:rgba(34,211,238,.2);color:var(--cyan)}
@@ -181,7 +205,7 @@
   .log-form input[type="date"]{min-width:140px}
   .btn-log{background:var(--accent);border:none;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;padding:.44rem 1rem;border-radius:6px;cursor:pointer;transition:background .2s,transform .15s;white-space:nowrap}
   .btn-log:hover{opacity:.9}
-  .btn-log:active{transform:scale(0.98)}
+  .btn-log:active{transform:scale(0.96);opacity:.9}
   .log-table-wrapper{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .log-table{width:100%;border-collapse:collapse;font-size:.74rem}
   .log-table th{text-align:left;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);padding:.36rem .72rem;border-bottom:1px solid var(--border)}
@@ -190,11 +214,11 @@
   .del-btn{background:none;border:none;color:rgba(231,76,60,.4);cursor:pointer;font-size:.9rem;padding:.1rem .22rem;transition:color .2s}
   .del-btn:hover{color:var(--red)}
   .empty-log{text-align:center;color:var(--text-muted);font-size:.76rem;padding:1.5rem;font-style:italic}
-  .card-base{background:var(--card-bg);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1rem 1.1rem;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--card-shadow);margin-bottom:1rem}
+  .card-base{background:var(--card-bg-warm);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1rem 1.1rem;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--card-shadow);margin-bottom:1rem}
   .card-base h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:.75rem;padding-bottom:.44rem;border-bottom:1px solid var(--border)}
 
   .lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:.85rem}
-  .lib-card{background:var(--card-bg);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1rem;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--card-shadow)}
+  .lib-card{background:var(--card-bg-warm);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1rem;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--card-shadow)}
   .lib-card h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.79rem;letter-spacing:.17em;text-transform:uppercase;margin-bottom:.5rem}
   .lib-card .rep-guide{margin-bottom:.45rem}
   .lib-list{list-style:none}
@@ -204,7 +228,7 @@
 
   .notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
   @media(max-width:640px){.notes-grid{grid-template-columns:1fr}}
-  .notes-card{background:var(--card-bg);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1rem;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--card-shadow)}
+  .notes-card{background:var(--card-bg-warm);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1rem;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--card-shadow)}
   .notes-card h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:.7rem;padding-bottom:.42rem;border-bottom:1px solid var(--border)}
   .notes-card ul{list-style:none}
   .notes-card ul li{font-size:.74rem;color:var(--text-secondary);line-height:1.6;padding:.28rem 0 .28rem .85rem;position:relative;border-bottom:1px solid rgba(34,211,238,.06)}
@@ -224,7 +248,11 @@
   .sync-indicator.offline{opacity:1;background:rgba(231,76,60,.15);color:var(--red)}
 
   @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes checkBounce{0%{transform:scale(1.2)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+  @keyframes checkBounce{0%{transform:scale(1.4)}35%{transform:scale(1.15)}65%{transform:scale(0.92)}100%{transform:scale(1)}}
+  @keyframes burstGlow{0%{opacity:0;transform:scale(0.5)}30%{opacity:1;transform:scale(1.2)}100%{opacity:0;transform:scale(1.8)}}
+  @keyframes dayShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-3px)}40%{transform:translateX(3px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+  @keyframes completedPulse{0%,100%{opacity:1}50%{opacity:.7}}
+  @keyframes weekBounce{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
   @media(max-width:580px){
     html{font-size:18px}
     .days-grid{grid-template-columns:1fr}
@@ -246,8 +274,8 @@
     .btn-sm{min-height:44px;padding:.52rem .9rem}
     .open-builder-btn,.btn-log{min-height:44px}
     main{padding:1.25rem;padding-bottom:max(2rem,env(safe-area-inset-bottom))}
-    .user-husband .modal{width:100%;max-width:100%;max-height:85vh;max-height:85dvh;border-radius:12px 12px 0 0;align-self:flex-end}
-    .user-husband .modal-overlay{align-items:flex-end;justify-content:center;padding:0}
+    body:not(.user-wife) .modal{width:100%;max-width:100%;max-height:85vh;max-height:85dvh;border-radius:12px 12px 0 0;align-self:flex-end}
+    body:not(.user-wife) .modal-overlay{align-items:flex-end;justify-content:center;padding:0}
     .log-form select,.log-form input{min-height:44px}
   }
   @media(min-width:430px) and (max-width:580px){
@@ -342,11 +370,13 @@
 <!-- SYNC INDICATOR -->
 <div class="sync-indicator" id="syncIndicator"></div>
 
-<!-- PROFILE SELECTOR -->
+<!-- DASHBOARD -->
 <div class="profile-overlay" id="profileOverlay">
-  <h1 class="profile-title">THE <span>ALL</span> ROUNDER</h1>
+  <h1 class="profile-title"><span class="nb-excl">!</span>ALL ROUNDER</h1>
+  <p class="profile-subtitle">Select your account and start your journey</p>
+  <h2 class="profile-lets-play">Let's Play</h2>
   <div class="profile-cards" id="profileCards"></div>
-  <button class="btn-sm btn-cyan" onclick="openSetup()" style="position:relative;z-index:1">Customize Profiles</button>
+  <button class="btn-sm btn-cyan" onclick="openSetup()" style="position:relative;z-index:1">Your Crew</button>
 </div>
 
 <!-- PIN ENTRY -->
@@ -363,23 +393,43 @@
   </div>
 </div>
 
-<!-- PROFILE SETUP -->
+<!-- MANAGE ACCOUNTS -->
 <div class="setup-overlay" id="setupOverlay">
   <div class="setup-box">
-    <h3>Customize Profiles</h3>
-    <div style="margin-bottom:1rem">
-      <div style="font-size:.7rem;color:var(--text-muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.5rem">Profile 1</div>
-      <div class="setup-row"><label>Name</label><input type="text" id="setupName1" placeholder="e.g. Rob"></div>
-      <div class="setup-row"><label>PIN</label><input type="password" id="setupPin1" maxlength="4" inputmode="numeric" placeholder="Optional 4-digit PIN"></div>
-    </div>
-    <div style="margin-bottom:.5rem">
-      <div style="font-size:.7rem;color:var(--text-muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.5rem">Profile 2</div>
-      <div class="setup-row"><label>Name</label><input type="text" id="setupName2" placeholder="e.g. Sarah"></div>
-      <div class="setup-row"><label>PIN</label><input type="password" id="setupPin2" maxlength="4" inputmode="numeric" placeholder="Optional 4-digit PIN"></div>
-    </div>
+    <h3>Your Crew</h3>
+    <div id="manageAccountsList" style="margin-bottom:1rem;max-height:280px;overflow-y:auto"></div>
     <div class="setup-actions">
-      <button class="btn-sm btn-red" onclick="closeSetup()">Cancel</button>
-      <button class="btn-sm btn-cyan" onclick="saveSetup()">Save</button>
+      <button class="btn-sm btn-cyan" onclick="closeSetup();openAddUser()">Add Account</button>
+      <button class="btn-sm btn-red" onclick="closeSetup()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD USER -->
+<div class="setup-overlay" id="addUserOverlay">
+  <div class="setup-box">
+    <h3 id="addUserTitle">Add Account</h3>
+    <div class="setup-row"><label>Name</label><input type="text" id="addUserName" placeholder="e.g. Rob"></div>
+    <div class="setup-row"><label>PIN</label><input type="password" id="addUserPin" maxlength="4" inputmode="numeric" placeholder="Optional 4-digit PIN"></div>
+    <div class="setup-row"><label>Program</label><select id="addUserProgram">
+      <option value="viada">Viada Hybrid</option>
+      <option value="j3u">J3U / Wenning</option>
+      <option value="untamed">Untamed Run & Lift</option>
+      <option value="wife">Scoliosis</option>
+      <optgroup label="Barbell Medicine (BBM)">
+        <option value="bbm_novice">BBM Novice Linear Progression</option>
+        <option value="bbm_12week">BBM 12 Week Strength</option>
+        <option value="bbm_bridge">BBM Bridge V2.0</option>
+        <option value="bbm_hlm">BBM HLM</option>
+        <option value="bbm_gpp_endurance">BBM 7 Week GPP Endurance</option>
+        <option value="bbm_gpp_hypertrophy">BBM 7 Week GPP Hypertrophy</option>
+        <option value="bbm_olympic">BBM 4 Week Olympic</option>
+        <option value="bbm_timecrunch">BBM 4 Week Time Crunch</option>
+      </optgroup>
+    </select></div>
+    <div class="setup-actions">
+      <button class="btn-sm btn-red" onclick="closeAddUser()">Cancel</button>
+      <button class="btn-sm btn-cyan" onclick="saveAddUser()">Save</button>
     </div>
   </div>
 </div>
@@ -388,7 +438,7 @@
 <header>
   <div class="header-inner">
     <div class="logo-block">
-      <h1>THE <span>ALL</span> ROUNDER</h1>
+      <h1><span class="nb-excl">!</span>ALL ROUNDER</h1>
       <p id="headerSubtitle">Hybrid Athlete Program Tracker</p>
     </div>
     <div class="header-controls">
@@ -397,6 +447,7 @@
         <span class="user-badge-name" id="userBadgeName"></span>
         <button class="user-badge-switch" onclick="switchUser()">Switch</button>
       </div>
+      <button class="btn-sm btn-cyan" onclick="openSetup()" style="display:none" id="headerCrewBtn">Your Crew</button>
       <div class="week-nav">
         <button onclick="changeWeek(-1)">&lsaquo;</button>
         <span id="weekLabel">WEEK 1</span>
@@ -434,12 +485,12 @@
       <div class="stat-card" id="statEnduranceCard"><div class="label">Endurance Days</div><div class="value" id="statEndurance">0 <span>/ 3</span></div><div class="sub">Completed</div></div>
       <div class="stat-card"><div class="label">Total Logged</div><div class="value" id="statTotal">0</div><div class="sub">All time</div></div>
     </div>
-    <div class="prog-bar-container">
+    <div class="prog-bar-container" id="progBarContainer">
       <div class="prog-bar-header"><span>Weekly Progress</span><span id="progPct">0%</span></div>
       <div class="prog-bar"><div class="prog-bar-fill" id="progFill" style="width:0%"></div></div>
     </div>
     <div class="section-label">
-      <h2>This Week's Schedule</h2>
+      <h2>Your Week</h2>
       <div class="pill pill-standard" id="modePill">Standard</div>
     </div>
     <div class="days-grid" id="daysGrid"></div>
@@ -543,20 +594,29 @@ function showSync(status) {
 }
 
 // ═══════════════════════════════════════════════════
-//  USER PROFILE SYSTEM
+//  USER PROFILE SYSTEM (multi-user)
 // ═══════════════════════════════════════════════════
-const USER_COLORS = {
-  user1: { accent: '#22d3ee', dot: '#22d3ee', label: 'cyan' },
-  user2: { accent: '#e8736f', dot: '#e8736f', label: 'coral' }
-};
+const ACCENT_POOL = ['#22d3ee','#e8736f','#34d399','#a78bfa','#fbbf24','#f472b6'];
+function nextAccent() { return ACCENT_POOL[Object.keys(profiles).length % ACCENT_POOL.length]; }
+function generateUserId() { return 'user_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9); }
 
-let profiles = JSON.parse(localStorage.getItem('ar_profiles') || 'null') || {
-  user1: { name: 'Husband', pin: '' },
-  user2: { name: 'Wife', pin: '' }
-};
-
+let profiles = JSON.parse(localStorage.getItem('ar_profiles') || 'null') || {};
 let currentUser = localStorage.getItem('ar_currentUser') || null;
 let pendingUser = null;
+let editingUserId = null;
+
+function migrateProfiles() {
+  const raw = JSON.parse(localStorage.getItem('ar_profiles') || 'null');
+  if (raw && (raw.user1 || raw.user2)) {
+    profiles = {};
+    if (raw.user1) profiles['user1'] = { name: raw.user1.name || 'Husband', pin: raw.user1.pin || '', programType: 'viada', accent: '#22d3ee' };
+    if (raw.user2) profiles['user2'] = { name: raw.user2.name || 'Wife', pin: raw.user2.pin || '', programType: 'wife', accent: '#e8736f' };
+    localStorage.setItem('ar_profiles', JSON.stringify(profiles));
+    saveProfiles();
+  }
+  const cu = localStorage.getItem('ar_currentUser');
+  if (cu && (cu === 'user1' || cu === 'user2') && profiles[cu]) currentUser = cu;
+}
 
 function saveProfiles() {
   localStorage.setItem('ar_profiles', JSON.stringify(profiles));
@@ -565,29 +625,52 @@ function saveProfiles() {
   }
 }
 
+function normalizeProfile(uid, p) {
+  const out = { name: p.name || (uid === 'user1' ? 'Husband' : uid === 'user2' ? 'Wife' : 'User'), pin: p.pin || '' };
+  out.programType = p.programType || (uid === 'user2' ? 'wife' : 'viada');
+  out.accent = p.accent || (uid === 'user1' ? '#22d3ee' : uid === 'user2' ? '#e8736f' : ACCENT_POOL[0]);
+  return out;
+}
+
 function loadProfilesFromFirebase() {
   if (!firebaseReady) return;
   db.ref('allRounder/config/profiles').once('value').then(snap => {
     if (snap.val()) {
-      profiles = snap.val();
-      localStorage.setItem('ar_profiles', JSON.stringify(profiles));
+      const remote = snap.val();
+      if (Object.keys(remote).length > 0) {
+        profiles = {};
+        for (const [uid, p] of Object.entries(remote)) {
+          profiles[uid] = normalizeProfile(uid, p);
+        }
+        localStorage.setItem('ar_profiles', JSON.stringify(profiles));
+      }
       renderProfileCards();
     }
   });
 }
 
+const PROGRAM_LABELS = { viada:'Viada', j3u:'J3U / Wenning', untamed:'Untamed Run & Lift', wife:'Scoliosis', bbm_novice:'BBM Novice LP', bbm_12week:'BBM 12 Week Strength', bbm_bridge:'BBM Bridge V2.0', bbm_hlm:'BBM HLM', bbm_gpp_endurance:'BBM GPP Endurance', bbm_gpp_hypertrophy:'BBM GPP Hypertrophy', bbm_olympic:'BBM 4 Week Olympic', bbm_timecrunch:'BBM 4 Week Time Crunch' };
+const PROGRAM_TAGLINES = { viada:'Master your hybrid training', j3u:'Build strength & muscle', untamed:'Run hard, lift heavy', wife:'Scoliosis-safe movement', bbm_novice:'Linear progression for beginners', bbm_12week:'RPE-based strength after Novice LP', bbm_bridge:'Transition from Novice to intermediate', bbm_hlm:'Heavy Light Medium periodization', bbm_gpp_endurance:'Strength + endurance focus', bbm_gpp_hypertrophy:'Strength + muscle building', bbm_olympic:'Power clean, snatch, jerk focus', bbm_timecrunch:'Minimal time, 3 days/week' };
+
 function renderProfileCards() {
   const c = document.getElementById('profileCards');
-  c.innerHTML = ['user1','user2'].map(uid => {
+  const uids = Object.keys(profiles);
+  const cards = uids.map(uid => {
     const p = profiles[uid];
-    const colors = USER_COLORS[uid];
+    const accent = p.accent || nextAccent();
     const initial = (p.name || 'U')[0].toUpperCase();
-    return `<div class="profile-card user-${uid === 'user1' ? 'husband' : 'wife'}" role="button" tabindex="0" onclick="selectProfile('${uid}')" onkeydown="if(event.key==='Enter'||event.key===' ')selectProfile('${uid}')">
-      <div class="profile-avatar" style="background:${colors.accent}22;border-color:${colors.accent}88;color:${colors.accent}">${initial}</div>
-      <div class="profile-name">${p.name || (uid === 'user1' ? 'Husband' : 'Wife')}</div>
+    return `<div class="profile-card" role="button" tabindex="0" onclick="selectProfile('${uid}')" onkeydown="if(event.key==='Enter'||event.key===' ')selectProfile('${uid}')" style="--profile-accent:${accent}">
+      <div class="profile-avatar" style="background:${accent}22;border-color:${accent}88;color:${accent}">${initial}</div>
+      <div class="profile-name">${(p.name || 'User').replace(/</g,'&lt;')}</div>
       <div class="profile-role">${p.pin ? 'PIN Protected' : 'Tap to enter'}</div>
     </div>`;
   }).join('');
+  const addCard = `<div class="profile-card add-user-card" role="button" tabindex="0" onclick="openAddUser()" onkeydown="if(event.key==='Enter'||event.key===' ')openAddUser()">
+    <div class="profile-avatar add-avatar">+</div>
+    <div class="profile-name">Add Account</div>
+    <div class="profile-role">Start your journey</div>
+  </div>`;
+  c.innerHTML = cards + addCard;
 }
 
 function selectProfile(uid) {
@@ -630,6 +713,8 @@ function loginAs(uid) {
   localStorage.setItem('ar_currentUser', uid);
   applyUserTheme(uid);
   document.getElementById('profileOverlay').classList.add('hidden');
+  const crewBtn = document.getElementById('headerCrewBtn');
+  if (crewBtn) crewBtn.style.display = '';
   loadUserData();
 }
 
@@ -641,42 +726,116 @@ function switchUser() {
   currentUser = null;
   localStorage.removeItem('ar_currentUser');
   document.getElementById('profileOverlay').classList.remove('hidden');
+  const crewBtn = document.getElementById('headerCrewBtn');
+  if (crewBtn) crewBtn.style.display = 'none';
   renderProfileCards();
 }
 
 function applyUserTheme(uid) {
-  const colors = USER_COLORS[uid];
-  document.documentElement.style.setProperty('--accent', colors.accent);
+  const p = profiles[uid];
+  if (!p) return;
+  const accent = p.accent || '#22d3ee';
+  document.documentElement.style.setProperty('--accent', accent);
   const dot = document.getElementById('userBadgeDot');
-  dot.style.background = colors.dot;
-  document.body.classList.toggle('user-wife', uid === 'user2');
-  const name = profiles[uid].name || (uid === 'user1' ? 'Husband' : 'Wife');
-  document.getElementById('userBadgeName').textContent = name;
-  document.getElementById('headerSubtitle').textContent = name + "'s Tracker";
+  if (dot) dot.style.background = accent;
+  document.body.classList.toggle('user-wife', (p.programType || '') === 'wife');
+  const name = p.name || 'User';
+  const nameEl = document.getElementById('userBadgeName');
+  const subEl = document.getElementById('headerSubtitle');
+  if (nameEl) nameEl.textContent = name;
+  if (subEl) subEl.textContent = name + "'s Tracker";
 }
 
 function openSetup() {
-  document.getElementById('setupName1').value = profiles.user1.name || '';
-  document.getElementById('setupPin1').value = profiles.user1.pin || '';
-  document.getElementById('setupName2').value = profiles.user2.name || '';
-  document.getElementById('setupPin2').value = profiles.user2.pin || '';
+  renderManageAccounts();
   document.getElementById('setupOverlay').classList.add('open');
 }
 
 function closeSetup() {
   document.getElementById('setupOverlay').classList.remove('open');
+  editingUserId = null;
 }
 
-function saveSetup() {
-  profiles.user1.name = document.getElementById('setupName1').value.trim() || 'Husband';
-  profiles.user1.pin = document.getElementById('setupPin1').value.trim();
-  profiles.user2.name = document.getElementById('setupName2').value.trim() || 'Wife';
-  profiles.user2.pin = document.getElementById('setupPin2').value.trim();
-  saveProfiles();
+function renderManageAccounts() {
+  const list = document.getElementById('manageAccountsList');
+  if (!list) return;
+  const uids = Object.keys(profiles);
+  list.innerHTML = uids.map(uid => {
+    const p = profiles[uid];
+    const progLabel = PROGRAM_LABELS[p.programType] || p.programType || 'Viada';
+    return `<div class="manage-account-row">
+      <div class="manage-account-info">
+        <span class="manage-account-name">${(p.name || 'User').replace(/</g,'&lt;')}</span>
+        <span class="manage-account-program">${progLabel}</span>
+      </div>
+      <div class="manage-account-actions">
+        <button class="btn-sm btn-cyan" onclick="editUser('${uid}')">Edit</button>
+        <button class="btn-sm btn-red" onclick="deleteUser('${uid}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('') || '<div class="manage-empty">No crew yet. Add your first account below.</div>';
+}
+
+function editUser(uid) {
+  editingUserId = uid;
+  const p = profiles[uid];
+  document.getElementById('addUserName').value = p.name || '';
+  document.getElementById('addUserPin').value = p.pin || '';
+  document.getElementById('addUserProgram').value = p.programType || 'viada';
+  document.getElementById('addUserTitle').textContent = 'Edit Account';
+  document.getElementById('addUserOverlay').classList.add('open');
   closeSetup();
+}
+
+function deleteUser(uid) {
+  if (!confirm('Delete this account? Their data will remain in storage but they will no longer appear in the list.')) return;
+  delete profiles[uid];
+  if (currentUser === uid) {
+    currentUser = null;
+    localStorage.removeItem('ar_currentUser');
+    document.getElementById('profileOverlay').classList.remove('hidden');
+  }
+  saveProfiles();
   renderProfileCards();
-  if (currentUser) applyUserTheme(currentUser);
-  showToast('Profiles updated!');
+  renderManageAccounts();
+  showToast('Account removed.');
+}
+
+function openAddUser() {
+  editingUserId = null;
+  document.getElementById('addUserName').value = '';
+  document.getElementById('addUserPin').value = '';
+  document.getElementById('addUserProgram').value = 'viada';
+  document.getElementById('addUserTitle').textContent = 'Add Account';
+  document.getElementById('addUserOverlay').classList.add('open');
+}
+
+function closeAddUser() {
+  document.getElementById('addUserOverlay').classList.remove('open');
+  editingUserId = null;
+}
+
+function saveAddUser() {
+  const name = document.getElementById('addUserName').value.trim();
+  if (!name) { showToast('Name is required.'); return; }
+  const pin = document.getElementById('addUserPin').value.trim();
+  const programType = document.getElementById('addUserProgram').value || 'viada';
+  const accent = nextAccent();
+  if (editingUserId) {
+    profiles[editingUserId].name = name;
+    profiles[editingUserId].pin = pin;
+    profiles[editingUserId].programType = programType;
+    showToast('Account updated!');
+  } else {
+    const uid = generateUserId();
+    profiles[uid] = { name, pin, programType, accent };
+    showToast('Account created!');
+  }
+  saveProfiles();
+  closeAddUser();
+  renderProfileCards();
+  const ml = document.getElementById('manageAccountsList');
+  if (ml && ml.closest('.setup-box')) renderManageAccounts();
 }
 
 // ═══════════════════════════════════════════════════
@@ -1090,6 +1249,100 @@ const HUSBAND_UNTAMED_DROPDOWN = [
 ];
 
 // ═══════════════════════════════════════════════════
+//  BBM (BARBELL MEDICINE) PROGRAM DATA
+// ═══════════════════════════════════════════════════
+const BBM_NOVICE = { standard:[
+  {day:'Day 1',title:'Squat + Bench + Deadlift',type:'strength',strength:['Squat: 5 x 3 sets','Bench: 5 x 3 sets','Deadlift: 5 x 1 set','Chins: 8 min AMRAP (or rows)'],endurance:null},
+  {day:'Day 2',title:'Squat + Press + Deadlift',type:'strength',strength:['Squat: 5 x 3 sets','Strict Press: 5 x 3 sets','Deadlift: 5 x 1 set','Chins: 8 min AMRAP (or rows)'],endurance:null},
+  {day:'Day 3',title:'Squat + Bench + Deadlift',type:'strength',strength:['Squat: 5 x 3 sets','Bench: 5 x 3 sets','Deadlift: 5 x 1 set','Chins: 8 min AMRAP (or rows)'],endurance:null},
+  {day:'Day 4',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 5',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 6',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 7',title:'Rest',type:'rest',strength:[],endurance:null}
+] };
+
+const BBM_12WEEK = { standard:[
+  {day:'Day 1',title:'Squat + Bench + Supplemental',type:'strength',strength:['C-S + C-B + S-B2','RPE-based. See week block for volume.','GPP: 25 min steady state @ RPE 6, 7 min upper back'],endurance:null},
+  {day:'Day 2',title:'Deadlift + Press + Supplemental',type:'strength',strength:['C-D + C-P + S-S2','RPE-based. See week block for volume.'],endurance:null},
+  {day:'Day 3',title:'Supplemental Squat + Bench + Supplemental',type:'strength',strength:['S-S1 + S-B3 + S-B4','Odd supplemental: 4@7, 4@8, 4@9. Even: 10@7, 10@8, 10@9'],endurance:null},
+  {day:'Day 4',title:'Supplemental Deadlift + Supplemental',type:'strength',strength:['S-D1 + S-B5 + S-D2','GPP: 25\u201330 min steady state @ RPE 6, upper back work'],endurance:null},
+  {day:'Day 5',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 6',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 7',title:'Rest',type:'rest',strength:[],endurance:null}
+] };
+
+const BBM_BRIDGE = { standard:[
+  {day:'Day 1',title:'Heavy \u2014 Squat + Bench + Supplemental',type:'strength',strength:['C-S + C-B + S-D1','5 reps @ 6, 5 @ 7, 5 @ 8 x 2 sets (Low Stress)','GPP: 30 min steady state @ RPE 6\u20137, chins/rows 6 min AMRAP'],endurance:null},
+  {day:'Day 2',title:'Light \u2014 Supplemental + Press + Supplemental',type:'strength',strength:['S-S1 + C-P + S-B2','Supplemental: 5@7, 5@8, 5@9. Repeat 5@9 x 1 set'],endurance:null},
+  {day:'Day 3',title:'Medium \u2014 Deadlift + Supplemental',type:'strength',strength:['C-D + S-B1 + S-S2','5 min rest for sets > RPE 7'],endurance:null},
+  {day:'Day 4',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 5',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 6',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 7',title:'Rest',type:'rest',strength:[],endurance:null}
+] };
+
+const BBM_HLM = { standard:[
+  {day:'Day 1',title:'Heavy \u2014 Squat + Bench + Supplemental',type:'strength',strength:['C-S + C-B + S-D1','5 reps @ 6 (70%), 5 @ 7 (75%), 5 @ 8 (80%)','Supplemental odd: 4@7, 4@8, 4@9. Even: 8@6, 8@7, 8@8'],endurance:null},
+  {day:'Day 2',title:'Light \u2014 Press + Supplemental',type:'strength',strength:['C-P + S-S2 + S-B2','Light day \u2014 reduced load'],endurance:null},
+  {day:'Day 3',title:'Medium \u2014 Deadlift + Supplemental',type:'strength',strength:['C-D + S-B1 + S-S1','GPP: 30 min steady state, sprint 30s every 2 min, upper back 7 min AMRAP, ab work'],endurance:null},
+  {day:'Day 4',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 5',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 6',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 7',title:'Rest',type:'rest',strength:[],endurance:null}
+] };
+
+const BBM_GPP_ENDURANCE = { standard:[
+  {day:'Day 1',title:'Squat + Press + Chins',type:'strength',strength:['C-S + C-P + 8 min AMRAP Chins','5 @ 7, 5 @ 8, 5 @ 9 (no fatigue or x3 sets)'],endurance:null},
+  {day:'Day 2',title:'Run/Row Test',type:'endurance',strength:[],endurance:{label:'400m Run / 500m Row Test',tag:'Test'}},
+  {day:'Day 3',title:'Deadlift + Supplemental + Rows',type:'strength',strength:['C-D + S-B1 + 8 min Pendlay Rows'],endurance:null},
+  {day:'Day 4',title:'Run/Row',type:'endurance',strength:[],endurance:{label:'5K Run / Row Test or 35 min @ RPE 6',tag:'Endurance'}},
+  {day:'Day 5',title:'Bench + Supplemental + Pull-ups',type:'strength',strength:['C-B + S-S1 + 8 min Pull-ups'],endurance:null},
+  {day:'Day 6',title:'Run/Row',type:'endurance',strength:[],endurance:{label:'1 mile run / 2K Row or 4 min @ RPE 8 x 3 rounds',tag:'Endurance'}},
+  {day:'Day 7',title:'Rest',type:'rest',strength:[],endurance:null}
+] };
+
+const BBM_GPP_HYPERTROPHY = { standard:[
+  {day:'Day 1',title:'Squat + Bench + Supplemental',type:'strength',strength:['C-S + C-B + S-B2','6 @ 6, 6 @ 7, 6 @ 8 x 2\u20133 sets','GPP: 30 min steady state, sprint 30s, upper back 8 min AMRAP, ab work'],endurance:null},
+  {day:'Day 2',title:'Press + Supplemental',type:'strength',strength:['C-P + S-D1 + S-B4','Odd supplemental: 8@6, 8@7, 8@8. Even: 14\u201316 @ RPE 8, 3\u20135 myoreps'],endurance:null},
+  {day:'Day 3',title:'Deadlift + Supplemental',type:'strength',strength:['C-D + S-B1 + S-D2','Bonus: Bicep curls 12 reps x 3\u20134 sets, Tricep pressdowns 12 reps x 3\u20134 sets'],endurance:null},
+  {day:'Day 4',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 5',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 6',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 7',title:'Rest',type:'rest',strength:[],endurance:null}
+] };
+
+const BBM_OLYMPIC = { standard:[
+  {day:'Day 1',title:'Power Clean + Squat + Press',type:'strength',strength:['Power Clean x 3 x 5 @ RPE 8','C-S + C-P','1 @ 8, -20% from single x 5 reps x 3\u20135 sets'],endurance:null},
+  {day:'Day 2',title:'Power Snatch + Deadlift + Bench',type:'strength',strength:['Power Snatch 2 x 6 @ RPE 8','C-D + C-B'],endurance:null},
+  {day:'Day 3',title:'Split Jerk + Supplemental',type:'strength',strength:['Split Jerk x 1 x 8 EMOM','S-S1 + S-B1'],endurance:null},
+  {day:'Day 4',title:'Snatch + Clean and Jerk',type:'strength',strength:['Snatch x 2 reps x 7 sets @ RPE 7\u20138','Clean and Jerk x 3 x 5'],endurance:null},
+  {day:'Day 5',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 6',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 7',title:'Rest',type:'rest',strength:[],endurance:null}
+] };
+
+const BBM_TIME_CRUNCH = { standard:[
+  {day:'Day 1',title:'Squat + Press + Supplemental',type:'strength',strength:['C-S + C-P + S-B2','1 @ 8, 5 @ 9, -8% from 5@9 x 2\u20133 sets','S-B2: Pendlay Rows. S-S2: Leg Press or RDL'],endurance:null},
+  {day:'Day 2',title:'Bench + Supplemental',type:'strength',strength:['C-B + S-S1 + S-D2','S-D2: Pull-ups or Chin-ups (alternate weekly)'],endurance:null},
+  {day:'Day 3',title:'Deadlift + Supplemental',type:'strength',strength:['C-D + S-B1 + S-S2','S-B1: Press touch n go. S-S1: Squat no belt'],endurance:null},
+  {day:'Day 4',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 5',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 6',title:'Rest',type:'rest',strength:[],endurance:null},
+  {day:'Day 7',title:'Rest',type:'rest',strength:[],endurance:null}
+] };
+
+const BBM_DROPDOWNS = {
+  bbm_novice:['Day 1 \u2014 Squat + Bench + Deadlift','Day 2 \u2014 Squat + Press + Deadlift','Day 3 \u2014 Squat + Bench + Deadlift','Day 4 \u2014 Rest','Day 5 \u2014 Rest','Day 6 \u2014 Rest','Day 7 \u2014 Rest'],
+  bbm_12week:['Day 1 \u2014 Squat + Bench + Supplemental','Day 2 \u2014 Deadlift + Press + Supplemental','Day 3 \u2014 Supplemental Squat + Bench','Day 4 \u2014 Supplemental Deadlift','Day 5 \u2014 Rest','Day 6 \u2014 Rest','Day 7 \u2014 Rest'],
+  bbm_bridge:['Day 1 \u2014 Heavy (Squat + Bench)','Day 2 \u2014 Light (Press + Supplemental)','Day 3 \u2014 Medium (Deadlift)','Day 4 \u2014 Rest','Day 5 \u2014 Rest','Day 6 \u2014 Rest','Day 7 \u2014 Rest'],
+  bbm_hlm:['Day 1 \u2014 Heavy','Day 2 \u2014 Light','Day 3 \u2014 Medium','Day 4 \u2014 Rest','Day 5 \u2014 Rest','Day 6 \u2014 Rest','Day 7 \u2014 Rest'],
+  bbm_gpp_endurance:['Day 1 \u2014 Squat + Press + Chins','Day 2 \u2014 Run/Row Test','Day 3 \u2014 Deadlift + Rows','Day 4 \u2014 Run/Row','Day 5 \u2014 Bench + Pull-ups','Day 6 \u2014 Run/Row','Day 7 \u2014 Rest'],
+  bbm_gpp_hypertrophy:['Day 1 \u2014 Squat + Bench','Day 2 \u2014 Press + Supplemental','Day 3 \u2014 Deadlift + Supplemental','Day 4 \u2014 Rest','Day 5 \u2014 Rest','Day 6 \u2014 Rest','Day 7 \u2014 Rest'],
+  bbm_olympic:['Day 1 \u2014 Power Clean + Squat + Press','Day 2 \u2014 Power Snatch + Deadlift + Bench','Day 3 \u2014 Split Jerk + Supplemental','Day 4 \u2014 Snatch + Clean and Jerk','Day 5 \u2014 Rest','Day 6 \u2014 Rest','Day 7 \u2014 Rest'],
+  bbm_timecrunch:['Day 1 \u2014 Squat + Press + Rows','Day 2 \u2014 Bench + Pull-ups','Day 3 \u2014 Deadlift + Supplemental','Day 4 \u2014 Rest','Day 5 \u2014 Rest','Day 6 \u2014 Rest','Day 7 \u2014 Rest']
+};
+
+// ═══════════════════════════════════════════════════
 //  PROGRAM DATA
 // ═══════════════════════════════════════════════════
 const program = {
@@ -1346,11 +1599,49 @@ const HUSBAND_DROPDOWN = [
   'Day 7 \u2014 Rest'
 ];
 
-function isWife() { return currentUser === 'user2'; }
-function isJ3U() { return !isWife() && S.husbandProgram === 'j3u'; }
-function isUntamed() { return !isWife() && S.husbandProgram === 'untamed'; }
-function getProgram() { return isWife() ? wifeProgram : (isJ3U() ? J3U_WENNING : (isUntamed() ? UNTAMED_RUN_LIFT : program)); }
-function getTotalWeeks() { return isWife() ? 10 : 12; }
+const BBM_PROGRAMS = ['bbm_novice','bbm_12week','bbm_bridge','bbm_hlm','bbm_gpp_endurance','bbm_gpp_hypertrophy','bbm_olympic','bbm_timecrunch'];
+const BBM_WEEKS = { bbm_novice:12, bbm_12week:12, bbm_bridge:8, bbm_hlm:8, bbm_gpp_endurance:7, bbm_gpp_hypertrophy:7, bbm_olympic:4, bbm_timecrunch:4 };
+const BBM_PROGRAM_DATA = { bbm_novice:BBM_NOVICE, bbm_12week:BBM_12WEEK, bbm_bridge:BBM_BRIDGE, bbm_hlm:BBM_HLM, bbm_gpp_endurance:BBM_GPP_ENDURANCE, bbm_gpp_hypertrophy:BBM_GPP_HYPERTROPHY, bbm_olympic:BBM_OLYMPIC, bbm_timecrunch:BBM_TIME_CRUNCH };
+
+function getProgramType() {
+  if (!currentUser || !profiles[currentUser]) return null;
+  const p = profiles[currentUser];
+  if (p.programType === 'wife') return 'wife';
+  if (p.programType === 'j3u') return 'j3u';
+  if (p.programType === 'untamed') return 'untamed';
+  if (BBM_PROGRAMS.indexOf(p.programType) >= 0) return p.programType;
+  return 'viada';
+}
+function isWife() { return getProgramType() === 'wife'; }
+function isJ3U() {
+  const pt = getProgramType();
+  if (pt === 'wife') return false;
+  if (BBM_PROGRAMS.indexOf(pt) >= 0) return false;
+  if (pt === 'j3u') return true;
+  if (pt === 'untamed') return false;
+  return S.husbandProgram === 'j3u';
+}
+function isUntamed() {
+  const pt = getProgramType();
+  if (pt === 'wife') return false;
+  if (BBM_PROGRAMS.indexOf(pt) >= 0) return false;
+  if (pt === 'j3u') return false;
+  if (pt === 'untamed') return true;
+  return S.husbandProgram === 'untamed';
+}
+function isBBM() { return BBM_PROGRAMS.indexOf(getProgramType()) >= 0; }
+function getProgram() {
+  if (isWife()) return wifeProgram;
+  if (isJ3U()) return J3U_WENNING;
+  if (isUntamed()) return UNTAMED_RUN_LIFT;
+  if (isBBM()) return BBM_PROGRAM_DATA[getProgramType()];
+  return program;
+}
+function getTotalWeeks() {
+  if (isWife()) return 10;
+  if (isBBM()) return BBM_WEEKS[getProgramType()] || 12;
+  return 12;
+}
 
 function setHusbandProgram(p) {
   if (isWife()) return;
@@ -1392,7 +1683,12 @@ function getUntamedRunProtocols(wk) {
 
 function updateDropdown() {
   var sel = document.getElementById('logDay');
-  var opts = isWife() ? WIFE_DROPDOWN : (isJ3U() ? HUSBAND_J3U_DROPDOWN : (isUntamed() ? HUSBAND_UNTAMED_DROPDOWN : HUSBAND_DROPDOWN));
+  var opts;
+  if (isWife()) opts = WIFE_DROPDOWN;
+  else if (isBBM()) opts = BBM_DROPDOWNS[getProgramType()] || HUSBAND_DROPDOWN;
+  else if (isJ3U()) opts = HUSBAND_J3U_DROPDOWN;
+  else if (isUntamed()) opts = HUSBAND_UNTAMED_DROPDOWN;
+  else opts = HUSBAND_DROPDOWN;
   sel.innerHTML = '<option value="">Select Session</option>';
   opts.forEach(function(o) { sel.innerHTML += '<option>' + o + '</option>'; });
 }
@@ -1464,6 +1760,20 @@ function updateNotesTab() {
       '<li>During rest: crunch down on abs and hold the contraction with controlled breathing.</li>' +
       '<li>Wear a belt on all axial loading hard sets in the gym.</li>' +
       '</ul></div>';
+  } else if (isBBM()) {
+    var bbmType = getProgramType();
+    var bbmLabel = PROGRAM_LABELS[bbmType] || 'BBM';
+    grid.innerHTML = '<div class="notes-card"><h3>' + bbmLabel + ' \u2014 Overview</h3><ul>' +
+      '<li><strong style="color:var(--cyan)">RPE-based:</strong> All BBM programs use RPE (Rate of Perceived Exertion). RPE 6 = easy, RPE 10 = maximal. Use the RPE Chart in the Excel template for reference.</li>' +
+      '<li><strong style="color:var(--cyan)">Competition lifts:</strong> C-S = Squat, C-B = Bench, C-P = Press, C-D = Deadlift. Supplemental (S-S1, S-B2, etc.) vary by program.</li>' +
+      '<li><strong style="color:var(--gold)">Progression:</strong> Add weight when you hit the top of the rep range at the prescribed RPE. Take 3\u20135% off after @9 sets to keep RPE @9.</li>' +
+      '<li><strong style="color:var(--gold)">AMRAP:</strong> As many reps as possible. Do submaximal sets \u2014 don\'t go to failure on every set.</li>' +
+      '</ul></div>' +
+      '<div class="notes-card"><h3>Program Notes</h3><ul>' +
+      '<li>Refer to the MasterTemplates Excel for full week-by-week prescriptions, block types, and supplemental lift variations.</li>' +
+      '<li>Rest: 5 min for competition lifts, 3\u20134 min for supplemental.</li>' +
+      '<li>If you cannot do unassisted chins/pull-ups, use rows or assisted chins per the program appendix.</li>' +
+      '</ul></div>';
   } else if (isUntamed()) {
     var uPhase = getUntamedPhaseForWeek(S.week);
     var runP = getUntamedRunProtocols(S.week);
@@ -1500,18 +1810,28 @@ function updateModeToggle() {
   var pd = document.getElementById('phaseDisplay');
   var pt = document.getElementById('programToggle');
   if (!pt) return;
-  if (isWife()) {
+  var ptype = getProgramType();
+  if (ptype === 'wife') {
     pt.style.display = 'none';
     mt.style.display = 'none';
     pd.style.display = '';
     var phase = getPhaseForWeek(S.week);
     pd.textContent = phase.name + ' (Weeks ' + phase.weeks + ')';
-  } else {
+  } else if (ptype === 'viada') {
     pt.style.display = 'flex';
     document.getElementById('btnViada').classList.toggle('active', S.husbandProgram === 'viada');
     document.getElementById('btnJ3U').classList.toggle('active', isJ3U());
     document.getElementById('btnUntamed').classList.toggle('active', isUntamed());
-    mt.style.display = (isJ3U() || isUntamed()) ? 'none' : 'flex';
+    mt.style.display = (S.husbandProgram === 'j3u' || S.husbandProgram === 'untamed') ? 'none' : 'flex';
+    pd.style.display = 'none';
+  } else if (isBBM()) {
+    pt.style.display = 'none';
+    mt.style.display = 'none';
+    pd.style.display = '';
+    pd.textContent = PROGRAM_LABELS[ptype] || 'BBM Program';
+  } else {
+    pt.style.display = 'none';
+    mt.style.display = 'none';
     pd.style.display = 'none';
   }
 }
@@ -1521,6 +1841,7 @@ function updateHeaderSubtitle() {
   if (isWife()) { el.textContent = 'Glute & Quad Hypertrophy + Scoliosis Program'; }
   else if (isJ3U()) { el.textContent = 'J3U Bodybuilding + Wenning Warmup Protocol'; }
   else if (isUntamed()) { el.textContent = 'Untamed Run & Lift'; }
+  else if (isBBM()) { el.textContent = (PROGRAM_LABELS[getProgramType()] || 'BBM') + ' Program'; }
   else { el.textContent = 'Hybrid Athlete Program Tracker'; }
 }
 
@@ -1620,7 +1941,7 @@ function loadUserData() {
   if (!S.week) S.week = 1;
   S.totalWeeks = getTotalWeeks();
   if (!S.mode) S.mode = 'standard';
-  if (isWife()) S.mode = 'standard';
+  if (isWife() || isBBM()) S.mode = 'standard';
   if (!S.husbandProgram || !['viada','j3u','untamed'].includes(S.husbandProgram)) S.husbandProgram = 'viada';
   if (!S.completed) S.completed = {};
   if (!S.log) S.log = [];
@@ -1636,7 +1957,7 @@ function loadUserData() {
       if (remote) {
         S = remote;
         S.totalWeeks = getTotalWeeks();
-        if (isWife()) S.mode = 'standard';
+        if (isWife() || isBBM()) S.mode = 'standard';
         if (!S.husbandProgram || !['viada','j3u','untamed'].includes(S.husbandProgram)) S.husbandProgram = 'viada';
         if (!S.completed) S.completed = {};
         if (!S.log) S.log = [];
@@ -1666,7 +1987,7 @@ function startFirebaseListener() {
     if (remote) {
       S = remote;
       S.totalWeeks = getTotalWeeks();
-      if (isWife()) S.mode = 'standard';
+      if (isWife() || isBBM()) S.mode = 'standard';
       if (!S.husbandProgram || !['viada','j3u','untamed'].includes(S.husbandProgram)) S.husbandProgram = 'viada';
       if (!S.completed) S.completed = {};
       if (!S.log) S.log = [];
@@ -1722,9 +2043,37 @@ function switchTab(id) {
 // ═══════════════════════════════════════════════════
 //  CONTROLS
 // ═══════════════════════════════════════════════════
-function changeWeek(d) { S.week = Math.max(1, Math.min(S.totalWeeks, S.week + d)); save(); render(); }
+function changeWeek(d) {
+  S.week = Math.max(1, Math.min(S.totalWeeks, S.week + d));
+  var wn = document.querySelector('.week-nav');
+  if (wn) { wn.classList.add('week-bounce'); setTimeout(function(){ wn.classList.remove('week-bounce'); }, 400); }
+  save(); render();
+}
 function setMode(m) { if (isWife()) return; S.mode = m; document.getElementById('btnStandard').classList.toggle('active', m === 'standard'); document.getElementById('btnDeload').classList.toggle('active', m === 'deload'); save(); render(); }
 function confirmReset() { if (!confirm('Reset completion marks for Week ' + S.week + '?')) return; Object.keys(S.completed).filter(k => k.startsWith(S.week + '-')).forEach(k => delete S.completed[k]); save(); render(); showToast('Week ' + S.week + ' reset.'); }
+
+// ═══════════════════════════════════════════════════
+//  COMPLETION SOUND (optional, user-initiated)
+// ═══════════════════════════════════════════════════
+var _audioCtx = null;
+function playCompletionSound() {
+  try {
+    if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (_audioCtx.state === 'suspended') _audioCtx.resume();
+    var osc = _audioCtx.createOscillator();
+    var gain = _audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(_audioCtx.destination);
+    osc.frequency.setValueAtTime(180, _audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(120, _audioCtx.currentTime + 0.08);
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0, _audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.12, _audioCtx.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, _audioCtx.currentTime + 0.15);
+    osc.start(_audioCtx.currentTime);
+    osc.stop(_audioCtx.currentTime + 0.15);
+  } catch (e) {}
+}
 
 // ═══════════════════════════════════════════════════
 //  TOGGLE COMPLETE
@@ -1740,9 +2089,12 @@ function toggleDay(i) {
   if (!was) {
     const bData = S.builders[key] || {};
     const exList = Object.entries(bData).filter(([k, v]) => v && !k.endsWith('-note') && v !== '__other__').map(([k, v]) => v).join(' · ');
-    var modeLabel = isWife() ? getPhaseForWeek(S.week).name : (isUntamed() ? getUntamedPhaseForWeek(S.week).name : (S.mode === 'standard' ? 'Standard' : 'Taper/Deload'));
+    var modeLabel = isWife() ? getPhaseForWeek(S.week).name : (isBBM() ? (PROGRAM_LABELS[getProgramType()] || 'BBM') : (isUntamed() ? getUntamedPhaseForWeek(S.week).name : (S.mode === 'standard' ? 'Standard' : 'Taper/Deload')));
     S.log.unshift({ date: new Date().toISOString().slice(0, 10), session: d.day + ' — ' + d.title, week: S.week, mode: modeLabel, note: exList || '' });
     showToast('✓ ' + d.day + ' logged!');
+    var grid = document.getElementById('daysGrid');
+    if (grid) { grid.classList.add('day-shake'); setTimeout(function(){ grid.classList.remove('day-shake'); }, 450); }
+    playCompletionSound();
   }
   save(); render();
 }
@@ -1829,7 +2181,7 @@ function addLog() {
   const session = document.getElementById('logDay').value;
   const note = document.getElementById('logNote').value.trim();
   if (!session) { showToast('Select a session', 'error'); return; }
-  var modeLabel = isWife() ? getPhaseForWeek(S.week).name : (isUntamed() ? getUntamedPhaseForWeek(S.week).name : (S.mode === 'standard' ? 'Standard' : 'Taper/Deload'));
+  var modeLabel = isWife() ? getPhaseForWeek(S.week).name : (isBBM() ? (PROGRAM_LABELS[getProgramType()] || 'BBM') : (isUntamed() ? getUntamedPhaseForWeek(S.week).name : (S.mode === 'standard' ? 'Standard' : 'Taper/Deload')));
   S.log.unshift({ date, session, week: S.week, mode: modeLabel, note });
   document.getElementById('logDay').value = ''; document.getElementById('logNote').value = '';
   save(); renderLog(); showToast('Entry added!');
@@ -1866,6 +2218,9 @@ function render() {
     var phase = getPhaseForWeek(S.week);
     pill.textContent = phase.name;
     pill.className = 'pill phase-pill';
+  } else if (isBBM()) {
+    pill.textContent = PROGRAM_LABELS[getProgramType()] || 'BBM';
+    pill.className = 'pill pill-standard';
   } else if (isJ3U()) {
     pill.textContent = S.mode === 'standard' ? 'J3U Standard' : 'J3U Deload';
     pill.className = 'pill ' + (S.mode === 'standard' ? 'pill-standard' : 'pill-deload');
@@ -1883,12 +2238,14 @@ function render() {
     if (S.completed[S.week + '-' + i]) { done++; if (d.type === 'strength') str++; if (d.type === 'both') { str++; end++; } if (d.type === 'endurance') end++; }
   });
   var totalAct = isWife() ? 4 : days.filter(d => d.type !== 'rest').length;
-  var strTotal = isWife() ? 4 : (isJ3U() ? 4 : (isUntamed() ? 5 : 3));
+  var strTotal = isWife() ? 4 : (isBBM() ? days.filter(d => d.type === 'strength').length : (isJ3U() ? 4 : (isUntamed() ? 5 : 3)));
   const pct = Math.round((done / totalAct) * 100);
   document.getElementById('statWeek').innerHTML = S.week + ' <span>/ ' + S.totalWeeks + '</span>';
   if (isWife()) {
     var ph = getPhaseForWeek(S.week);
     document.getElementById('statMode').textContent = ph.name + ' Phase';
+  } else if (isBBM()) {
+    document.getElementById('statMode').textContent = PROGRAM_LABELS[getProgramType()] || 'BBM';
   } else if (isJ3U()) {
     document.getElementById('statMode').textContent = S.mode === 'standard' ? 'Standard Phase' : 'Deload Phase';
   } else if (isUntamed()) {
@@ -1900,6 +2257,11 @@ function render() {
   document.getElementById('statStrength').innerHTML = str + ' <span>/ ' + strTotal + '</span>';
   if (isWife() || isJ3U()) {
     document.getElementById('statEnduranceCard').style.display = 'none';
+  } else if (isBBM() && getProgramType() !== 'bbm_gpp_endurance') {
+    document.getElementById('statEnduranceCard').style.display = 'none';
+  } else if (isBBM() && getProgramType() === 'bbm_gpp_endurance') {
+    document.getElementById('statEnduranceCard').style.display = '';
+    document.getElementById('statEndurance').innerHTML = end + ' <span>/ 3</span>';
   } else if (isUntamed()) {
     document.getElementById('statEnduranceCard').style.display = '';
     document.getElementById('statEndurance').innerHTML = end + ' <span>/ 1</span>';
@@ -1910,6 +2272,8 @@ function render() {
   document.getElementById('statTotal').textContent = S.log ? S.log.length : 0;
   document.getElementById('progPct').textContent = pct + '%';
   document.getElementById('progFill').style.width = pct + '%';
+  var progCont = document.getElementById('progBarContainer');
+  if (progCont) progCont.classList.toggle('week-complete', pct >= 100);
   document.getElementById('wkNoteLabel').textContent = 'Week ' + S.week;
   document.getElementById('weekNotes').value = (S.notes && S.notes[S.week]) || '';
   updateModeToggle();
@@ -1962,7 +2326,7 @@ function render() {
             body += '<div class="workout-block"><span class="block-tag tag-endurance">Endurance</span><div class="endurance-badge">' + day.endurance.label + '</div></div>';
           }
         }
-        const cfg = isJ3U() ? BUILDER_J3U[i] : (isUntamed() ? BUILDER_UNTAMED[i] : BUILDER[i]);
+        const cfg = !isBBM() ? (isJ3U() ? BUILDER_J3U[i] : (isUntamed() ? BUILDER_UNTAMED[i] : BUILDER[i])) : null;
         if (cfg && !hasPlan && !isJ3U()) {
           const currentPhase = S.mode;
           const relevantSlots = cfg.filter(sec => { const p = sec.phase || 'both'; return (p === 'both' || p === currentPhase) && sec.defaultNote; });
@@ -1979,7 +2343,7 @@ function render() {
           const planned = Object.entries(bData).filter(([k, v]) => !k.endsWith('-note') && v && v !== 'custom').map(([, v]) => '<li>' + v + '</li>').join('');
           if (planned) body += '<div class="workout-block"><span class="block-tag tag-planned">Planned</span><ul class="workout-list">' + planned + '</ul></div>';
         }
-        if (cfg || day.type !== 'endurance') body += '<button class="open-builder-btn" onclick="openBuilder(' + i + ',event)">' + (hasPlan ? '\u270e Edit Workout Plan' : '+ Plan This Workout') + '</button>';
+        if (!isBBM() && (cfg || day.type !== 'endurance')) body += '<button class="open-builder-btn" onclick="openBuilder(' + i + ',event)">' + (hasPlan ? '\u270e Edit Workout Plan' : '+ Plan This Workout') + '</button>';
         card.innerHTML = '<div class="day-header"><div class="day-label">' + day.day + '</div><div class="day-title">' + day.title + '</div><button class="day-check" onclick="event.stopPropagation();toggleDay(' + i + ')">' + (isComp ? '\u2713' : '') + '</button></div><div class="day-body">' + body + '</div>';
       }
     }
@@ -2007,12 +2371,15 @@ function showToast(msg, type) {
 // ═══════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════
+migrateProfiles();
 loadProfilesFromFirebase();
 renderProfileCards();
 
 if (currentUser && profiles[currentUser]) {
   applyUserTheme(currentUser);
   document.getElementById('profileOverlay').classList.add('hidden');
+  const crewBtn = document.getElementById('headerCrewBtn');
+  if (crewBtn) crewBtn.style.display = '';
   loadUserData();
 } else {
   currentUser = null;
