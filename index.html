@@ -363,6 +363,188 @@
     .user-wife .open-builder-btn{min-height:48px;font-size:.82rem;padding:.5rem}
     .user-wife .supplemental-desc{font-size:.88rem;padding:.65rem}
   }
+
+  /* Not Boring iOS refresh overrides */
+  :root{
+    --surface-0:#090d18;
+    --surface-1:rgba(25,32,52,0.78);
+    --surface-2:rgba(33,42,66,0.88);
+    --surface-3:rgba(42,52,80,0.94);
+    --text-primary:#f4f7ff;
+    --text-secondary:#c7d4eb;
+    --text-muted:#94a5c3;
+    --interactive:#7cc8ff;
+    --interactive-strong:#5ab5ff;
+    --success:#53d18f;
+    --danger:#ff6f7d;
+    --warning:#ffd76c;
+    --hairline:rgba(255,255,255,0.14);
+    --card-shadow-soft:0 10px 32px rgba(0,0,0,0.28);
+    --card-shadow-raised:0 16px 42px rgba(0,0,0,0.34);
+    --radius-sm:10px;
+    --radius-md:14px;
+    --radius-lg:18px;
+    --duration-fast:.18s;
+    --duration-base:.28s;
+    --ease-spring:cubic-bezier(.22,.85,.28,1);
+    --accent:var(--interactive);
+    --card-bg:var(--surface-1);
+    --card-bg-warm:var(--surface-2);
+    --border:var(--hairline);
+    --bg-dark:var(--surface-0);
+  }
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    background:
+      radial-gradient(120% 100% at 0% 0%,rgba(96,138,255,.2),transparent 55%),
+      radial-gradient(90% 80% at 100% 100%,rgba(255,147,194,.12),transparent 56%),
+      linear-gradient(165deg,#070b14 0%,#0d1425 50%,#111b31 100%);
+  }
+  body::before{opacity:.45}
+  body::after{opacity:.01}
+  header{
+    background:linear-gradient(160deg,rgba(22,29,47,.88),rgba(17,24,43,.84));
+    border-bottom:1px solid var(--hairline);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+  }
+  header::after{opacity:.4}
+  .header-inner{padding:1rem 0}
+  .logo-block p{font-size:.72rem;letter-spacing:.1em}
+  .profile-overlay,.profile-overlay::before{
+    background:
+      radial-gradient(90% 75% at 50% 10%,rgba(127,189,255,.14),transparent 55%),
+      linear-gradient(180deg,#0a0f1d 0%,#111b31 100%);
+  }
+  .profile-subtitle,.profile-lets-play{text-transform:none;letter-spacing:.04em}
+
+  .profile-card,.stat-card,.day-card,.card-base,.lib-card,.notes-card,.prog-bar-container,.modal,.pin-box,.setup-box,.user-badge,.week-nav,.mode-toggle{
+    background:var(--surface-1);
+    border:1px solid var(--hairline);
+    border-radius:var(--radius-md);
+    box-shadow:var(--card-shadow-soft);
+  }
+  .profile-card:hover,.stat-card:hover,.day-card:not(.rest-day):hover{
+    transform:translateY(-2px) scale(1.01);
+    border-color:color-mix(in srgb, var(--accent) 42%, white 16%);
+    box-shadow:var(--card-shadow-raised);
+  }
+  .day-card.completed{
+    background:color-mix(in srgb, var(--success) 14%, var(--surface-1));
+    border-color:color-mix(in srgb, var(--success) 52%, white 20%);
+    box-shadow:0 8px 30px rgba(83,209,143,.22);
+  }
+  .day-header,.modal-header,.modal-footer,.log-table th,.manage-account-row{border-color:var(--hairline)}
+  .mode-toggle button,.tab-btn,.btn-sm,.open-builder-btn,.btn-log{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    letter-spacing:.03em;
+    text-transform:none;
+    border-radius:10px;
+    transition:all var(--duration-fast) var(--ease-spring);
+  }
+  .mode-toggle button{
+    padding:.48rem .95rem;
+    color:var(--text-secondary);
+  }
+  .mode-toggle button.active{
+    background:linear-gradient(160deg,var(--interactive),var(--accent));
+    color:#08111f;
+    font-weight:700;
+  }
+  .tab-btn{
+    font-size:.86rem;
+    color:var(--text-secondary);
+    border-bottom:2px solid transparent;
+  }
+  .tab-btn.active{
+    color:var(--text-primary);
+    border-bottom-color:var(--accent);
+    transform:none;
+  }
+  .btn-sm{
+    padding:.46rem .88rem;
+    border-radius:999px;
+    font-size:.76rem;
+    font-weight:600;
+  }
+  .btn-cyan{
+    background:color-mix(in srgb, var(--accent) 20%, transparent);
+    border-color:color-mix(in srgb, var(--accent) 50%, white 8%);
+    color:var(--text-primary);
+  }
+  .btn-red{
+    background:color-mix(in srgb, var(--danger) 18%, transparent);
+    border-color:color-mix(in srgb, var(--danger) 45%, white 8%);
+    color:#ffd8dd;
+  }
+  .open-builder-btn{
+    background:color-mix(in srgb, var(--accent) 16%, transparent);
+    border:1px solid color-mix(in srgb, var(--accent) 45%, white 10%);
+    color:var(--text-primary);
+    min-height:42px;
+  }
+  .btn-log{
+    background:linear-gradient(165deg,var(--interactive),var(--accent));
+    color:#06101e;
+    font-weight:700;
+  }
+  .prog-bar{background:rgba(255,255,255,.08);border-radius:999px;height:8px}
+  .prog-bar-fill{
+    border-radius:999px;
+    background:linear-gradient(90deg,color-mix(in srgb, var(--accent) 78%, white 10%),color-mix(in srgb, var(--accent) 52%, #a78bfa 48%));
+  }
+  .pill,.block-tag,.wk-label,.day-label,.log-table th,.section-label h2,.card-base h3,.notes-card h3,.lib-card h4{
+    letter-spacing:.06em;
+    text-transform:none;
+  }
+  .section-label h2,.modal-header h3,.profile-card .profile-name,.day-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif}
+  .log-table td,.lib-list li,.notes-card ul li,.workout-list li,.manage-account-program{color:var(--text-secondary)}
+  .sync-indicator{
+    border:1px solid var(--hairline);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-radius:999px;
+  }
+  .sync-indicator.syncing{background:rgba(255,215,108,.18);color:#ffe8ae}
+  .sync-indicator.synced{background:rgba(83,209,143,.18);color:#bef4d6}
+  .sync-indicator.offline{background:rgba(255,111,125,.2);color:#ffc2ca}
+
+  input,select,textarea,.pin-input,.ex-select,.ex-note,.setup-row input,.setup-row select,.log-form select,.log-form input,.weekly-notes-wrap textarea,.wife-ex-note{
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--hairline);
+    color:var(--text-primary);
+    border-radius:var(--radius-sm);
+  }
+  input:focus,select:focus,textarea:focus,.pin-input:focus,.ex-select:focus,.ex-note:focus,.setup-row input:focus,.setup-row select:focus,.log-form select:focus,.log-form input:focus,.weekly-notes-wrap textarea:focus,.wife-ex-note:focus{
+    border-color:color-mix(in srgb, var(--accent) 62%, white 10%);
+  }
+  :focus-visible{
+    outline:2px solid color-mix(in srgb, var(--accent) 72%, white 14%);
+    outline-offset:2px;
+  }
+  .modal-overlay.open{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .modal{transition:transform var(--duration-base) var(--ease-spring),opacity var(--duration-fast) ease}
+  .modal-overlay.open .modal{transform:translateY(0) scale(1)}
+
+  @media(max-width:640px){
+    main{padding:1rem .9rem calc(3.4rem + env(safe-area-inset-bottom))}
+    .tabs{gap:.28rem;overflow-x:auto;padding-bottom:.1rem}
+    .tab-btn{white-space:nowrap;padding:.5rem .72rem}
+    .header-controls{gap:.45rem}
+    .btn-sm,.open-builder-btn,.btn-log{min-height:44px}
+    .day-check{min-width:36px;min-height:36px}
+  }
+  @media(max-width:580px){
+    header{padding:0 .8rem}
+    .header-inner{gap:.72rem}
+    .profile-card{width:min(100%,280px)}
+    .week-nav span{min-width:82px}
+    .modal{border-radius:16px 16px 0 0}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+    .day-card,.stat-card,.profile-card{transform:none!important}
+  }
 </style>
 </head>
 <body>

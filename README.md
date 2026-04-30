@@ -14,6 +14,16 @@ A hybrid athlete program tracker for two users (husband & wife) to track workout
 - **Exercise library** from Chapter 9 (Viada)
 - **Weekly notes** per user
 
+## Design Refresh
+
+The UI now follows a Not Boring iOS-inspired design direction:
+
+- Softer layered surfaces with cleaner elevation and reduced neon glow
+- More readable iOS-style typography in controls and data-heavy screens
+- Tactile, touch-first buttons/toggles with clearer interaction states
+- Updated motion/accessibility support (`:focus-visible`, reduced-motion handling)
+- Existing workflows and program logic remain unchanged
+
 ---
 
 ## Setup Instructions
