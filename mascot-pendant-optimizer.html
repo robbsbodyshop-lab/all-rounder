@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mascot Pendant Optimizer</title>
+<style>
+  :root{
+    --bg:#0e1116; --panel:#161b22; --panel2:#1c2330; --line:#2a3140;
+    --text:#e8edf5; --muted:#8b96a8; --accent:#3ecf8e; --accent2:#ffb020;
+    --danger:#ff5d5d; --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  body{min-height:100dvh;}
+  header{padding:18px 20px 10px;border-bottom:1px solid var(--line);}
+  header h1{margin:0 0 4px;font-size:1.35rem;letter-spacing:-0.01em;}
+  header p{margin:0;color:var(--muted);font-size:0.9rem;max-width:70ch;}
+  .layout{display:grid;grid-template-columns:380px 1fr;gap:16px;padding:16px;align-items:start;}
+  @media (max-width:900px){.layout{grid-template-columns:1fr;}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;}
+  .panel h2{font-size:0.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 12px;}
+  .drop{border:1.5px dashed var(--line);border-radius:var(--radius);padding:22px 14px;text-align:center;cursor:pointer;
+    color:var(--muted);font-size:0.88rem;transition:border-color .15s, background .15s;}
+  .drop.drag{border-color:var(--accent);background:rgba(62,207,142,0.06);}
+  .drop b{color:var(--text);}
+  input[type=file]{display:none;}
+  .row{display:flex;align-items:center;gap:10px;margin:10px 0;}
+  .row label{flex:0 0 auto;width:150px;font-size:0.82rem;color:var(--muted);}
+  .row input[type=range]{flex:1;accent-color:var(--accent);}
+  .row .val{flex:0 0 52px;text-align:right;font-variant-numeric:tabular-nums;font-size:0.82rem;color:var(--text);}
+  .row.check{gap:8px;}
+  .row.check label{width:auto;color:var(--text);font-size:0.85rem;}
+  select, .row input[type=number]{background:var(--panel2);border:1px solid var(--line);color:var(--text);
+    border-radius:8px;padding:6px 8px;font-size:0.85rem;width:100%;}
+  .seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px;}
+  .seg button{flex:1;background:transparent;border:0;color:var(--muted);padding:7px 6px;border-radius:6px;
+    font-size:0.8rem;cursor:pointer;}
+  .seg button.active{background:var(--accent);color:#06140d;font-weight:600;}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+  button.primary{background:var(--accent);color:#06140d;border:0;padding:10px 14px;border-radius:9px;
+    font-weight:600;font-size:0.86rem;cursor:pointer;flex:1;}
+  button.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line);padding:10px 14px;
+    border-radius:9px;font-size:0.86rem;cursor:pointer;flex:1;}
+  button:disabled{opacity:.45;cursor:not-allowed;}
+  button.primary:hover:not(:disabled){filter:brightness(1.08);}
+  .swatch{width:26px;height:26px;border-radius:6px;border:1px solid var(--line);cursor:crosshair;flex:0 0 auto;}
+  .preview-col{display:flex;flex-direction:column;gap:14px;}
+  .canvases{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:700px){.canvases{grid-template-columns:1fr;}}
+  .canvas-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:10px;position:relative;}
+  .canvas-box h3{margin:0 0 8px;font-size:0.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}
+  #maskCanvas{width:100%;height:auto;display:block;border-radius:8px;background:#0a0d12;cursor:crosshair;}
+  #threeMount{width:100%;height:420px;border-radius:8px;overflow:hidden;background:#0a0d12;}
+  .log{font-size:0.78rem;color:var(--muted);white-space:pre-wrap;line-height:1.5;max-height:120px;overflow:auto;}
+  .log .warn{color:var(--accent2);}
+  .log .err{color:var(--danger);}
+  .log .ok{color:var(--accent);}
+  .stat{display:flex;justify-content:space-between;font-size:0.8rem;padding:3px 0;color:var(--muted);}
+  .stat b{color:var(--text);font-weight:600;}
+  .hint{font-size:0.76rem;color:var(--muted);margin-top:6px;line-height:1.45;}
+  .badge{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:5px;
+    padding:1px 6px;font-size:0.72rem;color:var(--accent);margin-left:6px;}
+  ol.steps{margin:6px 0 0;padding-left:18px;font-size:0.8rem;color:var(--muted);line-height:1.6;}
+  code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:0.82em;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mascot Pendant Optimizer</h1>
+  <p>Turn a mascot / logo image into a print-ready hype-chain pendant STL — traced silhouette, raised relief on a backing plate, and an integrated chain bail — tuned for Bambu Studio on the H2C with AMS Pro 2.</p>
+</header>
+
+<div class="layout">
+  <div class="controls-col">
+
+    <div class="panel">
+      <h2>1 · Image</h2>
+      <div id="drop" class="drop">
+        <div><b>Click to upload</b> or drag a mascot image here</div>
+        <div style="margin-top:4px;">PNG with transparency works best. JPG/flat-background images are auto chroma-keyed.</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*">
+      <div class="row check" style="margin-top:12px;">
+        <input type="checkbox" id="useAlpha" checked>
+        <label for="useAlpha">Use image transparency (if present)</label>
+      </div>
+      <div class="row">
+        <label for="threshold">Threshold</label>
+        <input type="range" id="threshold" min="0" max="255" value="60">
+        <span class="val" id="thresholdVal">60</span>
+      </div>
+      <div class="row">
+        <label>Background color</label>
+        <div id="bgSwatch" class="swatch" style="background:#ffffff;"></div>
+        <span class="hint" style="margin:0;">click preview to pick</span>
+      </div>
+      <div class="hint">Threshold controls how aggressively pixels are classified as background. Watch the mask preview (teal overlay) and adjust until only the mascot is highlighted.</div>
+    </div>
+
+    <div class="panel">
+      <h2>2 · Cleanup</h2>
+      <div class="row">
+        <label for="denoise">Remove specks</label>
+        <input type="range" id="denoise" min="0" max="100" value="20">
+        <span class="val" id="denoiseVal">20</span>
+      </div>
+      <div class="row">
+        <label for="simplify">Simplify detail</label>
+        <input type="range" id="simplify" min="0" max="6" step="0.1" value="1.4">
+        <span class="val" id="simplifyVal">1.4</span>
+      </div>
+      <div class="row">
+        <label for="smooth">Smooth edges</label>
+        <input type="range" id="smooth" min="0" max="3" step="1" value="1">
+        <span class="val" id="smoothVal">1</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>3 · Pendant design</h2>
+      <div class="seg" id="modeSeg">
+        <button data-mode="plate" class="active">Backing plate + relief</button>
+        <button data-mode="cutout">Pure silhouette cutout</button>
+      </div>
+      <div class="hint" id="modeHint" style="margin-top:8px;">Recommended. A solid plate keeps thin mascot details (legs, ears, text) from snapping off, and lets you print the plate and mascot relief in two AMS colors.</div>
+
+      <div id="plateFields">
+        <div class="row">
+          <label for="maxDim">Max size (mm)</label>
+          <input type="range" id="maxDim" min="15" max="70" value="30">
+          <span class="val" id="maxDimVal">30</span>
+        </div>
+        <div class="row">
+          <label for="plateThick">Plate thickness</label>
+          <input type="range" id="plateThick" min="0.8" max="3" step="0.1" value="1.6">
+          <span class="val" id="plateThickVal">1.6</span>
+        </div>
+        <div class="row">
+          <label for="reliefThick">Relief height</label>
+          <input type="range" id="reliefThick" min="0.4" max="2.5" step="0.1" value="1.2">
+          <span class="val" id="reliefThickVal">1.2</span>
+        </div>
+        <div class="row">
+          <label for="margin">Plate margin</label>
+          <input type="range" id="margin" min="0" max="5" step="0.25" value="2">
+          <span class="val" id="marginVal">2</span>
+        </div>
+        <div class="row">
+          <label for="cornerRadius">Corner radius</label>
+          <input type="range" id="cornerRadius" min="0" max="8" step="0.25" value="3">
+          <span class="val" id="cornerRadiusVal">3</span>
+        </div>
+      </div>
+      <div id="cutoutFields" style="display:none;">
+        <div class="row">
+          <label for="maxDimCutout">Max size (mm)</label>
+          <input type="range" id="maxDimCutout" min="15" max="70" value="30">
+          <span class="val" id="maxDimCutoutVal">30</span>
+        </div>
+        <div class="row">
+          <label for="cutoutThick">Thickness</label>
+          <input type="range" id="cutoutThick" min="1.6" max="5" step="0.1" value="3.2">
+          <span class="val" id="cutoutThickVal">3.2</span>
+        </div>
+      </div>
+
+      <div class="row check">
+        <input type="checkbox" id="twoTone">
+        <label for="twoTone">Two-tone export (separate plate / relief STL for AMS)</label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>4 · Chain bail</h2>
+      <div class="row check">
+        <input type="checkbox" id="bailEnabled" checked>
+        <label for="bailEnabled">Add hanging loop</label>
+      </div>
+      <div class="row">
+        <label for="bailOuter">Outer diameter</label>
+        <input type="range" id="bailOuter" min="4" max="12" step="0.1" value="6.5">
+        <span class="val" id="bailOuterVal">6.5</span>
+      </div>
+      <div class="row">
+        <label for="bailHole">Hole diameter</label>
+        <input type="range" id="bailHole" min="1.5" max="8" step="0.1" value="3.4">
+        <span class="val" id="bailHoleVal">3.4</span>
+      </div>
+      <div class="row">
+        <label for="bailOffset">Horizontal offset</label>
+        <input type="range" id="bailOffset" min="-15" max="15" step="0.5" value="0">
+        <span class="val" id="bailOffsetVal">0</span>
+      </div>
+      <div class="row">
+        <label for="bailOverlap">Neck overlap</label>
+        <input type="range" id="bailOverlap" min="0.5" max="4" step="0.1" value="2">
+        <span class="val" id="bailOverlapVal">2</span>
+      </div>
+      <div class="hint" id="bailWarn"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Status</h2>
+      <div class="stat">Components found<b id="statComponents">–</b></div>
+      <div class="stat">Holes detected<b id="statHoles">–</b></div>
+      <div class="stat">Triangles<b id="statTris">–</b></div>
+      <div class="stat">Pendant size<b id="statSize">–</b></div>
+      <div class="log" id="log">Upload an image to begin.</div>
+    </div>
+
+  </div>
+
+  <div class="preview-col">
+    <div class="canvases">
+      <div class="canvas-box">
+        <h3>Mask preview <span class="badge">click to pick background</span></h3>
+        <canvas id="maskCanvas" width="640" height="480"></canvas>
+      </div>
+      <div class="canvas-box">
+        <h3>3D preview <span id="colorLegend"></span></h3>
+        <div id="threeMount"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Export</h2>
+      <div class="btnrow">
+        <button class="primary" id="exportBtn" disabled>Download STL</button>
+        <button class="secondary" id="exportNotesBtn" disabled>Download print notes (.txt)</button>
+      </div>
+      <div class="hint" id="exportHint"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Recommended Bambu Studio settings — H2C + AMS Pro 2</h2>
+      <div id="printSettings" class="hint">Settings appear once an image is processed.</div>
+    </div>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { STLExporter } from 'three/addons/exporters/STLExporter.js';
+
+/* ---------------------------------------------------------------------- */
+/* State                                                                   */
+/* ---------------------------------------------------------------------- */
+
+const state = {
+  img: null,
+  workW: 0, workH: 0,
+  imageData: null,
+  bgColor: [255,255,255],
+  hasAlpha: false,
+  mode: 'plate',
+  result: null,   // { plateGroupData, reliefGroupData, totalSizeMM, thicknessMM }
+};
+
+const els = id => document.getElementById(id);
+const log = (msg, cls='') => {
+  const box = els('log');
+  const line = document.createElement('div');
+  if (cls) line.className = cls;
+  line.textContent = msg;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+};
+const clearLog = () => { els('log').innerHTML = ''; };
+
+/* ---------------------------------------------------------------------- */
+/* UI wiring: sliders                                                     */
+/* ---------------------------------------------------------------------- */
+
+const sliderIds = ['threshold','denoise','simplify','smooth','maxDim','plateThick','reliefThick',
+  'margin','cornerRadius','maxDimCutout','cutoutThick','bailOuter','bailHole','bailOffset','bailOverlap'];
+sliderIds.forEach(id=>{
+  const el = els(id);
+  const out = els(id+'Val');
+  const sync = () => { out.textContent = el.value; };
+  sync();
+  el.addEventListener('input', ()=>{ sync(); scheduleRebuild(); });
+});
+els('useAlpha').addEventListener('change', scheduleRebuild);
+els('bailEnabled').addEventListener('change', scheduleRebuild);
+els('twoTone').addEventListener('change', ()=>{ scheduleRebuild(); updateExportHint(); });
+
+document.querySelectorAll('#modeSeg button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    state.mode = btn.dataset.mode;
+    els('plateFields').style.display = state.mode==='plate' ? '' : 'none';
+    els('cutoutFields').style.display = state.mode==='cutout' ? '' : 'none';
+    els('modeHint').textContent = state.mode==='plate'
+      ? 'Recommended. A solid plate keeps thin mascot details (legs, ears, text) from snapping off, and lets you print the plate and mascot relief in two AMS colors.'
+      : 'Prints the mascot outline only, no backing plate. Thin limbs/antennae/text can be fragile at small sizes — increase thickness or use plate mode if the mascot has delicate details.';
+    els('twoTone').disabled = state.mode!=='plate';
+    if (state.mode!=='plate') els('twoTone').checked = false;
+    scheduleRebuild();
+    updateExportHint();
+  });
+});
+
+/* ---------------------------------------------------------------------- */
+/* File loading                                                           */
+/* ---------------------------------------------------------------------- */
+
+const dropEl = els('drop');
+const fileInput = els('fileInput');
+dropEl.addEventListener('click', ()=> fileInput.click());
+['dragenter','dragover'].forEach(ev=> dropEl.addEventListener(ev, e=>{ e.preventDefault(); dropEl.classList.add('drag'); }));
+['dragleave','drop'].forEach(ev=> dropEl.addEventListener(ev, e=>{ e.preventDefault(); dropEl.classList.remove('drag'); }));
+dropEl.addEventListener('drop', e=>{
+  const f = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) handleFile(f);
+});
+fileInput.addEventListener('change', e=>{
+  const f = e.target.files && e.target.files[0];
+  if (f) handleFile(f);
+});
+
+function handleFile(file){
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = ()=>{
+    state.img = img;
+    prepareWorkingCanvas();
+    URL.revokeObjectURL(url);
+    clearLog();
+    log(`Loaded ${file.name} (${img.width}×${img.height}px).`);
+    scheduleRebuild(true);
+  };
+  img.onerror = ()=> log('Could not load that image file.', 'err');
+  img.src = url;
+}
+
+const WORK_MAX_DIM = 640;
+
+function prepareWorkingCanvas(){
+  const img = state.img;
+  const scale = Math.min(1, WORK_MAX_DIM / Math.max(img.width, img.height));
+  const w = Math.max(1, Math.round(img.width*scale));
+  const h = Math.max(1, Math.round(img.height*scale));
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.clearRect(0,0,w,h);
+  ctx.drawImage(img, 0, 0, w, h);
+  const data = ctx.getImageData(0,0,w,h);
+  state.workW = w; state.workH = h;
+  state.imageData = data;
+
+  let hasAlpha = false;
+  for (let i=3;i<data.data.length;i+=4){ if (data.data[i] < 250){ hasAlpha = true; break; } }
+  state.hasAlpha = hasAlpha;
+  els('useAlpha').disabled = !hasAlpha;
+
+  state.bgColor = sampleBackground(data.data, w, h);
+  els('bgSwatch').style.background = `rgb(${state.bgColor.map(v=>Math.round(v)).join(',')})`;
+
+  // draw source into the mask canvas immediately so the eyedropper has something to click
+  const maskCanvas = els('maskCanvas');
+  maskCanvas.width = w; maskCanvas.height = h;
+  const mctx = maskCanvas.getContext('2d');
+  mctx.drawImage(c, 0, 0);
+}
+
+function sampleBackground(data, w, h){
+  const pts = [];
+  const pad = Math.max(1, Math.floor(Math.min(w,h)*0.02));
+  for (const [x,y] of [[pad,pad],[w-1-pad,pad],[pad,h-1-pad],[w-1-pad,h-1-pad]]) pts.push([x,y]);
+  let r=0,g=0,b=0;
+  for (const [x,y] of pts){ const i=(y*w+x)*4; r+=data[i]; g+=data[i+1]; b+=data[i+2]; }
+  return [r/pts.length, g/pts.length, b/pts.length];
+}
+
+els('maskCanvas').addEventListener('click', e=>{
+  if (!state.imageData) return;
+  const rect = e.target.getBoundingClientRect();
+  const x = Math.round((e.clientX-rect.left) / rect.width * state.workW);
+  const y = Math.round((e.clientY-rect.top) / rect.height * state.workH);
+  const i = (Math.min(state.workH-1,Math.max(0,y)) * state.workW + Math.min(state.workW-1,Math.max(0,x))) * 4;
+  const d = state.imageData.data;
+  state.bgColor = [d[i], d[i+1], d[i+2]];
+  els('bgSwatch').style.background = `rgb(${state.bgColor.join(',')})`;
+  log(`Background color picked: rgb(${state.bgColor.join(',')})`);
+  scheduleRebuild();
+});
+
+/* ---------------------------------------------------------------------- */
+/* Image → mask → contours                                                */
+/* ---------------------------------------------------------------------- */
+
+function buildMask(){
+  const { data, width: w, height: h } = state.imageData;
+  const useAlpha = state.hasAlpha && els('useAlpha').checked;
+  const alphaThreshold = Number(els('threshold').value);
+  const colorThreshold = Number(els('threshold').value) * (441/255); // scale to max RGB distance ~441
+  const bg = state.bgColor;
+  const mask = new Uint8Array(w*h);
+  for (let i=0, p=0; i<data.length; i+=4, p++){
+    const a = data[i+3];
+    let fg;
+    if (useAlpha){
+      fg = a >= alphaThreshold;
+    } else {
+      if (a < 10) { fg = false; }
+      else {
+        const dr = data[i]-bg[0], dg = data[i+1]-bg[1], db = data[i+2]-bg[2];
+        const dist = Math.sqrt(dr*dr+dg*dg+db*db);
+        fg = dist >= colorThreshold;
+      }
+    }
+    mask[p] = fg ? 1 : 0;
+  }
+  return mask;
+}
+
+function labelComponents(mask, w, h, minSize){
+  const labels = new Int32Array(w*h).fill(-1);
+  const stack = new Int32Array(w*h);
+  let nextLabel = 0;
+  const sizes = [];
+  for (let y=0;y<h;y++){
+    for (let x=0;x<w;x++){
+      const idx = y*w+x;
+      if (mask[idx]!==1 || labels[idx]!==-1) continue;
+      let sp=0; stack[sp++]=idx; labels[idx]=nextLabel; let count=0;
+      while (sp>0){
+        const cur = stack[--sp]; count++;
+        const cx = cur % w, cy = (cur - cx) / w;
+        if (cx>0){ const n=cur-1; if (mask[n]===1 && labels[n]===-1){ labels[n]=nextLabel; stack[sp++]=n; } }
+        if (cx<w-1){ const n=cur+1; if (mask[n]===1 && labels[n]===-1){ labels[n]=nextLabel; stack[sp++]=n; } }
+        if (cy>0){ const n=cur-w; if (mask[n]===1 && labels[n]===-1){ labels[n]=nextLabel; stack[sp++]=n; } }
+        if (cy<h-1){ const n=cur+w; if (mask[n]===1 && labels[n]===-1){ labels[n]=nextLabel; stack[sp++]=n; } }
+      }
+      sizes.push(count);
+      nextLabel++;
+    }
+  }
+  const keep = sizes.map(s=> s>=minSize);
+  for (let i=0;i<labels.length;i++){
+    if (labels[i]>=0 && !keep[labels[i]]){ labels[i]=-1; mask[i]=0; }
+  }
+  const validLabels = [];
+  for (let l=0;l<sizes.length;l++) if (keep[l]) validLabels.push(l);
+  return { labels, validLabels, sizes };
+}
+
+const EDGE_KEY_MOD = 100000;
+
+function traceComponentLoops(labels, w, h, label){
+  const isFg = (x,y) => (x>=0 && y>=0 && x<w && y<h && labels[y*w+x]===label);
+  const edgeMap = new Map();
+  const key = (x,y) => x*EDGE_KEY_MOD + y;
+  for (let y=0;y<h;y++){
+    for (let x=0;x<w;x++){
+      if (!isFg(x,y)) continue;
+      if (!isFg(x,y-1)) edgeMap.set(key(x,y), [x+1,y]);       // top edge, rightward
+      if (!isFg(x+1,y)) edgeMap.set(key(x+1,y), [x+1,y+1]);   // right edge, downward
+      if (!isFg(x,y+1)) edgeMap.set(key(x+1,y+1), [x,y+1]);   // bottom edge, leftward
+      if (!isFg(x-1,y)) edgeMap.set(key(x,y+1), [x,y]);       // left edge, upward
+    }
+  }
+  const visited = new Set();
+  const loops = [];
+  for (const startKey of edgeMap.keys()){
+    if (visited.has(startKey)) continue;
+    const pts = [];
+    let curKey = startKey;
+    const firstKey = startKey;
+    let guard = 0;
+    const maxGuard = (w+2)*(h+2)*4 + 16;
+    do {
+      visited.add(curKey);
+      const x = Math.floor(curKey/EDGE_KEY_MOD), y = curKey - x*EDGE_KEY_MOD;
+      pts.push([x,y]);
+      const next = edgeMap.get(curKey);
+      if (!next) break;
+      curKey = key(next[0], next[1]);
+      guard++;
+    } while (curKey !== firstKey && guard < maxGuard);
+    if (pts.length >= 3) loops.push(pts);
+  }
+  return loops;
+}
+
+function signedArea(pts){
+  let s = 0;
+  for (let i=0;i<pts.length;i++){
+    const [x1,y1] = pts[i], [x2,y2] = pts[(i+1)%pts.length];
+    s += x1*y2 - x2*y1;
+  }
+  return s/2;
+}
+
+function ensureWinding(pts, wantPositive){
+  const a = signedArea(pts);
+  if ((a > 0) !== wantPositive) return pts.slice().reverse();
+  return pts;
+}
+
+function perpendicularDistance(p, a, b){
+  const [x,y]=p, [x1,y1]=a, [x2,y2]=b;
+  const dx=x2-x1, dy=y2-y1;
+  const len = Math.hypot(dx,dy);
+  if (len===0) return Math.hypot(x-x1,y-y1);
+  return Math.abs(dy*x - dx*y + x2*y1 - y2*x1)/len;
+}
+
+function douglasPeucker(points, epsilon){
+  if (points.length < 3) return points.slice();
+  let maxDist=0, index=0;
+  const a=points[0], b=points[points.length-1];
+  for (let i=1;i<points.length-1;i++){
+    const d = perpendicularDistance(points[i], a, b);
+    if (d>maxDist){ maxDist=d; index=i; }
+  }
+  if (maxDist > epsilon){
+    const left = douglasPeucker(points.slice(0,index+1), epsilon);
+    const right = douglasPeucker(points.slice(index), epsilon);
+    return left.slice(0,-1).concat(right);
+  }
+  return [a,b];
+}
+
+function simplifyClosedLoop(points, epsilon){
+  if (epsilon<=0 || points.length<4) return points;
+  const closed = points.concat([points[0]]);
+  const simplified = douglasPeucker(closed, epsilon);
+  simplified.pop();
+  return simplified.length>=3 ? simplified : points;
+}
+
+function chaikinSmooth(points, iterations){
+  let pts = points;
+  for (let it=0; it<iterations; it++){
+    const next = [];
+    const n = pts.length;
+    if (n<3) break;
+    for (let i=0;i<n;i++){
+      const p0=pts[i], p1=pts[(i+1)%n];
+      next.push([p0[0]*0.75+p1[0]*0.25, p0[1]*0.75+p1[1]*0.25]);
+      next.push([p0[0]*0.25+p1[0]*0.75, p0[1]*0.25+p1[1]*0.75]);
+    }
+    pts = next;
+  }
+  return pts;
+}
+
+/**
+ * Runs the full image -> vector pipeline and returns
+ * { components: [{outer:[[x,y]...], holes:[[[x,y]...]]}], bbox:{minX,minY,maxX,maxY} }
+ * All coordinates are in working-canvas pixel space.
+ */
+function extractComponents(){
+  const w = state.workW, h = state.workH;
+  const mask = buildMask();
+  const totalPixels = w*h;
+  const minSize = Math.max(4, Math.round(totalPixels * (Number(els('denoise').value)/100) * 0.01));
+  const { labels, validLabels } = labelComponents(mask, w, h, minSize);
+
+  const epsilon = Number(els('simplify').value);
+  const smoothIters = Number(els('smooth').value);
+
+  const components = [];
+  for (const label of validLabels){
+    const loops = traceComponentLoops(labels, w, h, label);
+    if (loops.length===0) continue;
+    let outerIdx = 0, outerArea = 0;
+    const areas = loops.map(l=>{ const a=Math.abs(signedArea(l)); return a; });
+    for (let i=0;i<areas.length;i++) if (areas[i]>outerArea){ outerArea=areas[i]; outerIdx=i; }
+    let outer = ensureWinding(loops[outerIdx], true);
+    outer = simplifyClosedLoop(outer, epsilon);
+    outer = chaikinSmooth(outer, smoothIters);
+    const holes = [];
+    for (let i=0;i<loops.length;i++){
+      if (i===outerIdx) continue;
+      if (areas[i] < minSize*0.5) continue; // ignore pinhole noise
+      let h2 = ensureWinding(loops[i], false);
+      h2 = simplifyClosedLoop(h2, epsilon);
+      h2 = chaikinSmooth(h2, smoothIters);
+      holes.push(h2);
+    }
+    components.push({ outer, holes, area: outerArea });
+  }
+  components.sort((a,b)=> b.area-a.area);
+
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  for (const comp of components) for (const [x,y] of comp.outer){
+    if (x<minX)minX=x; if (x>maxX)maxX=x;
+    if (y<minY)minY=y; if (y>maxY)maxY=y;
+  }
+  return { components, bbox: { minX,minY,maxX,maxY }, discarded: validLabels.length - components.length };
+}
+
+/* ---------------------------------------------------------------------- */
+/* Mask + outline preview                                                 */
+/* ---------------------------------------------------------------------- */
+
+function drawMaskPreview(extraction){
+  const canvas = els('maskCanvas');
+  const w = state.workW, h = state.workH;
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,w,h);
+
+  const src = document.createElement('canvas');
+  src.width = w; src.height = h;
+  src.getContext('2d').putImageData(state.imageData, 0, 0);
+  ctx.globalAlpha = 0.55;
+  ctx.drawImage(src, 0, 0);
+  ctx.globalAlpha = 1;
+
+  if (!extraction) return;
+
+  ctx.fillStyle = 'rgba(62,207,142,0.28)';
+  ctx.strokeStyle = '#3ecf8e';
+  ctx.lineWidth = 1.5;
+  for (const comp of extraction.components){
+    ctx.beginPath();
+    comp.outer.forEach(([x,y],i)=> i===0? ctx.moveTo(x,y) : ctx.lineTo(x,y));
+    ctx.closePath();
+    for (const hole of comp.holes){
+      hole.forEach(([x,y],i)=> i===0? ctx.moveTo(x,y) : ctx.lineTo(x,y));
+      ctx.closePath();
+    }
+    ctx.fill('evenodd');
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = '#ffb020';
+  ctx.setLineDash([4,3]);
+  for (const comp of extraction.components){
+    for (const hole of comp.holes){
+      ctx.beginPath();
+      hole.forEach(([x,y],i)=> i===0? ctx.moveTo(x,y) : ctx.lineTo(x,y));
+      ctx.closePath();
+      ctx.stroke();
+    }
+  }
+  ctx.setLineDash([]);
+}
+
+/* ---------------------------------------------------------------------- */
+/* 3D geometry                                                            */
+/* ---------------------------------------------------------------------- */
+
+function buildShapeFromLoop(outerMM, holesMM){
+  const shape = new THREE.Shape();
+  outerMM.forEach(([x,y],i)=> i===0? shape.moveTo(x,y) : shape.lineTo(x,y));
+  shape.closePath();
+  for (const hole of holesMM){
+    const path = new THREE.Path();
+    hole.forEach(([x,y],i)=> i===0? path.moveTo(x,y) : path.lineTo(x,y));
+    path.closePath();
+    shape.holes.push(path);
+  }
+  return shape;
+}
+
+function roundedRectShape(w,h,r){
+  r = Math.min(r, w/2, h/2);
+  const shape = new THREE.Shape();
+  const x=-w/2, y=-h/2;
+  shape.moveTo(x+r,y);
+  shape.lineTo(x+w-r,y);
+  if (r>0) shape.quadraticCurveTo(x+w,y,x+w,y+r);
+  shape.lineTo(x+w,y+h-r);
+  if (r>0) shape.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  shape.lineTo(x+r,y+h);
+  if (r>0) shape.quadraticCurveTo(x,y+h,x,y+h-r);
+  shape.lineTo(x,y+r);
+  if (r>0) shape.quadraticCurveTo(x,y,x+r,y);
+  return shape;
+}
+
+function ringShape(cx, cy, rOuter, rInner){
+  const shape = new THREE.Shape();
+  shape.absarc(cx, cy, rOuter, 0, Math.PI*2, false);
+  if (rInner > 0){
+    const hole = new THREE.Path();
+    hole.absarc(cx, cy, rInner, 0, Math.PI*2, true);
+    shape.holes.push(hole);
+  }
+  return shape;
+}
+
+function extrudeMesh(shape, depth, zOffset, color, curveSegments=24){
+  const geo = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled:false, curveSegments });
+  if (zOffset) geo.translate(0,0,zOffset);
+  const mat = new THREE.MeshStandardMaterial({ color, roughness:0.55, metalness:0.05 });
+  return new THREE.Mesh(geo, mat);
+}
+
+function buildPendant(){
+  const extraction = extractComponents();
+  drawMaskPreview(extraction);
+
+  els('statComponents').textContent = String(extraction.components.length);
+  const totalHoles = extraction.components.reduce((n,c)=> n+c.holes.length, 0);
+  els('statHoles').textContent = String(totalHoles);
+  if (extraction.discarded>0) log(`Discarded ${extraction.discarded} tiny speck(s) below the noise threshold.`);
+
+  if (extraction.components.length===0 || !isFinite(extraction.bbox.minX)){
+    log('No foreground detected — lower the threshold or pick a different background color.', 'err');
+    els('statSize').textContent = '–';
+    els('statTris').textContent = '–';
+    return null;
+  }
+
+  const mode = state.mode;
+  const bbox = extraction.bbox;
+  const bboxWpx = bbox.maxX-bbox.minX, bboxHpx = bbox.maxY-bbox.minY;
+  const targetMax = mode==='plate' ? Number(els('maxDim').value) : Number(els('maxDimCutout').value);
+  const scale = targetMax / Math.max(bboxWpx, bboxHpx, 1);
+  const cx = (bbox.minX+bbox.maxX)/2, cy = (bbox.minY+bbox.maxY)/2;
+  const toMM = ([x,y]) => [ (x-cx)*scale, (cy-y)*scale ];
+
+  const compsMM = extraction.components.map(c => ({
+    outer: c.outer.map(toMM),
+    holes: c.holes.map(h => h.map(toMM)),
+  }));
+
+  const bboxWmm = bboxWpx*scale, bboxHmm = bboxHpx*scale;
+
+  const plateGroup = new THREE.Group();
+  const reliefGroup = new THREE.Group();
+  let totalThickness, plateW=bboxWmm, plateH=bboxHmm, plateTopY=bboxHmm/2;
+
+  if (mode==='plate'){
+    const plateThick = Number(els('plateThick').value);
+    const reliefThick = Number(els('reliefThick').value);
+    const margin = Number(els('margin').value);
+    const cornerR = Number(els('cornerRadius').value);
+    plateW = bboxWmm + margin*2;
+    plateH = bboxHmm + margin*2;
+    plateTopY = plateH/2;
+    totalThickness = plateThick + reliefThick;
+
+    const plateShape = roundedRectShape(plateW, plateH, cornerR);
+    plateGroup.add(extrudeMesh(plateShape, plateThick, 0, 0x4f7cff, 8));
+
+    for (const comp of compsMM){
+      const shape = buildShapeFromLoop(comp.outer, comp.holes);
+      reliefGroup.add(extrudeMesh(shape, reliefThick, plateThick, 0xffb020));
+    }
+  } else {
+    const thick = Number(els('cutoutThick').value);
+    totalThickness = thick;
+    for (const comp of compsMM){
+      const shape = buildShapeFromLoop(comp.outer, comp.holes);
+      plateGroup.add(extrudeMesh(shape, thick, 0, 0x4f7cff));
+    }
+  }
+
+  let bailWarn = '';
+  if (els('bailEnabled').checked){
+    const outerD = Number(els('bailOuter').value);
+    const holeD = Number(els('bailHole').value);
+    const offset = Number(els('bailOffset').value);
+    const overlap = Number(els('bailOverlap').value);
+    const rOuter = outerD/2, rInner = holeD/2;
+    const wall = rOuter - rInner;
+    if (wall < 1.0) bailWarn = `Bail wall is ${wall.toFixed(2)}mm — thin for FDM. Increase outer diameter or shrink the hole (aim for ≥1.2mm wall).`;
+    const ringCy = plateTopY + rOuter - overlap;
+    const shape = ringShape(offset, ringCy, rOuter, rInner);
+    plateGroup.add(extrudeMesh(shape, totalThickness, 0, 0x4f7cff, 32));
+  }
+  els('bailWarn').textContent = bailWarn;
+  if (bailWarn) log(bailWarn, 'warn');
+
+  let triCount = 0;
+  [plateGroup, reliefGroup].forEach(g => g.children.forEach(m=>{
+    const pos = m.geometry.getAttribute('position');
+    triCount += pos.count/3;
+  }));
+  els('statTris').textContent = triCount.toLocaleString();
+  els('statSize').textContent = `${plateW.toFixed(1)} × ${plateH.toFixed(1)} × ${totalThickness.toFixed(1)} mm`;
+
+  log(`Built pendant: ${extraction.components.length} shape(s), ${totalHoles} hole(s), ${triCount.toLocaleString()} triangles.`, 'ok');
+
+  return { plateGroup, reliefGroup, plateW, plateH, totalThickness, mode };
+}
+
+/* ---------------------------------------------------------------------- */
+/* Three.js scene                                                         */
+/* ---------------------------------------------------------------------- */
+
+const mount = els('threeMount');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0d12);
+const camera = new THREE.PerspectiveCamera(40, mount.clientWidth/mount.clientHeight || 1, 0.1, 1000);
+camera.position.set(0, -40, 55);
+camera.up.set(0,0,1);
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.setSize(mount.clientWidth, mount.clientHeight || 420);
+mount.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+const dir1 = new THREE.DirectionalLight(0xffffff, 0.9); dir1.position.set(30,-30,60); scene.add(dir1);
+const dir2 = new THREE.DirectionalLight(0xffffff, 0.35); dir2.position.set(-30,30,-20); scene.add(dir2);
+
+const grid = new THREE.GridHelper(80, 16, 0x2a3140, 0x1c2330);
+grid.rotation.x = Math.PI/2;
+scene.add(grid);
+
+let pendantRoot = new THREE.Group();
+scene.add(pendantRoot);
+
+function animate(){
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', ()=>{
+  const w = mount.clientWidth, h = mount.clientHeight || 420;
+  camera.aspect = w/h; camera.updateProjectionMatrix();
+  renderer.setSize(w,h);
+});
+
+/* ---------------------------------------------------------------------- */
+/* Rebuild pipeline (debounced)                                           */
+/* ---------------------------------------------------------------------- */
+
+let rebuildTimer = null;
+function scheduleRebuild(immediate){
+  if (!state.imageData) return;
+  clearTimeout(rebuildTimer);
+  rebuildTimer = setTimeout(runRebuild, immediate ? 0 : 130);
+}
+
+function runRebuild(){
+  clearLog();
+  scene.remove(pendantRoot);
+  pendantRoot = new THREE.Group();
+
+  const built = buildPendant();
+  state.result = built;
+
+  if (built){
+    pendantRoot.add(built.plateGroup);
+    pendantRoot.add(built.reliefGroup);
+    scene.add(pendantRoot);
+    fitCameraTo(built.plateW, built.plateH, built.totalThickness);
+    els('exportBtn').disabled = false;
+    els('exportNotesBtn').disabled = false;
+    updatePrintSettings(built);
+  } else {
+    els('exportBtn').disabled = true;
+    els('exportNotesBtn').disabled = true;
+    els('printSettings').textContent = 'Settings appear once an image is processed.';
+  }
+  updateExportHint();
+}
+
+function fitCameraTo(w,h,t){
+  const maxDim = Math.max(w,h,t*4);
+  const dist = maxDim*1.9;
+  camera.position.set(0, -dist*0.65, dist*0.75);
+  controls.target.set(0,0,t/2);
+  camera.near = 0.1; camera.far = dist*10; camera.updateProjectionMatrix();
+}
+
+/* ---------------------------------------------------------------------- */
+/* Export                                                                 */
+/* ---------------------------------------------------------------------- */
+
+const exporter = new STLExporter();
+
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=> URL.revokeObjectURL(url), 4000);
+}
+
+function exportGroupSTL(group, filename){
+  const result = exporter.parse(group, { binary:true });
+  const blob = new Blob([result], { type:'application/sla' });
+  downloadBlob(blob, filename);
+}
+
+function updateExportHint(){
+  const twoTone = els('twoTone').checked && state.mode==='plate';
+  els('exportHint').textContent = twoTone
+    ? 'Exports pendant-plate.stl (loop + backing plate) and pendant-relief.stl (raised mascot). Import both into Bambu Studio at the same origin and assign each object a different AMS filament.'
+    : 'Exports one combined pendant.stl, ready to import into Bambu Studio.';
+}
+updateExportHint();
+
+els('exportBtn').addEventListener('click', ()=>{
+  if (!state.result) return;
+  const twoTone = els('twoTone').checked && state.result.mode==='plate';
+  if (twoTone){
+    exportGroupSTL(state.result.plateGroup, 'pendant-plate.stl');
+    exportGroupSTL(state.result.reliefGroup, 'pendant-relief.stl');
+    log('Exported pendant-plate.stl and pendant-relief.stl', 'ok');
+  } else {
+    // Clone (not re-parent) so the live preview keeps its own group hierarchy —
+    // Object3D.add() would otherwise steal these meshes away from pendantRoot.
+    const combined = new THREE.Group();
+    combined.add(state.result.plateGroup.clone());
+    combined.add(state.result.reliefGroup.clone());
+    exportGroupSTL(combined, 'pendant.stl');
+    log('Exported pendant.stl', 'ok');
+  }
+});
+
+els('exportNotesBtn').addEventListener('click', ()=>{
+  if (!state.result) return;
+  const text = buildPrintNotes(state.result);
+  downloadBlob(new Blob([text], {type:'text/plain'}), 'pendant-print-notes.txt');
+});
+
+/* ---------------------------------------------------------------------- */
+/* Print settings panel                                                   */
+/* ---------------------------------------------------------------------- */
+
+function buildPrintNotes(built){
+  const twoTone = els('twoTone').checked && built.mode==='plate';
+  const lines = [];
+  lines.push('MASCOT PENDANT — BAMBU STUDIO PRINT NOTES');
+  lines.push('==========================================');
+  lines.push(`Pendant footprint: ${built.plateW.toFixed(1)} x ${built.plateH.toFixed(1)} mm, thickness ${built.totalThickness.toFixed(1)} mm`);
+  lines.push('');
+  lines.push('SLICER SETTINGS (Bambu Studio, H2C, 0.4mm nozzle)');
+  lines.push('- Process: 0.12mm layer height (fine detail preset works well)');
+  lines.push('- Walls: 3 loops minimum');
+  lines.push('- Top/bottom shell layers: 5+ (or set infill to 100% since the part is tiny)');
+  lines.push('- Infill: 100% — the part is small enough that solid infill costs little time/filament and maximizes strength for a wearable');
+  lines.push('- Supports: OFF — the whole pendant (including the bail loop) is a straight vertical extrusion when printed flat, so there are no overhangs');
+  lines.push('- Build plate adhesion: enable a brim, 5-8mm wide, to keep the small footprint from lifting');
+  lines.push('- Orientation: flat on the plate, relief face up, exactly as previewed');
+  lines.push('- Cooling: standard part-cooling fan curve for your chosen filament is fine at this size');
+  lines.push('');
+  lines.push('FILAMENT');
+  lines.push('- PETG or PETG-HF recommended for a wearable pendant (impact/flex tolerant on a chain)');
+  lines.push('- Silk PLA also works well for a shiny "hype chain" look if it will not see abuse');
+  lines.push('- AMS Pro 2 humidity control is worth using if you leave PETG/nylon-ish spools loaded between prints');
+  lines.push('');
+  if (twoTone){
+    lines.push('TWO-COLOR (AMS Pro 2) WORKFLOW');
+    lines.push('1. Import BOTH pendant-plate.stl and pendant-relief.stl into the same Bambu Studio project');
+    lines.push('2. Leave both objects at their default position (0,0) — they were generated to align exactly, plate under, relief on top');
+    lines.push('3. Select pendant-plate.stl, assign it AMS slot / filament color A (this is also the bail loop)');
+    lines.push('4. Select pendant-relief.stl, assign it AMS slot / filament color B');
+    lines.push('5. Slice — Bambu Studio will treat the overlap as a single fused object per layer, no manual boolean union needed');
+  } else {
+    lines.push('SINGLE-COLOR EXPORT');
+    lines.push('pendant.stl contains the backing plate, bail, and mascot relief as one file — just drag it into Bambu Studio and slice.');
+  }
+  lines.push('');
+  lines.push('CHAIN / JUMP RING');
+  const bailOuter = Number(els('bailOuter').value), bailHole = Number(els('bailHole').value);
+  lines.push(`- Bail: ${bailOuter}mm outer diameter, ${bailHole}mm hole — check this fits your jump ring or chain clasp before printing a full batch`);
+  return lines.join('\n');
+}
+
+function updatePrintSettings(built){
+  const twoTone = els('twoTone').checked && built.mode==='plate';
+  const panel = els('printSettings');
+  panel.innerHTML = `
+    <div class="stat">Layer height<b>0.12 mm</b></div>
+    <div class="stat">Wall loops<b>3</b></div>
+    <div class="stat">Infill<b>100%</b></div>
+    <div class="stat">Supports<b>Off</b></div>
+    <div class="stat">Brim<b>5–8 mm</b></div>
+    <div class="stat">Orientation<b>Flat, relief up</b></div>
+    <div class="stat">Filament<b>PETG (or Silk PLA)</b></div>
+    ${twoTone ? '<div class="hint">Two-tone: import both STLs at the same origin and assign each object its own AMS filament slot before slicing.</div>' : ''}
+  `;
+  els('colorLegend').innerHTML = built.mode==='plate'
+    ? '<span style="color:#4f7cff">■</span> plate/bail &nbsp; <span style="color:#ffb020">■</span> relief'
+    : '<span style="color:#4f7cff">■</span> mascot cutout';
+}
+</script>
+</body>
+</html>
