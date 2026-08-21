@@ -2,6 +2,8 @@
 
 A hybrid athlete program tracker for two users (husband & wife) to track workouts independently from separate devices. Based on the Viada "All Rounder" program (Chapter 9 & 10).
 
+This repo also includes a standalone utility, **[Mascot Pendant Optimizer](./mascot-pendant-optimizer.html)** — see [below](#mascot-pendant-optimizer) — unrelated to the workout tracker.
+
 ## Features
 
 - **Dual-user profiles** with optional PIN protection
@@ -154,3 +156,17 @@ The sync indicator in the top-right corner shows:
 - **Syncing...** (gold) — saving to Firebase
 - **Synced** (green) — data saved successfully
 - **Offline** (red) — using local storage only
+
+---
+
+## Mascot Pendant Optimizer
+
+`mascot-pendant-optimizer.html` is a separate, self-contained tool for turning a mascot/logo image into a 3D-printable hype-chain pendant STL, tuned for **Bambu Studio** on the **H2C** with **AMS Pro 2**. It has no connection to the workout tracker or its Firebase data — open the file directly in a browser (no build step, no server required).
+
+**Pipeline:** upload an image → the tool traces its silhouette (using transparency if present, or auto-detected background chroma-keying otherwise) → cleans up speckle noise and simplifies/smooths the outline → builds a 3D pendant with a raised mascot relief on a backing plate (or a pure silhouette cutout) plus an integrated chain bail → exports a print-ready binary STL.
+
+Highlights:
+- Live mask preview (adjustable threshold + eyedropper background picker) and an interactive 3D preview (drag to orbit) before exporting
+- "Backing plate + relief" mode keeps thin mascot details (ears, legs, text) from snapping off, and supports **two-tone export** — separate `pendant-plate.stl` / `pendant-relief.stl` files that align at the same origin, so you can assign each one a different AMS filament color in Bambu Studio
+- Automatic warnings for printability issues (e.g. an overly thin bail wall)
+- A "Download print notes" button that exports the recommended Bambu Studio slicer settings (layer height, walls, infill, supports, brim, filament) alongside the STL(s)
