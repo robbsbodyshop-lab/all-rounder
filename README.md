@@ -1,8 +1,16 @@
-# The All Rounder — Dual-User Workout Tracker
+# The All Rounder
+
+This repo hosts three standalone tools:
+
+- **`index.html`** — a dual-user workout tracker (below)
+- **`maintenance.html`** — [Upkeep](#upkeep--maintenance-tracker), a maintenance schedule tracker for possessions, vehicles, and household items
+- **`mascot-pendant-optimizer.html`** — [Mascot Pendant Optimizer](#mascot-pendant-optimizer), a 3D-printable pendant STL generator
+
+---
+
+## Dual-User Workout Tracker
 
 A hybrid athlete program tracker for two users (husband & wife) to track workouts independently from separate devices. Based on the Viada "All Rounder" program (Chapter 9 & 10).
-
-This repo also includes a standalone utility, **[Mascot Pendant Optimizer](./mascot-pendant-optimizer.html)** — see [below](#mascot-pendant-optimizer) — unrelated to the workout tracker.
 
 ## Features
 
@@ -156,6 +164,53 @@ The sync indicator in the top-right corner shows:
 - **Syncing...** (gold) — saving to Firebase
 - **Synced** (green) — data saved successfully
 - **Offline** (red) — using local storage only
+
+---
+
+## Upkeep — Maintenance Tracker
+
+`maintenance.html` is a standalone tool for keeping up with recurring maintenance on cars, appliances, and other possessions — sauna cleaning, water heater/HVAC service, cleaning and oiling firearms, changing home air filters, and anything else on a schedule.
+
+It's linked from the workout tracker's start screen (and links back), but works completely independently — just open `maintenance.html` directly.
+
+### Features
+
+- **Inventory** of items (vehicles, home systems, firearms, appliances, recreation gear, or anything else), each with one or more recurring maintenance tasks
+- **Custom intervals** per task — every N days/weeks/months/years
+- **Due view** — all tasks across every item, sorted soonest-first and grouped into Overdue / Due Soon / Upcoming
+- **One-tap "Done"** — marks a task complete today, recalculates the next due date, and keeps a history of past completions
+- **Add / edit / delete** items and tasks at any time
+- **Search and category filters**
+- **Export / Import** — download a JSON backup of your full inventory and history, or restore from one
+
+### Data storage & family sync
+
+Upkeep syncs in real time through the **same Firebase project as the workout tracker** (see `FIREBASE_CONFIG` in `maintenance.html`), under its own database path (`upkeepMaintenance`) so it doesn't collide with workout data. Whoever adds an item or hits "Done" on one device, everyone else sees it appear on theirs — no separate copies per person.
+
+It also keeps a `localStorage` cache on each device, so the app still works offline and simply resumes syncing once the connection is back. The sync indicator in the header shows **Syncing…** / **Synced** / **Offline**.
+
+**One-time setup:** the shared Firebase Realtime Database needs a rule permitting reads/writes on the `upkeepMaintenance` path (in addition to the existing `allRounder` rule for the workout tracker). In the Firebase Console → Realtime Database → Rules, use:
+
+```json
+{
+  "rules": {
+    "allRounder": {
+      ".read": true,
+      ".write": true
+    },
+    "upkeepMaintenance": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}
+```
+
+Click **Publish**. Until this rule is added, Upkeep still works perfectly fine on a single device — it just falls back to local-only storage and shows "Offline" in the sync indicator.
+
+Regardless of sync, **use the Export button regularly** to save a JSON backup — Import restores from one on any device.
+
+The app ships with a few example items (Car, Sauna, H2C System, Forces USA FTR, Home Air Filters) based on common recurring maintenance — rename, edit, or delete any of them and add your own to build out your full inventory.
 
 ---
 
