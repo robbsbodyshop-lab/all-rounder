@@ -47,6 +47,11 @@
   .crosslink{font-size:.72rem;color:var(--text-muted);text-decoration:none;border:1px solid var(--border);padding:.4rem .7rem;border-radius:8px}
   .crosslink:hover{color:var(--accent);border-color:var(--accent)}
 
+  .sync-indicator{font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:.35rem .6rem;border-radius:7px;border:1px solid var(--border);color:var(--text-muted)}
+  .sync-indicator.syncing{color:var(--amber);border-color:var(--amber)}
+  .sync-indicator.synced{color:var(--green);border-color:var(--green)}
+  .sync-indicator.offline{color:var(--text-muted)}
+
   main{max-width:900px;margin:0 auto;padding:1.1rem 1.25rem 2rem}
 
   .tabs{display:flex;gap:.4rem;margin-bottom:1rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.3rem}
@@ -183,6 +188,7 @@
       </div>
     </div>
     <div class="header-actions">
+      <span class="sync-indicator" id="syncIndicator">Offline</span>
       <a class="crosslink" href="index.html">Workout Tracker →</a>
       <button class="btn btn-sm" id="exportBtn" title="Export backup JSON">⬇ Export</button>
       <button class="btn btn-sm" id="importBtn" title="Import backup JSON">⬆ Import</button>
@@ -287,10 +293,75 @@
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script>
 'use strict';
 
 const STORAGE_KEY = 'upkeep_maintenance_data_v1';
+
+// ═══════════════════════════════════════════════════
+//  FIREBASE — shares the same project as the workout
+//  tracker (index.html), under its own database path,
+//  so the whole family sees one live, synced inventory.
+//  See README.md for the security-rule change needed.
+// ═══════════════════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyC9NgpS-NZBF_ODcddJ1tSCtkXAtdKQorg",
+  authDomain: "all-rounder-tracker.firebaseapp.com",
+  databaseURL: "https://all-rounder-tracker-default-rtdb.firebaseio.com",
+  projectId: "all-rounder-tracker",
+  storageBucket: "all-rounder-tracker.firebasestorage.app",
+  messagingSenderId: "3371098531",
+  appId: "1:3371098531:web:477f218c0808fcea1a7a16"
+};
+const FIREBASE_PATH = 'upkeepMaintenance';
+
+let firebaseReady = false;
+let db = null;
+try {
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db = firebase.database();
+  firebaseReady = true;
+} catch (e) {
+  console.warn('Firebase init failed, using offline/local-only mode:', e);
+}
+
+function showSync(status){
+  const el = document.getElementById('syncIndicator');
+  if (!el) return;
+  el.className = 'sync-indicator ' + status;
+  el.textContent = status === 'syncing' ? 'Syncing…' : status === 'synced' ? 'Synced' : 'Offline';
+}
+
+function syncToFirebase(){
+  if (!firebaseReady) return;
+  showSync('syncing');
+  db.ref(FIREBASE_PATH).set(DATA)
+    .then(() => showSync('synced'))
+    .catch(err => { console.warn('Firebase sync failed:', err); showSync('offline'); });
+}
+
+function listenFirebase(){
+  if (!firebaseReady) return;
+  let gotFirstSnapshot = false;
+  db.ref(FIREBASE_PATH).on('value', snap => {
+    const remote = snap.val();
+    if (remote && Array.isArray(remote.items)) {
+      DATA = remote;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
+      renderAll();
+      showSync('synced');
+    } else if (!gotFirstSnapshot) {
+      // Nothing in Firebase yet — seed it with our local/default data.
+      syncToFirebase();
+    }
+    gotFirstSnapshot = true;
+  }, err => {
+    console.warn('Firebase listener error:', err);
+    showSync('offline');
+  });
+}
 
 const CATEGORIES = [
   { id:'vehicle',   label:'Vehicle',    icon:'🚗' },
@@ -361,6 +432,7 @@ function load(){
 function save(d){
   DATA = d || DATA;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
+  syncToFirebase();
 }
 
 // ---- Date / interval math ----
@@ -792,6 +864,7 @@ document.getElementById('importFile').addEventListener('change', e => {
 });
 
 renderAll();
+listenFirebase();
 </script>
 </body>
 </html>

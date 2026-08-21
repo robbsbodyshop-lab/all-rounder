@@ -182,8 +182,31 @@ It's linked from the workout tracker's start screen (and links back), but works 
 - **Search and category filters**
 - **Export / Import** — download a JSON backup of your full inventory and history, or restore from one
 
-### Data storage
+### Data storage & family sync
 
-Upkeep stores everything in the browser's `localStorage` — there's no account or server setup required, and no Firebase config to fill in. Because the data lives only in that browser, **use the Export button regularly** to save a JSON backup, especially before clearing browser data or switching devices. Import that file back in (on the same or a different device/browser) to restore it.
+Upkeep syncs in real time through the **same Firebase project as the workout tracker** (see `FIREBASE_CONFIG` in `maintenance.html`), under its own database path (`upkeepMaintenance`) so it doesn't collide with workout data. Whoever adds an item or hits "Done" on one device, everyone else sees it appear on theirs — no separate copies per person.
+
+It also keeps a `localStorage` cache on each device, so the app still works offline and simply resumes syncing once the connection is back. The sync indicator in the header shows **Syncing…** / **Synced** / **Offline**.
+
+**One-time setup:** the shared Firebase Realtime Database needs a rule permitting reads/writes on the `upkeepMaintenance` path (in addition to the existing `allRounder` rule for the workout tracker). In the Firebase Console → Realtime Database → Rules, use:
+
+```json
+{
+  "rules": {
+    "allRounder": {
+      ".read": true,
+      ".write": true
+    },
+    "upkeepMaintenance": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}
+```
+
+Click **Publish**. Until this rule is added, Upkeep still works perfectly fine on a single device — it just falls back to local-only storage and shows "Offline" in the sync indicator.
+
+Regardless of sync, **use the Export button regularly** to save a JSON backup — Import restores from one on any device.
 
 The app ships with a few example items (Car, Sauna, H2C System, Forces USA FTR, Home Air Filters) based on common recurring maintenance — rename, edit, or delete any of them and add your own to build out your full inventory.
