@@ -263,7 +263,7 @@ const state = {
   img: null,
   workW: 0, workH: 0,
   imageData: null,
-  bgColor: [255,255,255],
+  bgColors: [[255,255,255]],
   hasAlpha: false,
   mode: 'plate',
   result: null,   // { plateGroupData, reliefGroupData, totalSizeMM, thicknessMM }
@@ -368,8 +368,12 @@ function prepareWorkingCanvas(){
   state.hasAlpha = hasAlpha;
   els('useAlpha').disabled = !hasAlpha;
 
-  state.bgColor = sampleBackground(data.data, w, h);
-  els('bgSwatch').style.background = `rgb(${state.bgColor.map(v=>Math.round(v)).join(',')})`;
+  state.bgColors = sampleBackground(data.data, w, h);
+  const primary = state.bgColors[0];
+  els('bgSwatch').style.background = `rgb(${primary.map(v=>Math.round(v)).join(',')})`;
+  if (state.bgColors.length > 1){
+    log('Background looks like a checkerboard/patterned image (common when a transparent PNG was flattened to JPEG) — keying out both checker colors.', 'warn');
+  }
 
   // draw source into the mask canvas immediately so the eyedropper has something to click
   const maskCanvas = els('maskCanvas');
@@ -378,13 +382,36 @@ function prepareWorkingCanvas(){
   mctx.drawImage(c, 0, 0);
 }
 
+/**
+ * Samples the image's 1px border ring and returns up to 2 dominant
+ * background color clusters (colors are quantized first to absorb JPEG
+ * noise). A second cluster is returned when the border alternates between
+ * two clearly distinct, similarly common colors — i.e. a checkerboard
+ * "transparency" pattern baked into a flattened JPEG/PNG — so chroma-key
+ * can key out both instead of misreading half the checker squares as
+ * foreground.
+ */
 function sampleBackground(data, w, h){
-  const pts = [];
-  const pad = Math.max(1, Math.floor(Math.min(w,h)*0.02));
-  for (const [x,y] of [[pad,pad],[w-1-pad,pad],[pad,h-1-pad],[w-1-pad,h-1-pad]]) pts.push([x,y]);
-  let r=0,g=0,b=0;
-  for (const [x,y] of pts){ const i=(y*w+x)*4; r+=data[i]; g+=data[i+1]; b+=data[i+2]; }
-  return [r/pts.length, g/pts.length, b/pts.length];
+  const counts = new Map();
+  const quant = v => Math.min(240, Math.max(0, Math.round(v/16)*16));
+  const addPixel = (x,y) => {
+    const i = (y*w+x)*4;
+    const key = quant(data[i])+','+quant(data[i+1])+','+quant(data[i+2]);
+    const entry = counts.get(key);
+    if (entry) entry.n++;
+    else counts.set(key, { n:1, r:data[i], g:data[i+1], b:data[i+2] });
+  };
+  for (let x=0;x<w;x++){ addPixel(x,0); addPixel(x,h-1); }
+  for (let y=0;y<h;y++){ addPixel(0,y); addPixel(w-1,y); }
+  const sorted = [...counts.values()].sort((a,b)=> b.n-a.n);
+  const top = sorted[0] || { r:255, g:255, b:255 };
+  const clusters = [[top.r, top.g, top.b]];
+  const second = sorted[1];
+  if (second && second.n >= (sorted[0].n * 0.15)){
+    const dr = second.r-top.r, dg = second.g-top.g, db = second.b-top.b;
+    if (Math.sqrt(dr*dr+dg*dg+db*db) > 20) clusters.push([second.r, second.g, second.b]);
+  }
+  return clusters;
 }
 
 els('maskCanvas').addEventListener('click', e=>{
@@ -394,9 +421,9 @@ els('maskCanvas').addEventListener('click', e=>{
   const y = Math.round((e.clientY-rect.top) / rect.height * state.workH);
   const i = (Math.min(state.workH-1,Math.max(0,y)) * state.workW + Math.min(state.workW-1,Math.max(0,x))) * 4;
   const d = state.imageData.data;
-  state.bgColor = [d[i], d[i+1], d[i+2]];
-  els('bgSwatch').style.background = `rgb(${state.bgColor.join(',')})`;
-  log(`Background color picked: rgb(${state.bgColor.join(',')})`);
+  state.bgColors = [[d[i], d[i+1], d[i+2]]];
+  els('bgSwatch').style.background = `rgb(${state.bgColors[0].join(',')})`;
+  log(`Background color picked: rgb(${state.bgColors[0].join(',')})`);
   scheduleRebuild();
 });
 
@@ -409,7 +436,7 @@ function buildMask(){
   const useAlpha = state.hasAlpha && els('useAlpha').checked;
   const alphaThreshold = Number(els('threshold').value);
   const colorThreshold = Number(els('threshold').value) * (441/255); // scale to max RGB distance ~441
-  const bg = state.bgColor;
+  const bgClusters = state.bgColors;
   const mask = new Uint8Array(w*h);
   for (let i=0, p=0; i<data.length; i+=4, p++){
     const a = data[i+3];
@@ -419,8 +446,12 @@ function buildMask(){
     } else {
       if (a < 10) { fg = false; }
       else {
-        const dr = data[i]-bg[0], dg = data[i+1]-bg[1], db = data[i+2]-bg[2];
-        const dist = Math.sqrt(dr*dr+dg*dg+db*db);
+        let dist = Infinity;
+        for (const c of bgClusters){
+          const dr = data[i]-c[0], dg = data[i+1]-c[1], db = data[i+2]-c[2];
+          const d = Math.sqrt(dr*dr+dg*dg+db*db);
+          if (d < dist) dist = d;
+        }
         fg = dist >= colorThreshold;
       }
     }
@@ -434,20 +465,25 @@ function labelComponents(mask, w, h, minSize){
   const stack = new Int32Array(w*h);
   let nextLabel = 0;
   const sizes = [];
+  const bboxes = []; // pixel-corner coordinates, same space as traced loops
   for (let y=0;y<h;y++){
     for (let x=0;x<w;x++){
       const idx = y*w+x;
       if (mask[idx]!==1 || labels[idx]!==-1) continue;
       let sp=0; stack[sp++]=idx; labels[idx]=nextLabel; let count=0;
+      let minX=x, minY=y, maxX=x, maxY=y;
       while (sp>0){
         const cur = stack[--sp]; count++;
         const cx = cur % w, cy = (cur - cx) / w;
+        if (cx<minX) minX=cx; if (cx>maxX) maxX=cx;
+        if (cy<minY) minY=cy; if (cy>maxY) maxY=cy;
         if (cx>0){ const n=cur-1; if (mask[n]===1 && labels[n]===-1){ labels[n]=nextLabel; stack[sp++]=n; } }
         if (cx<w-1){ const n=cur+1; if (mask[n]===1 && labels[n]===-1){ labels[n]=nextLabel; stack[sp++]=n; } }
         if (cy>0){ const n=cur-w; if (mask[n]===1 && labels[n]===-1){ labels[n]=nextLabel; stack[sp++]=n; } }
         if (cy<h-1){ const n=cur+w; if (mask[n]===1 && labels[n]===-1){ labels[n]=nextLabel; stack[sp++]=n; } }
       }
       sizes.push(count);
+      bboxes.push({ minX, minY, maxX: maxX+1, maxY: maxY+1 });
       nextLabel++;
     }
   }
@@ -457,7 +493,7 @@ function labelComponents(mask, w, h, minSize){
   }
   const validLabels = [];
   for (let l=0;l<sizes.length;l++) if (keep[l]) validLabels.push(l);
-  return { labels, validLabels, sizes };
+  return { labels, validLabels, sizes, bboxes };
 }
 
 const EDGE_KEY_MOD = 100000;
@@ -475,6 +511,18 @@ function traceComponentLoops(labels, w, h, label){
       if (!isFg(x-1,y)) edgeMap.set(key(x,y+1), [x,y]);       // left edge, upward
     }
   }
+  // Walk the edge graph into closed loops. Each grid point should have at
+  // most one outgoing boundary edge, but where the silhouette touches
+  // itself only diagonally (common in real, compressed/anti-aliased
+  // artwork — teeth, spikes, serifs) two edges can collide on the same map
+  // key and overwrite each other, corrupting the graph into a small stray
+  // cycle that never revisits the walk's start point. Stopping as soon as
+  // ANY already-visited point is hit (not just the exact start) bounds
+  // every walk to the points it newly discovers, so total work across all
+  // walks is strictly O(edge count) — no runaway spin is possible — and a
+  // walk that lands back on a foreign point (not its own start) is a
+  // corrupted/self-intersecting boundary, discarded rather than kept as
+  // if it were valid polygon geometry.
   const visited = new Set();
   const loops = [];
   for (const startKey of edgeMap.keys()){
@@ -482,20 +530,33 @@ function traceComponentLoops(labels, w, h, label){
     const pts = [];
     let curKey = startKey;
     const firstKey = startKey;
-    let guard = 0;
-    const maxGuard = (w+2)*(h+2)*4 + 16;
-    do {
+    let closedProperly = false;
+    while (true){
+      if (visited.has(curKey)){ closedProperly = (curKey === firstKey); break; }
       visited.add(curKey);
       const x = Math.floor(curKey/EDGE_KEY_MOD), y = curKey - x*EDGE_KEY_MOD;
       pts.push([x,y]);
       const next = edgeMap.get(curKey);
       if (!next) break;
       curKey = key(next[0], next[1]);
-      guard++;
-    } while (curKey !== firstKey && guard < maxGuard);
-    if (pts.length >= 3) loops.push(pts);
+    }
+    if (closedProperly && pts.length >= 3) loops.push(pts);
   }
   return loops;
+}
+
+function loopBBox(pts){
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  for (const [x,y] of pts){
+    if (x<minX) minX=x; if (x>maxX) maxX=x;
+    if (y<minY) minY=y; if (y>maxY) maxY=y;
+  }
+  return { minX, minY, maxX, maxY };
+}
+
+function bboxContains(outer, inner, tolerance){
+  return inner.minX >= outer.minX-tolerance && inner.maxX <= outer.maxX+tolerance &&
+         inner.minY >= outer.minY-tolerance && inner.maxY <= outer.maxY+tolerance;
 }
 
 function signedArea(pts){
@@ -537,7 +598,24 @@ function douglasPeucker(points, epsilon){
   return [a,b];
 }
 
+// Douglas-Peucker is worst-case O(n^2); a noisy/misdetected mask (e.g. a
+// checkerboard background misread as foreground) can produce loops with
+// tens of thousands of raw points, which would otherwise hang the tab for
+// a very long time with no feedback. Uniformly decimating first bounds the
+// work to a fixed budget regardless of input; the simplify slider still
+// runs DP on the (already small) result for quality.
+const MAX_LOOP_POINTS_FOR_SIMPLIFY = 2500;
+
+function decimateLoop(points, maxPoints){
+  if (points.length <= maxPoints) return points;
+  const stride = points.length / maxPoints;
+  const out = [];
+  for (let i=0; i<maxPoints; i++) out.push(points[Math.floor(i*stride)]);
+  return out;
+}
+
 function simplifyClosedLoop(points, epsilon){
+  points = decimateLoop(points, MAX_LOOP_POINTS_FOR_SIMPLIFY);
   if (epsilon<=0 || points.length<4) return points;
   const closed = points.concat([points[0]]);
   const simplified = douglasPeucker(closed, epsilon);
@@ -566,30 +644,72 @@ function chaikinSmooth(points, iterations){
  * { components: [{outer:[[x,y]...], holes:[[[x,y]...]]}], bbox:{minX,minY,maxX,maxY} }
  * All coordinates are in working-canvas pixel space.
  */
+// Tracing walks the whole working canvas once per component, so a
+// misdetected mask (e.g. a checkerboard background read as foreground)
+// that survives denoising as hundreds of separate "components" would
+// otherwise multiply that cost into a multi-second-or-worse hang. Capping
+// to the largest N keeps total work bounded; anything past that is almost
+// always noise anyway.
+const MAX_COMPONENTS = 150;
+
 function extractComponents(){
   const w = state.workW, h = state.workH;
   const mask = buildMask();
   const totalPixels = w*h;
   const minSize = Math.max(4, Math.round(totalPixels * (Number(els('denoise').value)/100) * 0.01));
-  const { labels, validLabels } = labelComponents(mask, w, h, minSize);
+  const { labels, validLabels, sizes, bboxes } = labelComponents(mask, w, h, minSize);
 
   const epsilon = Number(els('simplify').value);
   const smoothIters = Number(els('smooth').value);
 
+  validLabels.sort((a,b)=> sizes[b]-sizes[a]);
+  const cappedLabels = validLabels.slice(0, MAX_COMPONENTS);
+  const componentsSkippedByCap = validLabels.length - cappedLabels.length;
+
+  let rejectedLoops = 0;
   const components = [];
-  for (const label of validLabels){
-    const loops = traceComponentLoops(labels, w, h, label);
+  for (const label of cappedLabels){
+    let loops = traceComponentLoops(labels, w, h, label);
     if (loops.length===0) continue;
     let outerIdx = 0, outerArea = 0;
     const areas = loops.map(l=>{ const a=Math.abs(signedArea(l)); return a; });
     for (let i=0;i<areas.length;i++) if (areas[i]>outerArea){ outerArea=areas[i]; outerIdx=i; }
+
+    // A pixel corner where the silhouette touches itself only diagonally
+    // (teeth, spikes, thin serifs) can splice the boundary walk onto an
+    // unrelated stretch of the grid; the walk can still coincidentally
+    // close into a loop that passes the earlier "did it return to its own
+    // start" check while being geometrically nonsense (self-crossing,
+    // spanning far outside the component it supposedly belongs to). Any
+    // loop whose own bounding box escapes the component's TRUE pixel
+    // footprint (from the mask itself, not the possibly-corrupt outer
+    // loop) is such a corruption — drop it rather than feed it to the
+    // triangulator, which produces garbage (wild, out-of-bounds spikes)
+    // for self-intersecting input instead of erroring. If the outer
+    // candidate itself is the corrupted one, fall back to the largest
+    // loop that IS within bounds.
+    const trueBBox = bboxes[label];
+    let keptLoops = loops.filter(l => bboxContains(trueBBox, loopBBox(l), 2));
+    rejectedLoops += loops.length - keptLoops.length;
+    if (keptLoops.length === 0) continue;
+    if (!bboxContains(trueBBox, loopBBox(loops[outerIdx]), 2)){
+      outerIdx = 0; outerArea = 0;
+      for (let i=0;i<keptLoops.length;i++){
+        const a = Math.abs(signedArea(keptLoops[i]));
+        if (a>outerArea){ outerArea=a; outerIdx=i; }
+      }
+    } else {
+      outerIdx = keptLoops.indexOf(loops[outerIdx]);
+    }
+    loops = keptLoops;
+
     let outer = ensureWinding(loops[outerIdx], true);
     outer = simplifyClosedLoop(outer, epsilon);
     outer = chaikinSmooth(outer, smoothIters);
     const holes = [];
     for (let i=0;i<loops.length;i++){
       if (i===outerIdx) continue;
-      if (areas[i] < minSize*0.5) continue; // ignore pinhole noise
+      if (Math.abs(signedArea(loops[i])) < minSize*0.5) continue; // ignore pinhole noise
       let h2 = ensureWinding(loops[i], false);
       h2 = simplifyClosedLoop(h2, epsilon);
       h2 = chaikinSmooth(h2, smoothIters);
@@ -604,7 +724,12 @@ function extractComponents(){
     if (x<minX)minX=x; if (x>maxX)maxX=x;
     if (y<minY)minY=y; if (y>maxY)maxY=y;
   }
-  return { components, bbox: { minX,minY,maxX,maxY }, discarded: validLabels.length - components.length };
+  return {
+    components, bbox: { minX,minY,maxX,maxY },
+    discarded: cappedLabels.length - components.length,
+    componentsSkippedByCap,
+    rejectedLoops,
+  };
 }
 
 /* ---------------------------------------------------------------------- */
@@ -706,7 +831,48 @@ function extrudeMesh(shape, depth, zOffset, color, curveSegments=24){
   return new THREE.Mesh(geo, mat);
 }
 
+let holesDroppedForSafety = 0;
+
+/**
+ * Real-world artwork (fine linework, letters overlapping a mascot, etc.)
+ * can produce holes whose boundary is technically a closed, in-bounds loop
+ * but geometrically pathological in a way cheap upstream checks can't
+ * fully rule out — a small number of pixel corners where detail touches
+ * itself only diagonally is enough to fragment the topology. Three.js's
+ * earcut-based triangulator has no error path for that: it silently
+ * produces wild, way-out-of-bounds triangles ("spikes") instead of
+ * failing. This is the backstop — build the mesh, and if its bounding box
+ * blew up far past what the outer silhouette could geometrically produce,
+ * drop the interior holes for that shape and re-extrude as a solid
+ * silhouette rather than ship broken geometry.
+ */
+function buildReliefMesh(outerMM, holesMM, depth, zOffset, color, curveSegments){
+  const bb0 = loopBBoxMM(outerMM);
+  const expectedDiag = Math.hypot(bb0.maxX-bb0.minX, bb0.maxY-bb0.minY) || 1;
+  let mesh = extrudeMesh(buildShapeFromLoop(outerMM, holesMM), depth, zOffset, color, curveSegments);
+  if (holesMM.length > 0){
+    mesh.geometry.computeBoundingBox();
+    const bb = mesh.geometry.boundingBox;
+    const gotDiag = Math.hypot(bb.max.x-bb.min.x, bb.max.y-bb.min.y);
+    if (gotDiag > expectedDiag * 1.5){
+      holesDroppedForSafety++;
+      mesh = extrudeMesh(buildShapeFromLoop(outerMM, []), depth, zOffset, color, curveSegments);
+    }
+  }
+  return mesh;
+}
+
+function loopBBoxMM(pts){
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  for (const [x,y] of pts){
+    if (x<minX) minX=x; if (x>maxX) maxX=x;
+    if (y<minY) minY=y; if (y>maxY) maxY=y;
+  }
+  return { minX, minY, maxX, maxY };
+}
+
 function buildPendant(){
+  holesDroppedForSafety = 0;
   const extraction = extractComponents();
   drawMaskPreview(extraction);
 
@@ -714,6 +880,12 @@ function buildPendant(){
   const totalHoles = extraction.components.reduce((n,c)=> n+c.holes.length, 0);
   els('statHoles').textContent = String(totalHoles);
   if (extraction.discarded>0) log(`Discarded ${extraction.discarded} tiny speck(s) below the noise threshold.`);
+  if (extraction.componentsSkippedByCap>0){
+    log(`Detected an unusually high number of separate shapes (${extraction.componentsSkippedByCap} more than the ${MAX_COMPONENTS} processed) — this usually means the background isn't being keyed out cleanly. Try raising the threshold, picking the background color manually, or raising "Remove specks".`, 'warn');
+  }
+  if (extraction.rejectedLoops>0){
+    log(`Discarded ${extraction.rejectedLoops} malformed detail loop(s) where the outline touched itself at a single pixel corner (common in fine detail like teeth or spikes). If you're missing a detail you expected, try increasing image resolution or reducing "Smooth edges".`, 'warn');
+  }
 
   if (extraction.components.length===0 || !isFinite(extraction.bbox.minX)){
     log('No foreground detected — lower the threshold or pick a different background color.', 'err');
@@ -755,15 +927,13 @@ function buildPendant(){
     plateGroup.add(extrudeMesh(plateShape, plateThick, 0, 0x4f7cff, 8));
 
     for (const comp of compsMM){
-      const shape = buildShapeFromLoop(comp.outer, comp.holes);
-      reliefGroup.add(extrudeMesh(shape, reliefThick, plateThick, 0xffb020));
+      reliefGroup.add(buildReliefMesh(comp.outer, comp.holes, reliefThick, plateThick, 0xffb020, 24));
     }
   } else {
     const thick = Number(els('cutoutThick').value);
     totalThickness = thick;
     for (const comp of compsMM){
-      const shape = buildShapeFromLoop(comp.outer, comp.holes);
-      plateGroup.add(extrudeMesh(shape, thick, 0, 0x4f7cff));
+      plateGroup.add(buildReliefMesh(comp.outer, comp.holes, thick, 0, 0x4f7cff, 24));
     }
   }
 
@@ -792,6 +962,9 @@ function buildPendant(){
   els('statSize').textContent = `${plateW.toFixed(1)} × ${plateH.toFixed(1)} × ${totalThickness.toFixed(1)} mm`;
 
   log(`Built pendant: ${extraction.components.length} shape(s), ${totalHoles} hole(s), ${triCount.toLocaleString()} triangles.`, 'ok');
+  if (holesDroppedForSafety > 0){
+    log(`${holesDroppedForSafety} shape(s) had interior detail too complex to triangulate cleanly — printed as a solid silhouette instead of dropping to broken geometry. Try increasing "Simplify detail" or lowering "Smooth edges" to recover some of that detail.`, 'warn');
+  }
 
   return { plateGroup, reliefGroup, plateW, plateH, totalThickness, mode };
 }
@@ -850,6 +1023,17 @@ function scheduleRebuild(immediate){
 }
 
 function runRebuild(){
+  clearLog();
+  log('Processing…');
+  els('exportBtn').disabled = true;
+  els('exportNotesBtn').disabled = true;
+  // Let the browser paint the "Processing…" state before the (synchronous,
+  // now work-capped) pipeline runs, so a moment of computation never reads
+  // as the click having done nothing.
+  requestAnimationFrame(()=> setTimeout(doRebuild, 0));
+}
+
+function doRebuild(){
   clearLog();
   scene.remove(pendantRoot);
   pendantRoot = new THREE.Group();
