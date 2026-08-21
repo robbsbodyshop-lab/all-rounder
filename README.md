@@ -1,4 +1,13 @@
-# The All Rounder — Dual-User Workout Tracker
+# The All Rounder
+
+This repo hosts two standalone tools:
+
+- **`index.html`** — a dual-user workout tracker (below)
+- **`maintenance.html`** — [Upkeep](#upkeep--maintenance-tracker), a maintenance schedule tracker for possessions, vehicles, and household items
+
+---
+
+## Dual-User Workout Tracker
 
 A hybrid athlete program tracker for two users (husband & wife) to track workouts independently from separate devices. Based on the Viada "All Rounder" program (Chapter 9 & 10).
 
@@ -154,3 +163,27 @@ The sync indicator in the top-right corner shows:
 - **Syncing...** (gold) — saving to Firebase
 - **Synced** (green) — data saved successfully
 - **Offline** (red) — using local storage only
+
+---
+
+## Upkeep — Maintenance Tracker
+
+`maintenance.html` is a standalone tool for keeping up with recurring maintenance on cars, appliances, and other possessions — sauna cleaning, water heater/HVAC service, cleaning and oiling firearms, changing home air filters, and anything else on a schedule.
+
+It's linked from the workout tracker's start screen (and links back), but works completely independently — just open `maintenance.html` directly.
+
+### Features
+
+- **Inventory** of items (vehicles, home systems, firearms, appliances, recreation gear, or anything else), each with one or more recurring maintenance tasks
+- **Custom intervals** per task — every N days/weeks/months/years
+- **Due view** — all tasks across every item, sorted soonest-first and grouped into Overdue / Due Soon / Upcoming
+- **One-tap "Done"** — marks a task complete today, recalculates the next due date, and keeps a history of past completions
+- **Add / edit / delete** items and tasks at any time
+- **Search and category filters**
+- **Export / Import** — download a JSON backup of your full inventory and history, or restore from one
+
+### Data storage
+
+Upkeep stores everything in the browser's `localStorage` — there's no account or server setup required, and no Firebase config to fill in. Because the data lives only in that browser, **use the Export button regularly** to save a JSON backup, especially before clearing browser data or switching devices. Import that file back in (on the same or a different device/browser) to restore it.
+
+The app ships with a few example items (Car, Sauna, H2C System, Forces USA FTR, Home Air Filters) based on common recurring maintenance — rename, edit, or delete any of them and add your own to build out your full inventory.

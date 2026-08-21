@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Upkeep — Maintenance Tracker</title>
+<style>
+  :root{
+    --bg:#0b1220; --bg-mid:#0f1a2e; --surface:#131f35; --surface-2:#182742;
+    --border:rgba(148,178,214,.14); --hairline:rgba(148,178,214,.08);
+    --text:#e8eef7; --text-dim:#aab8cc; --text-muted:#7688a1;
+    --accent:#2dd4bf; --accent-dim:rgba(45,212,191,.15);
+    --amber:#fbbf24; --amber-dim:rgba(251,191,36,.15);
+    --red:#f87171; --red-dim:rgba(248,113,113,.15);
+    --green:#4ade80; --green-dim:rgba(74,222,128,.15);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:radial-gradient(ellipse 80% 60% at 20% 0%, #16233d 0%, var(--bg) 55%), var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    min-height:100vh;
+    padding-bottom:3rem;
+  }
+  a{color:var(--accent)}
+  header{
+    position:sticky;top:0;z-index:20;
+    background:linear-gradient(135deg,var(--bg-mid),#101c33 60%,#0e1930);
+    border-bottom:1px solid var(--border);
+    padding:0 1.25rem;
+  }
+  .header-inner{
+    max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;
+    padding:.95rem 0;gap:.75rem;flex-wrap:wrap;
+  }
+  .brand{display:flex;align-items:center;gap:.6rem}
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;flex-shrink:0;
+    background:linear-gradient(135deg,var(--accent),#0e9488);
+    display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+  }
+  .brand h1{font-size:1.05rem;font-weight:800;letter-spacing:.02em;margin:0}
+  .brand p{margin:0;font-size:.68rem;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase}
+  .header-actions{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+  .crosslink{font-size:.72rem;color:var(--text-muted);text-decoration:none;border:1px solid var(--border);padding:.4rem .7rem;border-radius:8px}
+  .crosslink:hover{color:var(--accent);border-color:var(--accent)}
+
+  main{max-width:900px;margin:0 auto;padding:1.1rem 1.25rem 2rem}
+
+  .tabs{display:flex;gap:.4rem;margin-bottom:1rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.3rem}
+  .tab-btn{flex:1;background:transparent;border:none;color:var(--text-muted);font-size:.82rem;font-weight:700;letter-spacing:.03em;padding:.55rem;border-radius:9px;cursor:pointer;transition:.15s}
+  .tab-btn.active{background:var(--accent-dim);color:var(--accent)}
+  .tab-btn .count{opacity:.75;font-weight:600}
+
+  .toolbar{display:flex;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
+  .search-input{
+    flex:1;min-width:160px;background:var(--surface);border:1px solid var(--border);color:var(--text);
+    padding:.6rem .8rem;border-radius:10px;font-size:.88rem;
+  }
+  .search-input:focus{outline:none;border-color:var(--accent)}
+  select.filter-select{
+    background:var(--surface);border:1px solid var(--border);color:var(--text);
+    padding:.6rem .7rem;border-radius:10px;font-size:.83rem;
+  }
+  .btn{
+    background:var(--surface-2);border:1px solid var(--border);color:var(--text);
+    padding:.6rem .95rem;border-radius:10px;font-size:.83rem;font-weight:700;cursor:pointer;
+    display:inline-flex;align-items:center;gap:.4rem;transition:.15s;
+  }
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),#0e9488);border:none;color:#04231f}
+  .btn-primary:hover{color:#04231f;filter:brightness(1.08)}
+  .btn-danger{color:var(--red)}
+  .btn-danger:hover{border-color:var(--red);color:var(--red)}
+  .btn-sm{padding:.4rem .7rem;font-size:.75rem}
+  .btn-ghost{background:transparent;border:1px solid var(--border)}
+  .icon-btn{background:transparent;border:none;color:var(--text-muted);cursor:pointer;padding:.3rem;border-radius:6px;font-size:.95rem;line-height:1}
+  .icon-btn:hover{color:var(--text)}
+
+  .empty-state{text-align:center;padding:3rem 1rem;color:var(--text-muted)}
+  .empty-state .big{font-size:2.2rem;margin-bottom:.5rem}
+
+  /* Dashboard task rows */
+  .task-row{
+    display:flex;align-items:center;gap:.8rem;background:var(--surface);
+    border:1px solid var(--border);border-left:3px solid var(--border);
+    border-radius:10px;padding:.75rem .9rem;margin-bottom:.55rem;
+  }
+  .task-row.status-overdue{border-left-color:var(--red)}
+  .task-row.status-soon{border-left-color:var(--amber)}
+  .task-row.status-ok{border-left-color:var(--green)}
+  .task-row .cat-icon{font-size:1.3rem;flex-shrink:0;width:1.6rem;text-align:center}
+  .task-row .task-info{flex:1;min-width:0}
+  .task-row .task-name{font-weight:700;font-size:.92rem}
+  .task-row .item-name{font-size:.76rem;color:var(--text-muted);margin-top:.1rem}
+  .task-row .due-badge{
+    font-size:.72rem;font-weight:800;letter-spacing:.02em;padding:.28rem .55rem;border-radius:7px;white-space:nowrap;
+  }
+  .due-badge.status-overdue{background:var(--red-dim);color:var(--red)}
+  .due-badge.status-soon{background:var(--amber-dim);color:var(--amber)}
+  .due-badge.status-ok{background:var(--green-dim);color:var(--green)}
+
+  .section-heading{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin:1.4rem 0 .6rem;font-weight:700}
+  .section-heading:first-child{margin-top:0}
+
+  /* Inventory cards */
+  .item-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.85rem;overflow:hidden}
+  .item-card-head{display:flex;align-items:center;gap:.7rem;padding:.9rem 1rem;cursor:pointer}
+  .item-card-head .cat-icon{font-size:1.4rem}
+  .item-card-head .titles{flex:1;min-width:0}
+  .item-card-head .item-title{font-weight:800;font-size:.98rem}
+  .item-card-head .item-sub{font-size:.74rem;color:var(--text-muted);margin-top:.1rem}
+  .item-card-head .chev{color:var(--text-muted);transition:.2s;font-size:.8rem}
+  .item-card.open .chev{transform:rotate(90deg)}
+  .item-card-body{display:none;border-top:1px solid var(--hairline);padding:.8rem 1rem 1rem}
+  .item-card.open .item-card-body{display:block}
+  .item-notes{font-size:.8rem;color:var(--text-dim);margin-bottom:.7rem;white-space:pre-wrap}
+  .item-actions{display:flex;gap:.5rem;margin-bottom:.8rem;flex-wrap:wrap}
+
+  .task-line{
+    display:flex;align-items:center;gap:.7rem;padding:.6rem 0;border-top:1px solid var(--hairline);
+  }
+  .task-line:first-of-type{border-top:none}
+  .task-line .t-info{flex:1;min-width:0}
+  .task-line .t-name{font-weight:700;font-size:.86rem}
+  .task-line .t-meta{font-size:.73rem;color:var(--text-muted);margin-top:.15rem}
+  .task-line .t-actions{display:flex;gap:.35rem;flex-shrink:0}
+
+  /* Modal */
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(4,8,16,.65);z-index:100;
+    align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);
+  }
+  .modal-overlay.show{display:flex}
+  @media(min-width:640px){ .modal-overlay{align-items:center} }
+  .modal{
+    background:var(--surface-2);border:1px solid var(--border);width:100%;max-width:460px;
+    max-height:88vh;overflow-y:auto;border-radius:16px 16px 0 0;
+  }
+  @media(min-width:640px){ .modal{border-radius:16px} }
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.1rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface-2)}
+  .modal-head h3{margin:0;font-size:1rem;font-weight:800}
+  .modal-body{padding:1.1rem}
+  .modal-foot{display:flex;justify-content:flex-end;gap:.6rem;padding:.9rem 1.1rem;border-top:1px solid var(--border)}
+  .field{margin-bottom:.9rem}
+  .field label{display:block;font-size:.74rem;color:var(--text-muted);margin-bottom:.35rem;font-weight:700;letter-spacing:.02em}
+  .field input[type=text],.field input[type=date],.field textarea,.field select{
+    width:100%;background:var(--bg-mid);border:1px solid var(--border);color:var(--text);
+    padding:.65rem .75rem;border-radius:9px;font-size:.88rem;font-family:inherit;
+  }
+  .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent)}
+  .field textarea{resize:vertical;min-height:60px}
+  .field-row{display:flex;gap:.6rem}
+  .field-row .field{flex:1}
+  .category-picker{display:flex;flex-wrap:wrap;gap:.4rem}
+  .cat-chip{
+    border:1px solid var(--border);background:var(--bg-mid);color:var(--text-dim);
+    padding:.4rem .65rem;border-radius:20px;font-size:.78rem;cursor:pointer;display:flex;align-items:center;gap:.3rem;
+  }
+  .cat-chip.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+
+  .task-list-mini{margin-top:.4rem}
+  .task-mini-row{display:flex;align-items:center;gap:.5rem;padding:.5rem;background:var(--bg-mid);border:1px solid var(--border);border-radius:8px;margin-bottom:.4rem}
+  .task-mini-row .t-name{flex:1;font-size:.82rem;font-weight:600}
+
+  footer{max-width:900px;margin:1.5rem auto 0;padding:0 1.25rem;color:var(--text-muted);font-size:.72rem;text-align:center}
+
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark">🛠️</div>
+      <div>
+        <h1>Upkeep</h1>
+        <p>Maintenance Tracker</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a class="crosslink" href="index.html">Workout Tracker →</a>
+      <button class="btn btn-sm" id="exportBtn" title="Export backup JSON">⬇ Export</button>
+      <button class="btn btn-sm" id="importBtn" title="Import backup JSON">⬆ Import</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none">
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="due">Due <span class="count" id="dueCount"></span></button>
+    <button class="tab-btn" data-tab="inventory">Inventory <span class="count" id="invCount"></span></button>
+  </div>
+
+  <div class="toolbar">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search items or tasks…">
+    <select class="filter-select" id="categoryFilter">
+      <option value="">All categories</option>
+    </select>
+    <button class="btn btn-primary" id="addItemBtn">+ Add Item</button>
+  </div>
+
+  <div id="dueView"></div>
+  <div id="inventoryView" style="display:none"></div>
+
+  <footer>Data is stored locally in this browser. Use Export regularly to back up your maintenance history.</footer>
+</main>
+
+<!-- Item Modal -->
+<div class="modal-overlay" id="itemModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="itemModalTitle">Add Item</h3>
+      <button class="icon-btn" data-close-modal="itemModalOverlay">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="itemNameInput" placeholder="e.g. Honda Civic, Sauna, Forces USA FTR">
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <div class="category-picker" id="categoryPicker"></div>
+      </div>
+      <div class="field">
+        <label>Notes (optional)</label>
+        <textarea id="itemNotesInput" placeholder="Model, serial number, location, etc."></textarea>
+      </div>
+      <div class="field" id="taskListField" style="display:none">
+        <label>Maintenance Tasks</label>
+        <div class="task-list-mini" id="taskListMini"></div>
+        <button class="btn btn-sm btn-ghost" id="addTaskInlineBtn" type="button">+ Add Task</button>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-danger" id="deleteItemBtn" style="display:none">Delete Item</button>
+      <button class="btn btn-primary" id="saveItemBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Task Modal -->
+<div class="modal-overlay" id="taskModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="taskModalTitle">Add Task</h3>
+      <button class="icon-btn" data-close-modal="taskModalOverlay">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Task name</label>
+        <input type="text" id="taskNameInput" placeholder="e.g. Oil Change, Deep Clean, Replace Filter">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Repeat every</label>
+          <input type="text" id="taskIntervalValue" inputmode="numeric" placeholder="6">
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <select id="taskIntervalUnit">
+            <option value="days">Days</option>
+            <option value="weeks">Weeks</option>
+            <option value="months" selected>Months</option>
+            <option value="years">Years</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Last completed</label>
+        <input type="date" id="taskLastDone">
+      </div>
+      <div class="field">
+        <label>Notes (optional)</label>
+        <textarea id="taskNotesInput" placeholder="Product/part used, torque spec, etc."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-danger" id="deleteTaskBtn" style="display:none">Delete Task</button>
+      <button class="btn btn-primary" id="saveTaskBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+const STORAGE_KEY = 'upkeep_maintenance_data_v1';
+
+const CATEGORIES = [
+  { id:'vehicle',   label:'Vehicle',    icon:'🚗' },
+  { id:'home',      label:'Home',       icon:'🏠' },
+  { id:'firearm',   label:'Firearm',    icon:'🔫' },
+  { id:'appliance', label:'Appliance',  icon:'🔌' },
+  { id:'recreation',label:'Recreation', icon:'🚴' },
+  { id:'other',     label:'Other',      icon:'📦' },
+];
+const catById = id => CATEGORIES.find(c => c.id === id) || CATEGORIES[CATEGORIES.length-1];
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+
+function defaultData(){
+  const t = todayISO();
+  return {
+    items: [
+      {
+        id: uid(), name:'Car', category:'vehicle',
+        notes:'Rename to your actual vehicle. Add tasks for whatever your manufacturer recommends.',
+        tasks:[
+          { id: uid(), name:'Oil Change', intervalValue:6, intervalUnit:'months', lastDone:null, notes:'', history:[] },
+          { id: uid(), name:'Tire Rotation', intervalValue:6, intervalUnit:'months', lastDone:null, notes:'', history:[] },
+        ]
+      },
+      {
+        id: uid(), name:'Sauna', category:'home', notes:'',
+        tasks:[
+          { id: uid(), name:'Deep Clean', intervalValue:1, intervalUnit:'months', lastDone:null, notes:'Wipe benches, check heater rocks', history:[] },
+        ]
+      },
+      {
+        id: uid(), name:'H2C System', category:'home',
+        notes:'Rename to match your actual hot/cold water or HVAC unit.',
+        tasks:[
+          { id: uid(), name:'Service Check', intervalValue:3, intervalUnit:'months', lastDone:null, notes:'', history:[] },
+        ]
+      },
+      {
+        id: uid(), name:'Forces USA FTR', category:'firearm', notes:'',
+        tasks:[
+          { id: uid(), name:'Clean & Oil', intervalValue:2, intervalUnit:'months', lastDone:null, notes:'Clean and oil after range use, or every 2 months minimum', history:[] },
+        ]
+      },
+      {
+        id: uid(), name:'Home Air Filters', category:'home', notes:'HVAC return filters',
+        tasks:[
+          { id: uid(), name:'Replace Filter', intervalValue:3, intervalUnit:'months', lastDone:null, notes:'', history:[] },
+        ]
+      },
+    ]
+  };
+}
+
+let DATA = { items: [] };
+DATA = load();
+
+function load(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e){ console.warn('Failed to load data', e); }
+  const d = defaultData();
+  save(d);
+  return d;
+}
+function save(d){
+  DATA = d || DATA;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
+}
+
+// ---- Date / interval math ----
+function addInterval(dateISO, value, unit){
+  const d = new Date(dateISO + 'T00:00:00');
+  const v = parseInt(value, 10) || 0;
+  switch(unit){
+    case 'days': d.setDate(d.getDate() + v); break;
+    case 'weeks': d.setDate(d.getDate() + v*7); break;
+    case 'months': d.setMonth(d.getMonth() + v); break;
+    case 'years': d.setFullYear(d.getFullYear() + v); break;
+  }
+  return d.toISOString().slice(0,10);
+}
+function daysBetween(aISO, bISO){
+  const a = new Date(aISO + 'T00:00:00');
+  const b = new Date(bISO + 'T00:00:00');
+  return Math.round((b - a) / 86400000);
+}
+function nextDueDate(task){
+  const base = task.lastDone || task.createdAt || todayISO();
+  return addInterval(base, task.intervalValue, task.intervalUnit);
+}
+function taskStatus(task){
+  const due = nextDueDate(task);
+  const diff = daysBetween(todayISO(), due);
+  if (diff < 0) return { status:'overdue', due, diff };
+  if (diff <= 7) return { status:'soon', due, diff };
+  return { status:'ok', due, diff };
+}
+function fmtDate(iso){
+  if (!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' });
+}
+function fmtDueLabel(diff, due){
+  if (diff < 0) return `${Math.abs(diff)}d overdue`;
+  if (diff === 0) return 'Due today';
+  if (diff <= 7) return `Due in ${diff}d`;
+  return `Due ${fmtDate(due)}`;
+}
+function fmtInterval(t){
+  const unit = t.intervalUnit;
+  const v = t.intervalValue;
+  const label = v == 1 ? unit.slice(0,-1) : unit;
+  return `Every ${v} ${label}`;
+}
+
+// ---- Rendering ----
+let activeTab = 'due';
+let searchQuery = '';
+let categoryFilter = '';
+
+function allTasksFlat(){
+  const out = [];
+  for (const item of DATA.items){
+    for (const task of item.tasks){
+      out.push({ item, task });
+    }
+  }
+  return out;
+}
+function matchesFilter(item, task){
+  if (categoryFilter && item.category !== categoryFilter) return false;
+  if (searchQuery){
+    const q = searchQuery.toLowerCase();
+    const hay = (item.name + ' ' + (task ? task.name : '') + ' ' + (item.notes||'')).toLowerCase();
+    if (!hay.includes(q)) return false;
+  }
+  return true;
+}
+
+function renderCategoryFilter(){
+  const sel = document.getElementById('categoryFilter');
+  sel.innerHTML = '<option value="">All categories</option>' +
+    CATEGORIES.map(c => `<option value="${c.id}">${c.icon} ${c.label}</option>`).join('');
+  sel.value = categoryFilter;
+}
+
+function renderDueView(){
+  const container = document.getElementById('dueView');
+  const rows = allTasksFlat().filter(r => matchesFilter(r.item, r.task));
+  rows.forEach(r => { r.st = taskStatus(r.task); });
+  rows.sort((a,b) => a.st.diff - b.st.diff);
+
+  document.getElementById('dueCount').textContent =
+    '(' + rows.filter(r=>r.st.status==='overdue').length + ')';
+  document.getElementById('invCount').textContent = '(' + DATA.items.length + ')';
+
+  if (!rows.length){
+    container.innerHTML = `<div class="empty-state"><div class="big">✅</div>No maintenance tasks match. Add an item to get started.</div>`;
+    return;
+  }
+
+  const groups = [
+    { key:'overdue', label:'Overdue' },
+    { key:'soon', label:'Due Soon' },
+    { key:'ok', label:'Upcoming' },
+  ];
+  let html = '';
+  for (const g of groups){
+    const items = rows.filter(r => r.st.status === g.key);
+    if (!items.length) continue;
+    html += `<div class="section-heading">${g.label} · ${items.length}</div>`;
+    for (const r of items){
+      const cat = catById(r.item.category);
+      html += `
+      <div class="task-row status-${r.st.status}">
+        <div class="cat-icon">${cat.icon}</div>
+        <div class="task-info">
+          <div class="task-name">${escapeHtml(r.task.name)}</div>
+          <div class="item-name">${escapeHtml(r.item.name)}</div>
+        </div>
+        <div class="due-badge status-${r.st.status}">${fmtDueLabel(r.st.diff, r.st.due)}</div>
+        <button class="btn btn-sm btn-primary" data-mark-done="${r.item.id}:${r.task.id}">Done</button>
+      </div>`;
+    }
+  }
+  container.innerHTML = html;
+}
+
+function renderInventoryView(){
+  const container = document.getElementById('inventoryView');
+  const items = DATA.items.filter(item => {
+    if (categoryFilter && item.category !== categoryFilter) return false;
+    if (searchQuery){
+      const q = searchQuery.toLowerCase();
+      const hay = (item.name + ' ' + (item.notes||'') + ' ' + item.tasks.map(t=>t.name).join(' ')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (!items.length){
+    container.innerHTML = `<div class="empty-state"><div class="big">📦</div>No items yet. Click "+ Add Item" to inventory your first possession.</div>`;
+    return;
+  }
+
+  container.innerHTML = items.map(item => {
+    const cat = catById(item.category);
+    const openCls = openItemIds.has(item.id) ? 'open' : '';
+    const soonestCount = item.tasks.length;
+    const tasksHtml = item.tasks.map(task => {
+      const st = taskStatus(task);
+      return `
+      <div class="task-line">
+        <div class="t-info">
+          <div class="t-name">${escapeHtml(task.name)}</div>
+          <div class="t-meta">${fmtInterval(task)} · Last: ${fmtDate(task.lastDone)} · <span style="color:var(--${st.status==='overdue'?'red':st.status==='soon'?'amber':'green'})">${fmtDueLabel(st.diff, st.due)}</span></div>
+        </div>
+        <div class="t-actions">
+          <button class="btn btn-sm btn-primary" data-mark-done="${item.id}:${task.id}">Done</button>
+          <button class="icon-btn" data-edit-task="${item.id}:${task.id}" title="Edit task">✎</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    return `
+    <div class="item-card ${openCls}" data-item-id="${item.id}">
+      <div class="item-card-head" data-toggle-item="${item.id}">
+        <div class="cat-icon">${cat.icon}</div>
+        <div class="titles">
+          <div class="item-title">${escapeHtml(item.name)}</div>
+          <div class="item-sub">${cat.label} · ${soonestCount} task${soonestCount===1?'':'s'}</div>
+        </div>
+        <div class="chev">▶</div>
+      </div>
+      <div class="item-card-body">
+        ${item.notes ? `<div class="item-notes">${escapeHtml(item.notes)}</div>` : ''}
+        <div class="item-actions">
+          <button class="btn btn-sm" data-edit-item="${item.id}">Edit Item</button>
+          <button class="btn btn-sm btn-ghost" data-add-task="${item.id}">+ Add Task</button>
+        </div>
+        ${tasksHtml || '<div style="color:var(--text-muted);font-size:.8rem;padding:.4rem 0">No tasks yet.</div>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+const openItemIds = new Set();
+
+function escapeHtml(s){
+  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderAll(){
+  renderCategoryFilter();
+  renderDueView();
+  renderInventoryView();
+}
+
+// ---- Tabs ----
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    activeTab = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    document.getElementById('dueView').style.display = activeTab === 'due' ? '' : 'none';
+    document.getElementById('inventoryView').style.display = activeTab === 'inventory' ? '' : 'none';
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchQuery = e.target.value.trim();
+  renderAll();
+});
+document.getElementById('categoryFilter').addEventListener('change', e => {
+  categoryFilter = e.target.value;
+  renderAll();
+});
+
+// ---- Delegated click handling ----
+document.addEventListener('click', e => {
+  const markDone = e.target.closest('[data-mark-done]');
+  if (markDone){
+    const [itemId, taskId] = markDone.dataset.markDone.split(':');
+    markTaskDone(itemId, taskId);
+    return;
+  }
+  const toggleItem = e.target.closest('[data-toggle-item]');
+  if (toggleItem){
+    const id = toggleItem.dataset.toggleItem;
+    if (openItemIds.has(id)) openItemIds.delete(id); else openItemIds.add(id);
+    renderInventoryView();
+    return;
+  }
+  const editItem = e.target.closest('[data-edit-item]');
+  if (editItem){ openItemModal(editItem.dataset.editItem); return; }
+
+  const addTask = e.target.closest('[data-add-task]');
+  if (addTask){ openTaskModal(addTask.dataset.addTask, null); return; }
+
+  const editTask = e.target.closest('[data-edit-task]');
+  if (editTask){
+    const [itemId, taskId] = editTask.dataset.editTask.split(':');
+    openTaskModal(itemId, taskId);
+    return;
+  }
+
+  const closeModal = e.target.closest('[data-close-modal]');
+  if (closeModal){ closeModalById(closeModal.dataset.closeModal); return; }
+});
+
+function markTaskDone(itemId, taskId){
+  const item = DATA.items.find(i => i.id === itemId);
+  const task = item && item.tasks.find(t => t.id === taskId);
+  if (!task) return;
+  const today = todayISO();
+  task.history = task.history || [];
+  if (task.lastDone) task.history.push(task.lastDone);
+  task.lastDone = today;
+  save(DATA);
+  renderAll();
+}
+
+// ---- Item Modal ----
+let editingItemId = null;
+let draftTasks = [];
+
+function renderCategoryPicker(selected){
+  const el = document.getElementById('categoryPicker');
+  el.innerHTML = CATEGORIES.map(c =>
+    `<div class="cat-chip ${c.id===selected?'active':''}" data-cat="${c.id}">${c.icon} ${c.label}</div>`
+  ).join('');
+  el.querySelectorAll('.cat-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      el.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+}
+function getSelectedCategory(){
+  const active = document.querySelector('#categoryPicker .cat-chip.active');
+  return active ? active.dataset.cat : 'other';
+}
+
+function openItemModal(itemId){
+  editingItemId = itemId || null;
+  const item = itemId ? DATA.items.find(i => i.id === itemId) : null;
+  document.getElementById('itemModalTitle').textContent = item ? 'Edit Item' : 'Add Item';
+  document.getElementById('itemNameInput').value = item ? item.name : '';
+  document.getElementById('itemNotesInput').value = item ? (item.notes || '') : '';
+  renderCategoryPicker(item ? item.category : 'other');
+  document.getElementById('deleteItemBtn').style.display = item ? '' : 'none';
+
+  draftTasks = item ? JSON.parse(JSON.stringify(item.tasks)) : [];
+  document.getElementById('taskListField').style.display = item ? '' : 'none';
+  renderTaskListMini();
+
+  showModal('itemModalOverlay');
+}
+function renderTaskListMini(){
+  const el = document.getElementById('taskListMini');
+  if (!draftTasks.length){
+    el.innerHTML = '<div style="color:var(--text-muted);font-size:.78rem">No tasks yet. Save the item, then add tasks from the Inventory card.</div>';
+    return;
+  }
+  el.innerHTML = draftTasks.map(t =>
+    `<div class="task-mini-row"><span class="t-name">${escapeHtml(t.name)}</span><span style="font-size:.72rem;color:var(--text-muted)">${fmtInterval(t)}</span></div>`
+  ).join('');
+}
+document.getElementById('addTaskInlineBtn').addEventListener('click', () => {
+  if (editingItemId){ closeModalById('itemModalOverlay'); openTaskModal(editingItemId, null); }
+});
+
+document.getElementById('addItemBtn').addEventListener('click', () => openItemModal(null));
+
+document.getElementById('saveItemBtn').addEventListener('click', () => {
+  const name = document.getElementById('itemNameInput').value.trim();
+  if (!name){ document.getElementById('itemNameInput').focus(); return; }
+  const category = getSelectedCategory();
+  const notes = document.getElementById('itemNotesInput').value.trim();
+
+  if (editingItemId){
+    const item = DATA.items.find(i => i.id === editingItemId);
+    item.name = name; item.category = category; item.notes = notes;
+  } else {
+    DATA.items.push({ id: uid(), name, category, notes, tasks: [] });
+  }
+  save(DATA);
+  closeModalById('itemModalOverlay');
+  renderAll();
+});
+
+document.getElementById('deleteItemBtn').addEventListener('click', () => {
+  if (!editingItemId) return;
+  if (!confirm('Delete this item and all its maintenance tasks? This cannot be undone.')) return;
+  DATA.items = DATA.items.filter(i => i.id !== editingItemId);
+  save(DATA);
+  closeModalById('itemModalOverlay');
+  renderAll();
+});
+
+// ---- Task Modal ----
+let editingTaskItemId = null;
+let editingTaskId = null;
+
+function openTaskModal(itemId, taskId){
+  editingTaskItemId = itemId;
+  editingTaskId = taskId || null;
+  const item = DATA.items.find(i => i.id === itemId);
+  const task = taskId ? item.tasks.find(t => t.id === taskId) : null;
+
+  document.getElementById('taskModalTitle').textContent = task ? 'Edit Task' : 'Add Task';
+  document.getElementById('taskNameInput').value = task ? task.name : '';
+  document.getElementById('taskIntervalValue').value = task ? task.intervalValue : '';
+  document.getElementById('taskIntervalUnit').value = task ? task.intervalUnit : 'months';
+  document.getElementById('taskLastDone').value = task ? (task.lastDone || '') : '';
+  document.getElementById('taskNotesInput').value = task ? (task.notes || '') : '';
+  document.getElementById('deleteTaskBtn').style.display = task ? '' : 'none';
+
+  showModal('taskModalOverlay');
+}
+
+document.getElementById('saveTaskBtn').addEventListener('click', () => {
+  const name = document.getElementById('taskNameInput').value.trim();
+  const intervalValue = parseInt(document.getElementById('taskIntervalValue').value, 10);
+  const intervalUnit = document.getElementById('taskIntervalUnit').value;
+  const lastDone = document.getElementById('taskLastDone').value || null;
+  const notes = document.getElementById('taskNotesInput').value.trim();
+
+  if (!name){ document.getElementById('taskNameInput').focus(); return; }
+  if (!intervalValue || intervalValue <= 0){ document.getElementById('taskIntervalValue').focus(); return; }
+
+  const item = DATA.items.find(i => i.id === editingTaskItemId);
+  if (!item) return;
+
+  if (editingTaskId){
+    const task = item.tasks.find(t => t.id === editingTaskId);
+    task.name = name; task.intervalValue = intervalValue; task.intervalUnit = intervalUnit;
+    task.lastDone = lastDone; task.notes = notes;
+  } else {
+    item.tasks.push({ id: uid(), name, intervalValue, intervalUnit, lastDone, notes, history: [] });
+  }
+  save(DATA);
+  closeModalById('taskModalOverlay');
+  openItemIds.add(item.id);
+  renderAll();
+});
+
+document.getElementById('deleteTaskBtn').addEventListener('click', () => {
+  if (!editingTaskId) return;
+  if (!confirm('Delete this maintenance task?')) return;
+  const item = DATA.items.find(i => i.id === editingTaskItemId);
+  item.tasks = item.tasks.filter(t => t.id !== editingTaskId);
+  save(DATA);
+  closeModalById('taskModalOverlay');
+  renderAll();
+});
+
+// ---- Modal helpers ----
+function showModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModalById(id){ document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('show'); });
+});
+
+// ---- Export / Import ----
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(DATA, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `upkeep-backup-${todayISO()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+document.getElementById('importBtn').addEventListener('click', () => {
+  document.getElementById('importFile').click();
+});
+document.getElementById('importFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      if (!parsed || !Array.isArray(parsed.items)) throw new Error('Invalid file format');
+      if (!confirm(`Import ${parsed.items.length} item(s)? This will replace your current data.`)) return;
+      save(parsed);
+      renderAll();
+    } catch(err){
+      alert('Could not import file: ' + err.message);
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
+renderAll();
+</script>
+</body>
+</html>
