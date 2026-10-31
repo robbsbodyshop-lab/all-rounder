@@ -1,10 +1,11 @@
 # The All Rounder
 
-This repo hosts three standalone tools:
+This repo hosts four standalone tools:
 
 - **`index.html`** — a dual-user workout tracker (below)
 - **`maintenance.html`** — [Upkeep](#upkeep--maintenance-tracker), a maintenance schedule tracker for possessions, vehicles, and household items
 - **`mascot-pendant-optimizer.html`** — [Mascot Pendant Optimizer](#mascot-pendant-optimizer), a 3D-printable pendant STL generator
+- **`intro-maker.html`** — [Intro Maker](#intro-maker), a pixel-art title-sequence builder that exports video
 
 ---
 
@@ -225,3 +226,18 @@ Highlights:
 - "Backing plate + relief" mode keeps thin mascot details (ears, legs, text) from snapping off, and supports **two-tone export** — separate `pendant-plate.stl` / `pendant-relief.stl` files that align at the same origin, so you can assign each one a different AMS filament color in Bambu Studio
 - Automatic warnings for printability issues (e.g. an overly thin bail wall)
 - A "Download print notes" button that exports the recommended Bambu Studio slicer settings (layer height, walls, infill, supports, brim, filament) alongside the STL(s)
+
+---
+
+## Intro Maker
+
+`intro-maker.html` builds short 16-bit pixel-art intro sequences: everyday scenes, credits typed on in an outlined pixel font (small role label, big yellow name), and cuts that dive into one object in the frame to reveal the next scene. Open the file directly in a browser; it works on a phone.
+
+- **Scenes:** pick a built-in background (shop street, store aisle, phone in hand, cinema seats, city at night, black title card) or **upload a photo** — it's cropped to 16:9 and auto-pixelated with adjustable pixel size and colour count
+- **Character & speech bubble:** a customisable pixel character (size, position, walk/stand, hair/skin/clothes colours, stripes, glasses) and a bubble icon (envelope, coin, heart, !, ?, note)
+- **Credits:** one per line as `role | name`, placed along the bottom, stacked left/right, or as a big centred title
+- **Transitions into the next scene:** zoom into a spot (the bubble, the character's face, or any point you tap on the paused preview), iris circle, red-and-white flash with screen shake, or a hard cut. Each scene also has a camera move (still, push in, pan) and a colour look (normal, night, dramatic red & white, handheld green, black & white)
+- **Export:** "Record video" plays the sequence once in real time and records it at 1280×720 — MP4 on Safari/iPhone and recent Chrome, WebM elsewhere — with optional music mixed in. On iPhone, use **Share / Save to Photos**
+- Projects autosave on the device; **Save project / Open project** moves them between devices as a JSON file (photos included, music not)
+
+Text uses the [Galmuri](https://github.com/quiple/galmuri) pixel font (SIL OFL), loaded from jsDelivr, which covers Latin and Korean.
