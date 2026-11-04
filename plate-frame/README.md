@@ -8,6 +8,8 @@ Bambu Studio (File > Open Project). It contains one plate with two objects:
 | Plate frame | Frame body, Accent bezels | 1, 2 | front face **down** on the textured plate |
 | Blank plaque | Blank plaque | 1 | front face up |
 
+A themed plaque with the Powerpuff Girls lives in a second file, see below.
+
 Regenerate after editing the `P` dict in `make_frame_3mf.py`:
 
 ```
@@ -45,6 +47,36 @@ Custom plaque blank: 211.4 x 23.4 x 2.0 mm, corner radius 2.5, two 7.5 mm holes 
 the frame face. Add raised or engraved text to the `Blank plaque` object in Bambu Studio
 (Text tool) or remodel from the STL; raised text can be any height since nothing covers
 the plaque. If you want the plaque proud of the frame, make it thicker than 2 mm.
+
+## Themed plaque: Powerpuff Girls, Dia de los Muertos
+
+`plaque_powerpuff_dia_de_muertos.3mf` is a second Bambu Studio project holding only a
+plaque (same 211.4 x 23.4 x 2 mm blank with the two screw holes) with the three girls as
+sugar skulls raised 0.6 mm on the face, plus the poster's title text at each end.
+Regenerate with `python3 make_plaque_ppg.py`; it reads the plaque size from
+`make_frame_3mf.py` so the two stay matched.
+
+Parts and filament slots:
+
+| Part | Slot | Colour |
+|---|---|---|
+| Plaque base | 1 | black |
+| Art White | 2 | white (faces, ribs, bones) |
+| Art Orange, Text left, Text right | 3 | orange (Blossom hair and dress, lettering) |
+| Art Blue | 4 | blue (Bubbles dress) |
+| Art Green | 5 | green (Buttercup hair and dress) |
+| Art Red | 6 | red (Blossom's bow) |
+| Art Yellow | 7 | yellow (Bubbles' hair) |
+
+Seven colours need two AMS units. With one AMS 2 Pro, reassign parts in the object
+list: red to orange, yellow to orange (or white), which leaves black, white, orange,
+blue and green. Drop green too by printing Buttercup in blue if you only have four
+slots. Delete the `Text left` and `Text right` parts if you want characters only.
+
+Print it face up, 0.2 mm layers (0.1 mm for crisper faces), 0.4 nozzle, Arachne wall
+generator on (the default) so the 0.6 to 0.8 mm skull details and lettering strokes
+print as single lines. The colour changes happen in the top three layers only. Black
+outlines between regions are 0.5 mm gaps that show the base.
 
 ## Key dimensions (mm)
 
