@@ -18,43 +18,45 @@ python3 make_frame_3mf.py
 ## What the frame does
 
 * Fits a standard US plate (304.8 x 152.4 mm) with the 7 in x 4.75 in hole pattern.
-  Four 7.5 mm through-holes with 11 mm x 1 mm counterbores for the screw heads. The
-  plate sits behind the frame and is clamped by the mounting screws.
+  Four 7.5 mm through-holes; the bottom pair has 11 mm x 1 mm counterbores for the screw
+  heads, the top pair passes through the plaque recess. The plate sits behind the frame
+  and is clamped by the mounting screws.
 * **Bottom bar**: a 2 mm deep pocket shaped for the Badge of Ownership strip. Round
   pocket 35.6 mm for the loyalty medallion (left side, viewed from the front) and a
   112 x 26.5 mm trough for five lifestyle-icon tiles. The badges' own adhesive holds them
   in; the pocket only locates them.
-* **Top bar**: a 160 x 20 mm front-loading plaque pocket in place of the Subaru logo.
-  Retaining lips: 2.5 mm along the top edge, 1.0 mm along the bottom edge. Visible
-  window 160 x 16.5 mm. A 16 mm fingernail notch below the pocket exposes the plaque's
-  bottom edge.
+* **Top bar**: a 212 x 24 x 2 mm recess in place of the Subaru logo. The plaque spans
+  both top mounting holes and the two plate screws clamp it, so swapping a plaque means
+  loosening those two screws. No lips or clips.
 * **Accent bezels**: a 0.8 mm skin (2 mm band) around both pockets, split out as its
   own part so the AMS can print it in a second colour. Set it to filament 1 if you want a
   single-colour frame.
 
 ## Swapping plaques
 
-1. Push the plaque's top edge up under the 2.5 mm top lip.
-2. Swing the bottom edge into the pocket (it clears the 1 mm bottom lip by 0.4 mm).
-3. Let it drop. Gravity seats the bottom edge behind the bottom lip; the top edge stays
-   1.1 mm under the top lip.
-4. To remove, lift the plaque 1.4 mm with a fingernail in the notch and swing the bottom
-   out.
+1. Back the two top plate screws out far enough to free the plaque (the bottom screws
+   can stay).
+2. Lift the old plaque out of the recess and drop the new one in, holes over the screws.
+3. Tighten the top screws. The screw heads bear on the plaque; use screws with a washer
+   or flange head of at least 10 mm.
 
-Custom plaque blank: 159.4 x 18.6 x 2.0 mm, 0.6 mm chamfer on the back edges. Add
-raised or engraved text to the `Blank plaque` object in Bambu Studio (Text tool) or
-remodel from the STL. Keep raised text under 1 mm tall so it clears the lips.
+Custom plaque blank: 211.4 x 23.4 x 2.0 mm, corner radius 2.5, two 7.5 mm holes at
++/-88.9 mm horizontally and 4.675 mm below the plaque's centre line. It sits flush with
+the frame face. Add raised or engraved text to the `Blank plaque` object in Bambu Studio
+(Text tool) or remodel from the STL; raised text can be any height since nothing covers
+the plaque. If you want the plaque proud of the frame, make it thicker than 2 mm.
 
 ## Key dimensions (mm)
 
 | | |
 |---|---|
 | Frame outer | 316 x 164 x 5.5 |
-| Opening | 300 x 106 (side rails 8, top bar 28, bottom bar 30) |
+| Opening | 300 x 102 (side rails 8, top bar 32, bottom bar 30) |
 | Bottom boss around the strip | up to 41.3 above the bottom edge |
 | Medallion pocket | dia 35.6, centre 21 above the bottom edge, 56 left of centre |
 | Tile trough | 112 x 26.5, corner radius 3 |
 | Hole centres | +/-88.9 horizontal, +/-60.3 vertical from frame centre |
+| Plaque recess | 212 x 24 x 2, from 5 to 29 below the top edge |
 
 ## Where the badge sizes come from
 
@@ -73,7 +75,7 @@ remodel from the STL. Keep raised text under 1 mm tall so it clears the lips.
   plate. If your printer profile shows a smaller printable area, rotate the frame a few
   degrees in Bambu Studio.
 * Suggested: 0.2 mm layers, 3 walls, 5 top/bottom layers, 25% gyroid, no supports.
-  The badge pockets, plaque cavity and counterbores print as short bridges (max 36 mm)
+  The badge pockets, plaque recess and counterbores print as short bridges (max 36 mm)
   because the frame is face down.
 * Material: ASA or PETG for outdoor UV and heat. PLA will warp on a dark car in summer.
 * Filament 1 = frame colour, filament 2 = accent colour. The colour change only happens
@@ -81,7 +83,7 @@ remodel from the STL. Keep raised text under 1 mm tall so it clears the lips.
 
 ## Legal note
 
-The top and bottom bars cover about 22 mm and 24 mm of the plate's top and bottom edges
+The top and bottom bars cover about 26 mm and 24 mm of the plate's top and bottom edges
 (more around the medallion boss). Some states prohibit frames that cover the state name
 or registration stickers. Shrink `TOP_BAR`, `BOT_BAR` and `PK_H` in the script if that
-applies to you.
+applies to you (the recess must still clear the top holes by 2 mm).

@@ -3,7 +3,7 @@
 Generate a Bambu Studio-ready 3MF of a US license-plate frame with:
   * a bottom bar that holds a Subaru "Badge of Ownership" strip
     (round loyalty medallion + five lifestyle icon tiles),
-  * a top bar with a front-loading, swappable plaque pocket,
+  * a top bar with a recessed, swappable plaque that the two top plate screws clamp,
   * a second-filament accent bezel around both pockets,
   * a matching blank plaque as a second object.
 
@@ -26,7 +26,7 @@ P = dict(
     FRAME_W=316.0, FRAME_H=164.0,          # outer size (fits 325 mm H2C X)
     OUTER_R=10.0, INNER_R=4.0,
     THICK=5.5,                             # frame thickness
-    SIDE_RAIL=8.0, TOP_BAR=28.0, BOT_BAR=30.0,
+    SIDE_RAIL=8.0, TOP_BAR=32.0, BOT_BAR=30.0,
     HOLE_D=7.5, CBORE_D=11.0, CBORE_DEPTH=1.0,
     # --- badge strip (medallion measured from Subaru's 1:1 install template,
     #     tiles from photo ratios; see README)
@@ -35,12 +35,12 @@ P = dict(
     TILE_CLR_H=1.5, TROUGH_EXTRA_L=2.0,    # vertical clearance, extra length
     STRIP_Y=21.0,                          # strip centre-line above bottom edge
     STRIP_DEPTH=2.0, STRIP_WALL=2.5,
-    # --- plaque pocket (top bar)
-    PK_W=160.0, PK_H=20.0, PK_TOP_GAP=4.0, # pocket size, gap from top edge
-    PK_R=2.0, LIP_T=1.2, LIP_TOP=2.5, LIP_BOT=1.0, PK_DEPTH=2.5,
-    NOTCH_W=16.0, NOTCH_H=3.0,
-    # --- plaque
-    PLQ_CLR_W=0.6, PLQ_CLR_H=1.4, PLQ_T=2.0, PLQ_CHAMF=0.6, PLQ_R=1.5,
+    # --- plaque recess (top bar): the plaque spans both top mounting holes and is
+    #     clamped by the plate screws, so no lips are needed
+    PK_W=212.0, PK_H=24.0, PK_TOP_GAP=5.0, # recess size, gap from top edge
+    PK_R=3.0, PK_DEPTH=2.0,
+    # --- plaque (sits flush in the recess)
+    PLQ_CLR=0.6, PLQ_T=2.0, PLQ_R=2.5, PLQ_HOLE_D=7.5,
     # --- accent skin (filament 2)
     ACC_W=2.0, ACC_T=0.8,
     # --- bed placement (Bambu H2C plate, single nozzle 325 x 320)
@@ -91,52 +91,48 @@ boss = strip.offset(P["STRIP_WALL"], JoinType.Round)
 
 body2d = outer - (opening - boss)
 
-# plaque pocket
+# plaque recess; the top mounting holes pass through it
 pk_cy = top - P["PK_TOP_GAP"] - P["PK_H"] / 2
-pocket = rrect(P["PK_W"] + 0.4, P["PK_H"], P["PK_R"], 0, pk_cy)   # 0.2 mm wider than window each end
+pocket = rrect(P["PK_W"], P["PK_H"], P["PK_R"], 0, pk_cy)
 pk_top, pk_bot = pk_cy + P["PK_H"] / 2, pk_cy - P["PK_H"] / 2
-win_h = P["PK_H"] - P["LIP_TOP"] - P["LIP_BOT"]
-win_cy = pk_bot + P["LIP_BOT"] + win_h / 2
-window = rrect(P["PK_W"], win_h, 1.0, 0, win_cy)
-notch = CrossSection.square((P["NOTCH_W"], P["NOTCH_H"] + P["LIP_BOT"] + 0.5), center=True) \
-    .translate((0, pk_bot + P["LIP_BOT"] + 0.5 - (P["NOTCH_H"] + P["LIP_BOT"] + 0.5) / 2))
+assert pk_top - hole_y > P["HOLE_D"] / 2 + 2 and hole_y - pk_bot > P["HOLE_D"] / 2 + 2, "holes must sit inside the recess"
+assert pk_bot - (top - P["TOP_BAR"]) >= 2.5, "wall below recess"
 
 # accent skin regions (ring bands), kept 1 mm inside the outer edge
 inset = body2d.offset(-1.0, JoinType.Round)
 # the inner boundaries overlap the window/strip/notch by 0.05 mm so the 2-D band and the
 # 3-D prism cuts never leave hair-thin slivers (the 3-D cuts below trim them exactly)
 EPS = 0.05
-acc_plaque = (pocket.offset(P["ACC_W"], JoinType.Round) - window.offset(-EPS, JoinType.Round)) ^ inset
+acc_plaque = (pocket.offset(P["ACC_W"], JoinType.Round) - pocket.offset(-EPS, JoinType.Round)) ^ inset
 acc_strip = (strip.offset(P["ACC_W"], JoinType.Round) - strip.offset(-EPS, JoinType.Round)) ^ inset
-accent2d = (acc_plaque + acc_strip) - notch.offset(-EPS, JoinType.Round)
+accent2d = acc_plaque + acc_strip
 
 # ----------------------------------------------------------------- 3-D build (front face at z = T, back at z = 0)
 body = ext(body2d, 0, T)
 cuts = []
-cuts.append(ext(pocket, T - P["LIP_T"] - P["PK_DEPTH"], T - P["LIP_T"]))   # cavity behind lips
-cuts.append(ext(window, T - P["LIP_T"] - 0.01, T + 1))                      # window through lips
-cuts.append(ext(notch, T - P["LIP_T"] - 0.01, T + 1))                       # fingernail notch
+cuts.append(ext(pocket, T - P["PK_DEPTH"], T + 1))                          # plaque recess
 cuts.append(ext(strip, T - P["STRIP_DEPTH"], T + 1))                        # badge pockets
 for sx in (-1, 1):
     for sy in (-1, 1):
         cx, cy = sx * hole_x, sy * hole_y
         cuts.append(ext(circle(P["HOLE_D"], cx, cy), -1, T + 1))
-        cuts.append(ext(circle(P["CBORE_D"], cx, cy), T - P["CBORE_DEPTH"], T + 1))
+        if sy < 0:   # counterbores only on the bottom holes; the top screw heads sit on the plaque
+            cuts.append(ext(circle(P["CBORE_D"], cx, cy), T - P["CBORE_DEPTH"], T + 1))
 cuts.append(ext(accent2d, T - P["ACC_T"], T + 1))                           # make room for accent skin
 body = body - Manifold.batch_boolean(cuts, m3.OpType.Add)
 
 accent = ext(accent2d, T - P["ACC_T"], T)
 accent = accent - Manifold.batch_boolean(
-    [ext(window, T - 2, T + 1), ext(notch, T - 2, T + 1), ext(strip, T - 2, T + 1)]
-    + [ext(circle(P["CBORE_D"], sx * hole_x, sy * hole_y), T - 2, T + 1) for sx in (-1, 1) for sy in (-1, 1)],
+    [ext(pocket, T - 2, T + 1), ext(strip, T - 2, T + 1)]
+    + [ext(circle(P["CBORE_D"], sx * hole_x, -hole_y), T - 2, T + 1) for sx in (-1, 1)],
     m3.OpType.Add)
 
-# plaque: front face larger, back face chamfered (hull of two slabs)
-plq_w = P["PK_W"] - P["PLQ_CLR_W"]
-plq_h = P["PK_H"] - P["PLQ_CLR_H"]
-front = ext(rrect(plq_w, plq_h, P["PLQ_R"]), P["PLQ_T"] - 0.01, P["PLQ_T"])
-back = ext(rrect(plq_w - 2 * P["PLQ_CHAMF"], plq_h - 2 * P["PLQ_CHAMF"], P["PLQ_R"]), 0, 0.01)
-plaque = Manifold.batch_hull([front, back])
+# plaque: flat plate with the two screw holes, sits flush in the recess
+plq_w = P["PK_W"] - P["PLQ_CLR"]
+plq_h = P["PK_H"] - P["PLQ_CLR"]
+plq_hole_dy = hole_y - pk_cy                     # hole offset from plaque centre
+plaque2d = rrect(plq_w, plq_h, P["PLQ_R"]) - circle(P["PLQ_HOLE_D"], -hole_x, plq_hole_dy) - circle(P["PLQ_HOLE_D"], hole_x, plq_hole_dy)
+plaque = ext(plaque2d, 0, P["PLQ_T"])
 
 # ----------------------------------------------------------------- checks
 def stats(name, man):
@@ -150,13 +146,8 @@ stats("body", body); stats("accent", accent); stats("plaque", plaque)
 ov = (body ^ accent).volume()
 assert ov < 1e-6, f"body/accent overlap {ov}"
 print("body/accent overlap volume:", ov)
-# plaque must fit the pocket cavity
-assert plq_w < P["PK_W"] - 0.4 and plq_h < P["PK_H"] and P["PLQ_T"] < P["PK_DEPTH"]   # passes window, fits cavity
-# plaque bottom edge (pushed up) must clear bottom lip
-assert P["PK_H"] - plq_h > P["LIP_BOT"] + 0.3, "swing-in clearance"
-# dropped: top edge still under top lip
-assert plq_h > P["PK_H"] - P["LIP_TOP"] + 0.5, "top lip engagement"
-print(f"plaque {plq_w} x {plq_h} x {P['PLQ_T']} mm, visible window {P['PK_W']} x {win_h:.1f} mm")
+assert plq_w < P["PK_W"] and plq_h < P["PK_H"] and P["PLQ_T"] <= P["PK_DEPTH"]
+print(f"plaque {plq_w} x {plq_h} x {P['PLQ_T']} mm, screw holes {P['PLQ_HOLE_D']} mm at x=+/-{hole_x} y={plq_hole_dy:+.3f} from plaque centre")
 print(f"strip pocket: medallion dia {med_pd} at x={med_cx:.1f}, trough {trough_l}x{trough_h} mm, total {strip_total:.1f} mm")
 
 # ----------------------------------------------------------------- 3MF writing (Bambu Studio project layout)
@@ -194,7 +185,7 @@ IDENT = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]]
 cx, cy = P["BED_W"] / 2, P["BED_D"] / 2 + 55.0
 FLIP = [[1, 0, 0, cx], [0, -1, 0, cy], [0, 0, -1, T]]
 # Plaque face-UP, below the frame
-PLQ_TF = [[1, 0, 0, cx], [0, 1, 0, cy - H / 2 - 30.0], [0, 0, 1, 0]]
+PLQ_TF = [[1, 0, 0, cx], [0, 1, 0, cy - H / 2 - 32.0], [0, 0, 1, 0]]
 
 body_xml, body_tris = mesh_xml(1, body, "Frame body")
 acc_xml, acc_tris = mesh_xml(2, accent, "Accent bezels")
