@@ -75,10 +75,13 @@ Arachne on. Colour changes happen in the top three layers only.
 
 `plaque_gruss_vom_krampus.3mf` holds the same plaque blank with "Gruß vom Krampus" in
 Fraktur (UnifrakturCook Bold, SIL Open Font License, bundled in `fonts/`) across the
-middle and a Krampus silhouette facing inward at each end: horns, open goat muzzle with
-the tongue out, basket on the back, birch rod in hand, cloven hooves and an arrow tail.
-Regenerate with `python3 make_plaque_krampus.py`. Shared helpers for the themed plaques
-live in `plaque_lib.py`.
+middle and a Krampus silhouette facing inward at each end. The silhouette is traced from
+`krampus_silhouette_source.jpg` (the image you supplied), scaled to 21.8 mm tall; the
+hair-thin birch strands in the source are replaced by a solid notched bundle and
+anything under 0.45 mm (bell strings, fur wisps) is dropped. `krampus()` in the script
+is the older hand-drawn figure, kept as a fallback. Regenerate with
+`python3 make_plaque_krampus.py`. Shared helpers for the themed plaques live in
+`plaque_lib.py`.
 
 | Part | Slot | Colour |
 |---|---|---|

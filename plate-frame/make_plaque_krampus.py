@@ -53,7 +53,49 @@ def krampus():
     fig = fig.buffer(0.05, 8).buffer(-0.05, 8)
     return fig
 
-K = krampus()
+def traced_krampus(path=HERE / "krampus_silhouette_source.jpg", height=21.8, min_feature=0.45):
+    """Trace the supplied silhouette image and scale it to `height` mm. The birch switch
+    in the source is drawn with hair-thin strands that no nozzle can print, so that
+    region is masked out and a solid fan of twigs is drawn from the hand instead.
+    Anything thinner than `min_feature` (bell strings, fur wisps) is dropped."""
+    import cv2
+    img = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
+    mask = (img < 110).astype(np.uint8) * 255
+    mask[430:720, :1012] = 0                                          # the birch strands
+    cnts, hier = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
+    polys = []
+    for i, c in enumerate(cnts):
+        if hier[0][i][3] == -1 and cv2.contourArea(c) > 200:
+            holes = []
+            j = hier[0][i][2]
+            while j != -1:
+                if cv2.contourArea(cnts[j]) > 200:
+                    holes.append([tuple(pt[0]) for pt in cnts[j]])
+                j = hier[0][j][0]
+            polys.append(Polygon([tuple(pt[0]) for pt in c], holes).buffer(0))
+    g = max(islands(unary_union(polys)), key=lambda q: q.area)
+    minx, miny, maxx, maxy = g.bounds
+    k = height / (maxy - miny)
+    cx, cy = (minx + maxx) / 2, (miny + maxy) / 2
+    g = translate(sscale(g, k, -k, origin=(0, 0)), -cx * k, cy * k)   # image y points down
+    r = min_feature / 2
+    g = g.buffer(-r, 8).buffer(r, 8)
+    g = max(islands(g), key=lambda q: q.area).simplify(0.02)
+    hand = ((1038 - cx) * k, -(676 - cy) * k)                          # where the switch handle meets the hand
+    # birch bundle: a wedge pointing up and away from the hand, with notches at the tip
+    from shapely.affinity import rotate
+    L, w0, w1 = 4.6, 1.3, 3.8
+    wedge = Polygon([(0, -w0 / 2), (L, -w1 / 2), (L, w1 / 2), (0, w0 / 2)])
+    notches = unary_union([Polygon([(L + 0.1, y - 0.28), (L - 1.6, y), (L + 0.1, y + 0.28)]) for y in (-1.15, 0.0, 1.15)])
+    bundle = wedge.difference(notches)
+    bundle = translate(rotate(bundle, 150, origin=(0, 0)), hand[0] + 0.3, hand[1] + 0.2)
+    twigs = unary_union([bundle, circ(*hand, 0.75)])
+    g = unary_union([g, twigs])
+    b = g.bounds
+    return translate(g, -(b[0] + b[2]) / 2, -(b[1] + b[3]) / 2)
+
+K = traced_krampus()                 # faces left in the source image
+K = mirror_x(K)                      # left-hand copy faces the lettering
 kx = blank.art_x_max - (K.bounds[2] - K.bounds[0]) / 2 - 0.5
 left = translate(K, -kx - (K.bounds[0] + K.bounds[2]) / 2, 0)
 right = mirror_x(left)
