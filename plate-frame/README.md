@@ -50,33 +50,26 @@ the plaque. If you want the plaque proud of the frame, make it thicker than 2 mm
 
 ## Themed plaque: Powerpuff Girls, Dia de los Muertos
 
-`plaque_powerpuff_dia_de_muertos.3mf` is a second Bambu Studio project holding only a
-plaque (same 211.4 x 23.4 x 2 mm blank with the two screw holes) with the three girls'
-heads as sugar skulls, 22 mm tall, raised 0.6 mm on the face, plus the poster's title
-text at each end. Regenerate with `python3 make_plaque_ppg.py`; it reads the plaque size
-from `make_frame_3mf.py` so the two stay matched.
-
-Parts and filament slots (five, to match one AMS plus the external spool or a
-five-slot setup):
+`plaque_powerpuff_dia_de_muertos.3mf` holds the plaque blank with the poster's scene
+in five colours: Bubbles, Blossom and Buttercup as full-body sugar-skull figures (each
+girl one silhouette in her colour with a white skull face, ribs and bone limbs inside),
+papel picado bunting along the top, a dotted border along the bottom, marigolds, two
+little skulls and a three-colour Powerpuff heart at each end. No lettering.
+Regenerate with `python3 make_plaque_ppg.py`; it reads the plaque size from
+`make_frame_3mf.py` through `plaque_lib.py` so the files stay matched.
 
 | Part | Slot | Colour |
 |---|---|---|
 | Plaque base | 1 | black |
-| Art White | 2 | white (faces, eye highlights) |
-| Art Orange, Text left, Text right | 3 | orange (Blossom hair and bow, lettering) |
-| Art Blue | 4 | blue (Bubbles hair) |
-| Art Green | 5 | green (Buttercup hair) |
+| Art White | 2 | white (faces, bones, skulls, bunting string, border dots, white flags, marigold centres) |
+| Art Orange | 3 | orange (Blossom, marigolds, orange flags, left band of the hearts) |
+| Art Blue | 4 | blue (Bubbles, blue flags, middle band of the hearts) |
+| Art Green | 5 | green (Buttercup, green flags, right band of the hearts) |
 
-Each head is drawn in the girl's signature colour (hair, bow, pigtails or flip) with a
-white sugar-skull face: flower-shaped eye sockets with a coloured iris and highlight,
-heart nose, stitched smile (flat and angry for Buttercup), cheek flowers and chin dots.
-Delete the `Text left` and `Text right` parts for heads only, or reassign any part's
-filament in the object list.
-
-Print it face up, 0.2 mm layers (0.1 mm for crisper faces), 0.4 nozzle, Arachne wall
-generator on (the default) so the 0.6 to 0.8 mm skull details and lettering strokes
-print as single lines. The colour changes happen in the top three layers only. Black
-outlines between regions are 0.5 mm gaps that show the base.
+Art is raised 0.6 mm. Black outlines are 0.5 mm gaps that show the base; the
+smallest features are the 0.6 mm bone arms, the 0.8 mm border dots and the 0.6 mm
+holes punched in the flags. Print face up, 0.2 mm layers (0.1 mm for crisper faces),
+Arachne on. Colour changes happen in the top three layers only.
 
 ## Themed plaque: Gruß vom Krampus
 

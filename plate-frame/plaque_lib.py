@@ -233,3 +233,9 @@ def preview(path, blank, layers, colors, title, xlim=None, figsize=(22, 3.6), gr
     ax.set_aspect("equal"); ax.set_facecolor("#d8d8d8"); ax.set_title(title)
     ax.set_xticks(range(int(xlim[0]), int(xlim[1]) + 1, grid)); ax.grid(True, lw=0.25)
     fig.tight_layout(); fig.savefig(path, dpi=130); plt.close(fig)
+
+def flower(x, y, r, petals=8, pr=None):
+    """Disc with small discs around its rim (sugar-skull eye socket, marigold)."""
+    pr = pr or r * 0.36
+    return unary_union([circ(x, y, r)] + [circ(x + r * math.cos(a), y + r * math.sin(a), pr)
+                                          for a in np.linspace(0, 2 * math.pi, petals, endpoint=False)])
