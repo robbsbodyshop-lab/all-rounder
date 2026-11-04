@@ -56,22 +56,22 @@ sugar skulls raised 0.6 mm on the face, plus the poster's title text at each end
 Regenerate with `python3 make_plaque_ppg.py`; it reads the plaque size from
 `make_frame_3mf.py` so the two stay matched.
 
-Parts and filament slots:
+Parts and filament slots (five, to match one AMS plus the external spool or a
+five-slot setup):
 
 | Part | Slot | Colour |
 |---|---|---|
 | Plaque base | 1 | black |
-| Art White | 2 | white (faces, ribs, bones) |
-| Art Orange, Text left, Text right | 3 | orange (Blossom hair and dress, lettering) |
-| Art Blue | 4 | blue (Bubbles dress) |
+| Art White | 2 | white (faces, bone arms and legs, ribs, marigold centres) |
+| Art Orange, Text left, Text right | 3 | orange (Blossom hair, bow and dress, marigolds, lettering) |
+| Art Blue | 4 | blue (Bubbles hair and dress) |
 | Art Green | 5 | green (Buttercup hair and dress) |
-| Art Red | 6 | red (Blossom's bow) |
-| Art Yellow | 7 | yellow (Bubbles' hair) |
 
-Seven colours need two AMS units. With one AMS 2 Pro, reassign parts in the object
-list: red to orange, yellow to orange (or white), which leaves black, white, orange,
-blue and green. Drop green too by printing Buttercup in blue if you only have four
-slots. Delete the `Text left` and `Text right` parts if you want characters only.
+Each girl is drawn in her signature colour with a white sugar-skull face: flower-shaped
+eye sockets with a coloured iris, heart nose, stitched smile (flat and angry for
+Buttercup), cheek dots, white ribs on the dress, bone arms and legs. Delete the
+`Text left` and `Text right` parts for characters only, or reassign any part's filament
+in the object list.
 
 Print it face up, 0.2 mm layers (0.1 mm for crisper faces), 0.4 nozzle, Arachne wall
 generator on (the default) so the 0.6 to 0.8 mm skull details and lettering strokes
