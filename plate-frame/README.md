@@ -78,6 +78,24 @@ generator on (the default) so the 0.6 to 0.8 mm skull details and lettering stro
 print as single lines. The colour changes happen in the top three layers only. Black
 outlines between regions are 0.5 mm gaps that show the base.
 
+## Themed plaque: Gruß vom Krampus
+
+`plaque_gruss_vom_krampus.3mf` holds the same plaque blank with "Gruß vom Krampus" in
+Fraktur (UnifrakturCook Bold, SIL Open Font License, bundled in `fonts/`) across the
+middle and a Krampus silhouette facing inward at each end: horns, open goat muzzle with
+the tongue out, basket on the back, birch rod in hand, cloven hooves and an arrow tail.
+Regenerate with `python3 make_plaque_krampus.py`. Shared helpers for the themed plaques
+live in `plaque_lib.py`.
+
+| Part | Slot | Colour |
+|---|---|---|
+| Plaque base | 1 | black |
+| Lettering | 2 | white |
+| Krampus silhouettes | 3 | red |
+
+Art is raised 0.6 mm; thinnest features are the 0.6 mm birch twigs. Swap the slot
+numbers in the object list if you want red lettering and white silhouettes.
+
 ## Key dimensions (mm)
 
 | | |
