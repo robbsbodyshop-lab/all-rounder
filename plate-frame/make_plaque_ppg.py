@@ -72,110 +72,82 @@ def flower(x, y, r, petals=8, pr=None):
     return unary_union([circ(x, y, r)] + [circ(x + r * math.cos(a), y + r * math.sin(a), pr)
                                           for a in np.linspace(0, 2 * math.pi, petals, endpoint=False)])
 
-# ------------------------------------------------------------------ one character
+# ------------------------------------------------------------------ one head
 def character(kind):
-    """Return {slot: geometry} for one girl centred at x=0, y up, about 22 mm tall."""
+    """Return {slot: geometry} for one girl's head centred at x=0, y up, ~22 mm tall."""
     col = {"blossom": ORANGE, "bubbles": BLUE, "buttercup": GREEN}[kind]
     out = {}
     def add(slot, geom):
         if geom is not None and not geom.is_empty:
             out.setdefault(slot, []).append(geom)
 
-    # ---- head and hair silhouettes
-    face = circ(0, 1.4, 5.6)
+    face = circ(0, -1.0, 8.0)                       # 16 mm skull, top 7.0, chin -9.0
     if kind == "blossom":
-        dome = circ(0, 1.9, 6.6)
-        strands = unary_union([Polygon([(-6.5, 3.5), (-7.7, -7.6), (-5.3, -8.4), (-3.8, -2.5)]),
-                               Polygon([(6.5, 3.5), (7.7, -7.6), (5.3, -8.4), (3.8, -2.5)])])
-        hair = smooth(unary_union([dome, strands]), 1.2)
-        bangs = rounded(Polygon([(-8, 11), (8, 11), (8, 5.6), (5.0, 5.3), (0, 3.5), (-5.0, 5.3), (-8, 5.6)]), 0.5)
-        knot = circ(0, 8.3, 1.1)
-        loops = unary_union([smooth(Polygon([(-0.4, 8.3), (-6.3, 10.9), (-5.3, 6.6)]), 0.7),
-                             smooth(Polygon([(0.4, 8.3), (6.3, 10.9), (5.3, 6.6)]), 0.7)])
+        dome = circ(0, -0.2, 9.2)
+        strands = unary_union([Polygon([(-9.0, 0.5), (-9.9, -10.3), (-6.6, -10.9), (-5.5, -3.0)]),
+                               Polygon([(9.0, 0.5), (9.9, -10.3), (6.6, -10.9), (5.5, -3.0)])])
+        hair = smooth(unary_union([dome, strands]), 1.4)
+        bangs = rounded(Polygon([(-11, 12), (11, 12), (11, 6.6), (7.0, 6.2), (0, 3.4), (-7.0, 6.2), (-11, 6.6)]), 0.6)
+        knot = circ(0, 7.9, 1.4)
+        loops = unary_union([smooth(Polygon([(-0.5, 7.8), (-8.2, 10.9), (-6.8, 5.6)]), 0.9),
+                             smooth(Polygon([(0.5, 7.8), (8.2, 10.9), (6.8, 5.6)]), 0.9)])
         bow = unary_union([knot, loops])
-        hair_outline_only = False
     elif kind == "bubbles":
-        dome = circ(0, 2.0, 6.5)
-        pigtails = unary_union([circ(-6.3, 4.4, 2.9), circ(6.3, 4.4, 2.9)])
-        hair = smooth(unary_union([dome, pigtails]), 0.8)
-        bangs = rounded(Polygon([(-9, 11), (9, 11), (9, 5.8), (3.5, 5.4), (0, 4.5), (-3.5, 5.4), (-9, 5.8)]), 0.7)
+        dome = circ(0, 0.2, 9.0)
+        pigtails = unary_union([translate(sscale(circ(0, 0, 1.0), 3.1, 4.3, origin=(0, 0)), -8.5, 1.6),
+                                translate(sscale(circ(0, 0, 1.0), 3.1, 4.3, origin=(0, 0)), 8.5, 1.6)])
+        hair = smooth(unary_union([dome, pigtails]), 1.0)
+        bangs = rounded(Polygon([(-12, 12), (12, 12), (12, 7.6), (4.5, 7.2), (0, 5.6), (-4.5, 7.2), (-12, 7.6)]), 0.9)
         bow = None
-        hair_outline_only = False
     else:
-        dome = circ(0, 2.1, 6.6)
-        flips = unary_union([smooth(Polygon([(-5.8, 3.8), (-8.2, 1.4), (-5.6, -0.4)]), 0.9),
-                             smooth(Polygon([(5.8, 3.8), (8.2, 1.4), (5.6, -0.4)]), 0.9)])
-        hair = smooth(unary_union([dome, flips]), 0.6)
-        bangs = rounded(Polygon([(-8, 11), (8, 11), (8, 5.0), (3.0, 4.9), (-0.4, 3.4), (-2.4, 4.9), (-8, 5.0)]), 0.5)
+        dome = circ(0, 0.2, 9.0)
+        flips = unary_union([smooth(Polygon([(-8.0, 4.0), (-11.4, 1.6), (-7.8, -1.6)]), 1.1),
+                             smooth(Polygon([(8.0, 4.0), (11.4, 1.6), (7.8, -1.6)]), 1.1)])
+        hair = smooth(unary_union([dome, flips]), 0.8)
+        bangs = rounded(Polygon([(-11, 12), (11, 12), (11, 6.5), (4.0, 6.6), (-0.6, 3.8), (-3.4, 6.6), (-11, 6.5)]), 0.6)
         bow = None
-        hair_outline_only = False
 
     hair_region = hair.difference(face).union(hair.intersection(face).intersection(bangs))
     face_region = face.difference(hair_region)
-
-    # ---- body: dress, bone arms and legs
-    dress = rounded(Polygon([(-2.8, -2.6), (2.8, -2.6), (4.0, -8.4), (-4.0, -8.4)]), 0.5)
-    dress = dress.difference(face.buffer(GAP))
-    arms = unary_union([bone((-3.3, -4.3), (-5.3, -7.5), 0.95, 0.55), bone((3.3, -4.3), (5.3, -7.5), 0.95, 0.55)])
-    legs = unary_union([bone((-1.6, -9.35), (-1.6, -10.35), 1.0, 0.6), bone((1.6, -9.35), (1.6, -10.35), 1.0, 0.6)])
-    bones = unary_union([arms, legs]).difference(dress.buffer(GAP))
-    hair_region = hair_region.difference(unary_union([dress, bones]).buffer(GAP))
     if bow is not None:
         hair_region = hair_region.difference(bow.buffer(GAP))
         face_region = face_region.difference(bow.buffer(GAP))
-
-    # ---- raised regions with outline gaps
-    if hair_outline_only:
-        add(col, hair_region.buffer(-GAP / 2, 8).difference(hair_region.buffer(-GAP / 2 - 0.75, 8)))
-    else:
-        add(col, hair_region.buffer(-GAP / 2, 8))
-    if bow is not None:
         add(col, bow)
-    add(col, dress.buffer(-GAP / 2, 8))
-    add(WHITE, bones)
+    add(col, hair_region.buffer(-GAP / 2, 8))
 
     # ---- sugar-skull face
     eyes = []
     for sx in (-1, 1):
-        e = flower(sx * 2.3, 2.0, 1.85, 8, 0.62)
+        e = flower(sx * 3.4, 0.2, 2.6, 8, 0.85)
         if kind == "buttercup":   # angry brow: clip the upper inner part of each socket
-            e = e.difference(Polygon([(0, 4.9), (sx * 0.2, 2.6), (sx * 4.9, 4.9)]))
+            e = e.difference(Polygon([(0, 6.5), (sx * 0.3, 0.0), (sx * 6.8, 4.9), (sx * 6.8, 6.5)]))
         eyes.append(e)
-    nose = unary_union([circ(-0.42, 0.05, 0.42), circ(0.42, 0.05, 0.42), Polygon([(-0.8, -0.05), (0.8, -0.05), (0, -0.95)])])
+    nose = unary_union([circ(-0.62, -2.75, 0.62), circ(0.62, -2.75, 0.62),
+                        Polygon([(-1.2, -2.9), (1.2, -2.9), (0, -4.2)])])
     if kind == "buttercup":
-        mouth_line = LineString([(-2.2, -1.9), (2.2, -1.9)])
+        mouth_line = LineString([(-3.4, -5.9), (3.4, -5.9)])
     else:
-        mouth_line = LineString(arc_pts(0, 0.6, 3.0, math.radians(235), math.radians(305)))
-    mouth = mouth_line.buffer(0.27, 8)
-    for t in (0.12, 0.37, 0.63, 0.88):
+        mouth_line = LineString(arc_pts(0, -2.0, 4.6, math.radians(232), math.radians(308)))
+    mouth = mouth_line.buffer(0.3, 8)
+    for t in (0.1, 0.3, 0.5, 0.7, 0.9):
         pt = mouth_line.interpolate(t, normalized=True)
-        mouth = mouth.union(rect(pt.x - 0.2, pt.y - 0.65, pt.x + 0.2, pt.y + 0.65))
-    voids = unary_union(eyes + [nose, mouth])
+        mouth = mouth.union(rect(pt.x - 0.22, pt.y - 0.8, pt.x + 0.22, pt.y + 0.8))
+    chin = unary_union([circ(0, -7.9, 0.38), circ(-1.3, -7.5, 0.38), circ(1.3, -7.5, 0.38)])
+    voids = unary_union(eyes + [nose, mouth, chin])
     face_white = face_region.buffer(-GAP / 2, 8).difference(voids)
-    # coloured cheek dots and forehead dot (adjacent colours, no gap needed)
-    dots = [circ(sx * 4.1, -0.5, 0.5) for sx in (-1, 1)] + [circ(sx * 3.4, -1.9, 0.42) for sx in (-1, 1)]
-    dots = [d for d in dots if face_white.buffer(-0.3).contains(d)]
-    face_white = face_white.difference(unary_union(dots)) if dots else face_white
+    # coloured cheek flowers (adjacent colours, no gap needed)
+    cheeks = [flower(sx * 4.9, -4.7, 0.8, 5, 0.45) for sx in (-1, 1)]
+    cheeks = [c for c in cheeks if face_white.buffer(-0.3).contains(c)]
+    if cheeks:
+        face_white = face_white.difference(unary_union(cheeks))
     add(WHITE, face_white)
-    for d in dots:
-        add(col, d)
-    for sx in (-1, 1):   # iris inside the socket
-        add(col, circ(sx * 2.3, 2.0 if kind != "buttercup" else 1.75, 1.0))
-
-    # ---- skeleton ribs on the dress (white, touching the dress colour)
-    ribs = unary_union([rect(-2.1, y - 0.4, 2.1, y + 0.4) for y in (-5.3, -6.6, -7.9)] + [rect(-0.38, -4.6, 0.38, -8.3)])
-    ribs = ribs.intersection(dress.buffer(-0.55))
-    out[col] = [g.difference(ribs) for g in out[col]]
-    add(WHITE, ribs)
-
+    for c in cheeks:
+        add(col, c)
+    for sx in (-1, 1):   # iris with a white highlight inside the socket
+        iy = 0.2 if kind != "buttercup" else -0.1
+        add(col, circ(sx * 3.4, iy, 1.5).difference(circ(sx * 3.4 + 0.55, iy + 0.55, 0.5)))
+        add(WHITE, circ(sx * 3.4 + 0.55, iy + 0.55, 0.5))
     return {slot: unary_union(gs) for slot, gs in out.items()}
-
-def marigold(x, y):
-    petals = unary_union([circ(x + 1.55 * math.cos(a), y + 1.55 * math.sin(a), 0.72)
-                          for a in np.linspace(0, 2 * math.pi, 10, endpoint=False)] + [circ(x, y, 1.6)])
-    inner = unary_union([circ(x + 0.75 * math.cos(a), y + 0.75 * math.sin(a), 0.42)
-                         for a in np.linspace(math.pi / 10, 2 * math.pi, 10, endpoint=False)])
-    return {ORANGE: petals.difference(circ(x, y, 0.5).buffer(0.25)), WHITE: circ(x, y, 0.5)}
 
 # ------------------------------------------------------------------ text
 def text_geom(s, cap_h, font=FontProperties(fname="/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf")):
@@ -199,18 +171,16 @@ def text_geom(s, cap_h, font=FontProperties(fname="/usr/share/fonts/truetype/dej
     return translate(geom, -(b[0] + b[2]) / 2, -(b[1] + b[3]) / 2)   # centred
 
 # ------------------------------------------------------------------ layout
-chars = {"bubbles": -23.0, "blossom": 0.0, "buttercup": 23.0}
+chars = {"bubbles": -25.0, "blossom": 0.0, "buttercup": 25.0}
 layers = {}
 for kind, cx in chars.items():
     for slot, g in character(kind).items():
         layers.setdefault(slot, []).append(translate(g, cx, 0))
-for mx in (-37.0, 37.0):
-    for slot, g in marigold(mx, 0.0).items():
-        layers.setdefault(slot, []).append(g)
 layers = {slot: unary_union(gs) for slot, gs in layers.items()}
+heads_x = max(abs(layers[k].bounds[0]) for k in layers) if False else max(max(abs(g.bounds[0]), abs(g.bounds[2])) for g in layers.values())
 
 CAP = 4.0
-TX = (41.5 + ART_X_MAX) / 2
+TX = (heads_x + 3.0 + ART_X_MAX) / 2
 text_parts = {
     "Text left": unary_union([translate(text_geom("LAS TRES", CAP), -TX, 3.0),
                               translate(text_geom("CHICAS", CAP), -TX, -3.0)]),
@@ -218,7 +188,7 @@ text_parts = {
                                translate(text_geom("MUERTOS", CAP), TX, -3.0)]),
 }
 for g in text_parts.values():
-    assert min(abs(g.bounds[0]), abs(g.bounds[2])) > 41.0, "text runs into the marigolds"
+    assert min(abs(g.bounds[0]), abs(g.bounds[2])) > heads_x + 2.0, "text runs into the heads"
 
 # ------------------------------------------------------------------ checks
 limit = box(-ART_X_MAX, -PLQ_H / 2 + MARGIN, ART_X_MAX, PLQ_H / 2 - MARGIN)
@@ -289,8 +259,8 @@ fig, ax = plt.subplots(figsize=(14, 4.6))
 draw(base2d, COLORS[BLACK], 1)
 for slot, g in layers.items():
     draw(g, COLORS[slot], 2)
-ax.set_xlim(-42, 42); ax.set_ylim(-12.5, 12.5); ax.set_aspect("equal"); ax.set_facecolor("#d8d8d8")
-ax.set_xticks(range(-42, 43, 2)); ax.set_yticks(range(-12, 13, 2)); ax.grid(True, lw=0.3); ax.set_title("Characters, zoom (mm)")
+ax.set_xlim(-38, 38); ax.set_ylim(-12.5, 12.5); ax.set_aspect("equal"); ax.set_facecolor("#d8d8d8")
+ax.set_xticks(range(-38, 39, 2)); ax.set_yticks(range(-12, 13, 2)); ax.grid(True, lw=0.3); ax.set_title("Characters, zoom (mm)")
 fig.tight_layout(); fig.savefig(HERE / "preview_plaque_ppg_zoom.png", dpi=130)
 
 # ------------------------------------------------------------------ 3MF

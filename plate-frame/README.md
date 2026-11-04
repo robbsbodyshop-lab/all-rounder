@@ -51,10 +51,10 @@ the plaque. If you want the plaque proud of the frame, make it thicker than 2 mm
 ## Themed plaque: Powerpuff Girls, Dia de los Muertos
 
 `plaque_powerpuff_dia_de_muertos.3mf` is a second Bambu Studio project holding only a
-plaque (same 211.4 x 23.4 x 2 mm blank with the two screw holes) with the three girls as
-sugar skulls raised 0.6 mm on the face, plus the poster's title text at each end.
-Regenerate with `python3 make_plaque_ppg.py`; it reads the plaque size from
-`make_frame_3mf.py` so the two stay matched.
+plaque (same 211.4 x 23.4 x 2 mm blank with the two screw holes) with the three girls'
+heads as sugar skulls, 22 mm tall, raised 0.6 mm on the face, plus the poster's title
+text at each end. Regenerate with `python3 make_plaque_ppg.py`; it reads the plaque size
+from `make_frame_3mf.py` so the two stay matched.
 
 Parts and filament slots (five, to match one AMS plus the external spool or a
 five-slot setup):
@@ -62,16 +62,16 @@ five-slot setup):
 | Part | Slot | Colour |
 |---|---|---|
 | Plaque base | 1 | black |
-| Art White | 2 | white (faces, bone arms and legs, ribs, marigold centres) |
-| Art Orange, Text left, Text right | 3 | orange (Blossom hair, bow and dress, marigolds, lettering) |
-| Art Blue | 4 | blue (Bubbles hair and dress) |
-| Art Green | 5 | green (Buttercup hair and dress) |
+| Art White | 2 | white (faces, eye highlights) |
+| Art Orange, Text left, Text right | 3 | orange (Blossom hair and bow, lettering) |
+| Art Blue | 4 | blue (Bubbles hair) |
+| Art Green | 5 | green (Buttercup hair) |
 
-Each girl is drawn in her signature colour with a white sugar-skull face: flower-shaped
-eye sockets with a coloured iris, heart nose, stitched smile (flat and angry for
-Buttercup), cheek dots, white ribs on the dress, bone arms and legs. Delete the
-`Text left` and `Text right` parts for characters only, or reassign any part's filament
-in the object list.
+Each head is drawn in the girl's signature colour (hair, bow, pigtails or flip) with a
+white sugar-skull face: flower-shaped eye sockets with a coloured iris and highlight,
+heart nose, stitched smile (flat and angry for Buttercup), cheek flowers and chin dots.
+Delete the `Text left` and `Text right` parts for heads only, or reassign any part's
+filament in the object list.
 
 Print it face up, 0.2 mm layers (0.1 mm for crisper faces), 0.4 nozzle, Arachne wall
 generator on (the default) so the 0.6 to 0.8 mm skull details and lettering strokes
