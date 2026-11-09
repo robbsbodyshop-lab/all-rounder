@@ -6,6 +6,9 @@ This repo hosts three standalone tools:
 - **`maintenance.html`** — [Upkeep](#upkeep--maintenance-tracker), a maintenance schedule tracker for possessions, vehicles, and household items
 - **`mascot-pendant-optimizer.html`** — [Mascot Pendant Optimizer](#mascot-pendant-optimizer), a 3D-printable pendant STL generator
 
+It also holds printable shop procedures in [`service-manuals/`](service-manuals/README.md), starting with
+the 2019 Lincoln Navigator A/C compressor removal and installation.
+
 ---
 
 ## Dual-User Workout Tracker
